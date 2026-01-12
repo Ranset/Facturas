@@ -10,8 +10,10 @@ def main(page: ft.Page):
     }
 
     page.theme = ft.Theme(
-        font_family="poppins",
+        font_family="Arial",
     )
+
+    page.padding = 0
 
     # on load
     show_view(page, "/cotizacion")
