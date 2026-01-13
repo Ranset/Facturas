@@ -1,6 +1,7 @@
 import flet as ft
 from pages.common_controls.menu import contenedor_menu
 from pages.common_controls.states import States
+from pages.common_controls.customs_widgets import CustomTextDatePicker, CustomTextFieldAutocomplete
 
 class Cotizacion(ft.Container):
     def __init__(self, page: ft.Page):
@@ -12,7 +13,7 @@ class Cotizacion(ft.Container):
         ## <common variables
         ## common variables>
 
-        ## <Controls objects
+        ## <Widgets objects
         txt_Cotizacion_title = ft.Text(
             "Cotizaciones",
             size= 35,
@@ -37,57 +38,36 @@ class Cotizacion(ft.Container):
             label= "Estatus"
         )
 
-        # sample suggestions for clientes
         cliente_suggestions = [
             "ACME",
             "Beta S.A.",
             "Cliente 3",
             "Distribuciones López",
         ]
+        # select_cliente = CustomTextFieldAutocomplete(
+        #     page= page,
+        #     label= "Clientes",
+        #     suggestions= cliente_suggestions
+        # ).Crear()
 
-        def on_suggestion_click(value):
-            select_cliente_field.value = value
-            suggestions_container.visible = False
-            page.update()
-
-        def on_cliente_change(e):
-            txt = e.control.value or ""
-            if not txt:
-                suggestions_container.content = ft.Column(controls=[])
-                suggestions_container.visible = False
-                page.update()
-                return
-            matches = [c for c in cliente_suggestions if txt.lower() in c.lower()]
-            controls = []
-            for m in matches:
-                controls.append(
-                    ft.Container(
-                        content=ft.TextButton(text=m, on_click=lambda ev, v=m: on_suggestion_click(v)),
-                        padding=ft.padding.only(left=6, right=6),
-                    )
-                )
-            suggestions_container.content = ft.Column(controls=controls)
-            suggestions_container.visible = len(controls) > 0
-            page.update()
-
-        select_cliente_field = ft.TextField(
+        select_cliente = ft.Dropdown(
+            options=[
+                ft.dropdown.Option(c) for c in cliente_suggestions
+            ],
             label="Clientes",
             expand=True,
-            on_change=on_cliente_change,
         )
 
-        suggestions_container = ft.Container(
-            content=ft.Column(controls=[]),
-            visible=False,
-            bgcolor="white",
-            border=ft.border.all(1, "#cccccc"),
-            padding=ft.padding.only(top=2, bottom=2),
+        select_fecha_inicio = CustomTextDatePicker(page= page,label= "Desde").Crear()
+
+        select_fecha_fin = CustomTextDatePicker(page= page,label= "Hasta").Crear()
+
+        txt_nro_factura = ft.TextField(
+            label="# Factura",
+            expand=True
         )
 
-        # stack the text field and the suggestions container so suggestions appear below the field
-        select_cliente = ft.Stack(controls=[select_cliente_field, suggestions_container], expand=True)
-
-        ## Controls objects>
+        ## Widgets objects>
         # Controls>
 
         # <Layout
@@ -112,12 +92,22 @@ class Cotizacion(ft.Container):
             content=Row1, 
             # bgcolor= "#7979e6",
             margin= ft.margin.only(top=30, left=15, right=15),
+        )
+
+        Row2 = ft.Row(
+            controls=[
+                select_estatus,
+                select_cliente,
+                select_fecha_inicio,
+                select_fecha_fin,
+                txt_nro_factura
+                ],
+                vertical_alignment= ft.CrossAxisAlignment.START,
+                spacing= 10
             )
-        
-        Row2 = ft.Row(controls=[select_estatus, select_cliente])
         contenedor2 = ft.Container(
             content=Row2, 
-            bgcolor= "#e67979",
+            # bgcolor= "#e67979",
             margin= ft.margin.only(left=15, right=15),
             )
 
