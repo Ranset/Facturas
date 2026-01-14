@@ -11,6 +11,9 @@ class Cotizacion(ft.Container):
 
         # <Controls
         ## <common variables
+        inputs_height = 48
+        inputs_bgcolor = ft.Colors.WHITE
+        inputs_border_color= ft.Colors.GREY_400
         ## common variables>
 
         ## <Widgets objects
@@ -33,9 +36,12 @@ class Cotizacion(ft.Container):
                 ft.dropdown.Option("Enviada"),
                 ft.dropdown.Option("Vencida"),
             ],
-            # value="Todas",
-            expand= True,
-            label= "Estatus"
+            # expand= True,
+            label= "Estatus",
+            width= 130,
+            filled= True,
+            fill_color= inputs_bgcolor,
+            border_color= inputs_border_color
         )
 
         cliente_suggestions = [
@@ -56,15 +62,44 @@ class Cotizacion(ft.Container):
             ],
             label="Clientes",
             expand=True,
+            enable_filter=True,
+            editable=True,
+            filled= True,
+            fill_color= inputs_bgcolor,
+            border_color= inputs_border_color
         )
 
         select_fecha_inicio = CustomTextDatePicker(page= page,label= "Desde").Crear()
+        select_fecha_inicio.height = inputs_height
 
         select_fecha_fin = CustomTextDatePicker(page= page,label= "Hasta").Crear()
+        select_fecha_fin.height = inputs_height
 
         txt_nro_factura = ft.TextField(
             label="# Factura",
-            expand=True
+            # expand=True,
+            height= inputs_height,
+            width= 140,
+            bgcolor= inputs_bgcolor,
+            border_color= inputs_border_color
+        )
+
+        btn_buscar = ft.FloatingActionButton(
+            bgcolor= "#838383",
+            foreground_color= 'white',
+            icon= ft.Icons.REFRESH,
+            shape= ft.RoundedRectangleBorder(radius= 5),
+            width= inputs_height,
+            height= inputs_height,
+        )
+        
+        btn_clear = ft.FloatingActionButton(
+            bgcolor= '#838383',
+            foreground_color= 'white',
+            icon= ft.Icons.CLEAR,
+            shape= ft.RoundedRectangleBorder(radius= 5),
+            width= inputs_height,
+            height= inputs_height,
         )
 
         ## Widgets objects>
@@ -100,7 +135,9 @@ class Cotizacion(ft.Container):
                 select_cliente,
                 select_fecha_inicio,
                 select_fecha_fin,
-                txt_nro_factura
+                txt_nro_factura,
+                btn_buscar,
+                btn_clear
                 ],
                 vertical_alignment= ft.CrossAxisAlignment.START,
                 spacing= 10
@@ -110,9 +147,26 @@ class Cotizacion(ft.Container):
             # bgcolor= "#e67979",
             margin= ft.margin.only(left=15, right=15),
             )
+        
+        Row3= ft.Row(
+            controls=[
+                select_cliente
+            ]
+            )
+        columna_tabla = ft.Column(
+            controls=[
+                Row3,
+                Row1
+            ]
+        )
+        contenedor3 = ft.Container(
+            content=columna_tabla,
+                bgcolor= "#41da67",
+                margin= ft.margin.only(left=15, right=15, top= 12),
+        )
 
         columna_menu = ft.Column(controls= [contenedor_menu])
-        column2 = ft.Column(controls=[contenedor1, contenedor2], expand= True)
+        column2 = ft.Column(controls=[contenedor1, contenedor2, contenedor3], expand= True)
 
         Row_generar = ft.Row(controls=[columna_menu, column2], alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)
 

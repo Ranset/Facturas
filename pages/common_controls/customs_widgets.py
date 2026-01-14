@@ -4,7 +4,14 @@ class CustomTextDatePicker(ft.TextField):
     def __init__(self, page: ft.Page, label: str = "Fecha"):
         super().__init__()
 
-        self.select_fecha_inicio = ft.TextField(label= label, expand= True, prefix_icon= ft.Icons.CALENDAR_TODAY, on_click= lambda e: page.open(ft.DatePicker(on_change= self.poner_fecha)))
+        self.select_fecha_inicio = ft.TextField(label= label, 
+                                                # expand= True, 
+                                                suffix_icon= ft.Icons.CALENDAR_TODAY, 
+                                                width= 145,
+                                                bgcolor= ft.Colors.WHITE,
+                                                border_color= ft.Colors.GREY_400,
+                                                on_click= lambda e: page.open(ft.DatePicker(on_change= self.poner_fecha))
+                                                )
 
     def Crear(self):
         return self.select_fecha_inicio
