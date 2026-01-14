@@ -102,6 +102,27 @@ class Cotizacion(ft.Container):
             height= inputs_height,
         )
 
+        tabla_encabezado= ft.Container(content=ft.Row(
+            controls=[
+                ft.Container(content= ft.Text("Estado", weight= ft.FontWeight.BOLD, size=14)),
+                ft.Container(content= ft.Text("Fecha", weight= ft.FontWeight.BOLD, size=14)),
+                ft.Container(content= ft.Text("Número", weight= ft.FontWeight.BOLD, size=14)),
+                ft.Container(content= ft.Text("Cliente", weight= ft.FontWeight.BOLD, size=14)),
+                ft.Container(content= ft.Text("Total", weight= ft.FontWeight.BOLD, size=14)),
+                ft.Container(content= ft.Text("Moneda", weight= ft.FontWeight.BOLD, size=14)),
+                ft.Container(content= ft.Text("Acción", weight= ft.FontWeight.BOLD, size=14)),
+            ],
+            height= 40
+            ),
+            bgcolor= ft.Colors.WHITE
+            )
+
+        divider_encabezado_de_tabla = ft.Divider(color= ft.Colors.GREY_700, height=1)
+
+        tabla_controls = [
+            
+        ]
+
         ## Widgets objects>
         # Controls>
 
@@ -148,16 +169,22 @@ class Cotizacion(ft.Container):
             margin= ft.margin.only(left=15, right=15),
             )
         
-        Row3= ft.Row(
-            controls=[
-                select_cliente
-            ]
-            )
+        
+        
+        tabla = ft.Column(
+            controls= tabla_controls,
+            alignment= ft.MainAxisAlignment.START,
+            spacing= 0
+        )
+        
         columna_tabla = ft.Column(
             controls=[
-                Row3,
-                Row1
-            ]
+                tabla_encabezado,
+                divider_encabezado_de_tabla,
+                tabla
+            ],
+            alignment= ft.MainAxisAlignment.START,
+            spacing= 0
         )
         contenedor3 = ft.Container(
             content=columna_tabla,
