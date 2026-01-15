@@ -13,6 +13,9 @@ def main(page: ft.Page):
         font_family="Arial",
     )
 
+    page.window.min_width = 1200
+    page.window.min_height = 700
+
     page.padding = 0
 
     # on load

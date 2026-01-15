@@ -104,28 +104,35 @@ class Cotizacion(ft.Container):
 
         tabla_encabezado= ft.Container(content=ft.Row(
             controls=[
-                ft.Container(content= ft.Text("Estado", weight= ft.FontWeight.BOLD, size=14)),
-                ft.Container(content= ft.Text("Fecha", weight= ft.FontWeight.BOLD, size=14)),
-                ft.Container(content= ft.Text("Número", weight= ft.FontWeight.BOLD, size=14)),
-                ft.Container(content= ft.Text("Cliente", weight= ft.FontWeight.BOLD, size=14)),
-                ft.Container(content= ft.Text("Total", weight= ft.FontWeight.BOLD, size=14)),
-                ft.Container(content= ft.Text("Moneda", weight= ft.FontWeight.BOLD, size=14)),
-                ft.Container(content= ft.Text("Acción", weight= ft.FontWeight.BOLD, size=14)),
+                ft.Container(content= ft.Text("Estado", weight= ft.FontWeight.BOLD, size=14), width= 70, margin= ft.margin.only(left= 15)),
+                ft.Container(content= ft.Text("Fecha", weight= ft.FontWeight.BOLD, size=14), width= 80, margin= ft.margin.only(left= 15)),
+                ft.Container(content= ft.Text("Número", weight= ft.FontWeight.BOLD, size=14), width= 80, margin= ft.margin.only(left= 15)),
+                ft.Container(content= ft.Text("Cliente", weight= ft.FontWeight.BOLD, size=14), expand= True),
+                ft.Container(content= ft.Text("Total", weight= ft.FontWeight.BOLD, size=14), width= 200),
+                ft.Container(content= ft.Text("Moneda", weight= ft.FontWeight.BOLD, size=14), width= 100),
+                ft.Container(content= ft.Text("Acción", weight= ft.FontWeight.BOLD, size=14), width= 80),
             ],
-            height= 40
+            height= 40,
+            expand= True,
+            alignment= ft.MainAxisAlignment.START,
+            spacing= 0
             ),
-            bgcolor= ft.Colors.WHITE
+            bgcolor= ft.Colors.WHITE,
             )
 
         divider_encabezado_de_tabla = ft.Divider(color= ft.Colors.GREY_700, height=1)
 
 
 
-        tabla_row = ft.Row(
+        tabla_row = ft.Column(
+            alignment= ft.MainAxisAlignment.START,
+            spacing= 0,
+            controls=[
+                ft.Row(
             controls=[
                 ft.Container(
                     content= ft.Text(
-                        value= "Borrador",
+                        value= "Vencida",
                         color= ft.Colors.WHITE
                     ),
                     bgcolor= "#CA1414",
@@ -136,22 +143,31 @@ class Cotizacion(ft.Container):
                     margin= ft.margin.only(left= 15)
                     ),
                     ft.Container(
-                        content= ft.Text("08-01-2025")
+                        content= ft.Text("08-01-2025"),
+                        width= 80,
+                        margin= ft.margin.only(left= 15)
                     ),
                     ft.Container(
-                        content= ft.Text("250001")
+                        content= ft.Text("250001"),
+                        width= 80,
+                        margin= ft.margin.only(left= 15)
                     ),
                     ft.Container(
-                        content= ft.Text("Empresa Importadora del Este y del oriente")
+                        content= ft.Text("Empresa Importadora del Este y del oriente"),
+                        expand= 4
                     ),
                     ft.Container(
-                        content= ft.Text("$108,526,354.25")
+                        content= ft.Text("$108,526,354.25"),
+                        width= 200
                     ),
                     ft.Container(
-                        content= ft.Text("CUP")
+                        content= ft.Text("CUP"),
+                        width= 50,
+                        margin= ft.margin.only(left= 15)
                     ),
                     ft.Container(
-                        content= ft.TextButton(text="Facturar")
+                        content= ft.TextButton(text="Facturar"),
+                        width= 80
                     ),
                     ft.Container(
                         content= ft.PopupMenuButton(
@@ -161,27 +177,53 @@ class Cotizacion(ft.Container):
                                 ft.PopupMenuItem("Facturar", height= 10),
                                 ft.PopupMenuItem(
                                     content= ft.Column(controls=[
-                                        ft.Divider(height=8),
+                                        ft.Divider(height=8, color= "#ECEEF4"),
                                         ft.Text("PDF"),
                                     ], alignment= ft.alignment.top_center, spacing=0),
                                     height= 10),
                                 ft.PopupMenuItem(
                                     content= ft.Column(controls=[
-                                        ft.Divider(height=8),
+                                        ft.Divider(height=8, color= "#ECEEF4"),
                                         ft.Text("Eliminar", color= ft.Colors.RED),
                                     ], alignment= ft.alignment.top_center, spacing=0),
                                     height= 10
                                 ),
                             ]
-                        )
+                        ),
+                        width= 40
                     ),
             ],
             height= 33,
-            
-        )
+            expand= True,
+            alignment= ft.MainAxisAlignment.START,
+            spacing= 0
+        ),
+        ft.Divider(height=0)
+            ]
+        ) 
 
         tabla_controls = [
             tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            tabla_row,
+            
         ]
 
         ## Widgets objects>
@@ -232,10 +274,9 @@ class Cotizacion(ft.Container):
         
         
         
-        tabla = ft.Column(
+        tabla = ft.ListView(
             controls= tabla_controls,
-            alignment= ft.MainAxisAlignment.START,
-            spacing= 0,
+            height= page.window.height - 310
         )
         
         columna_tabla = ft.Column(
@@ -249,8 +290,11 @@ class Cotizacion(ft.Container):
         )
         contenedor3 = ft.Container(
             content=columna_tabla,
-                bgcolor= "#41da67",
-                margin= ft.margin.only(left=15, right=15, top= 12)
+                bgcolor= ft.Colors.WHITE,
+                margin= ft.margin.only(left=15, right=15, top= 12),
+                border= ft.border.all(1,inputs_border_color),
+                border_radius= ft.border_radius.all(5),
+                expand= True
         )
 
         columna_menu = ft.Column(controls= [contenedor_menu])
@@ -259,4 +303,10 @@ class Cotizacion(ft.Container):
         Row_generar = ft.Row(controls=[columna_menu, column2], alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)
 
         page.add(Row_generar)
+
+        def table_update(e):
+            tabla.height = page.window.height - 400
+            column2.update()
+
+        page.window.on_event = table_update
         # Layout>
