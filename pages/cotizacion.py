@@ -119,8 +119,69 @@ class Cotizacion(ft.Container):
 
         divider_encabezado_de_tabla = ft.Divider(color= ft.Colors.GREY_700, height=1)
 
-        tabla_controls = [
+
+
+        tabla_row = ft.Row(
+            controls=[
+                ft.Container(
+                    content= ft.Text(
+                        value= "Borrador",
+                        color= ft.Colors.WHITE
+                    ),
+                    bgcolor= "#CA1414",
+                    alignment= ft.alignment.center,
+                    border_radius= ft.border_radius.all(8),
+                    width= 70,
+                    height= 20,
+                    margin= ft.margin.only(left= 15)
+                    ),
+                    ft.Container(
+                        content= ft.Text("08-01-2025")
+                    ),
+                    ft.Container(
+                        content= ft.Text("250001")
+                    ),
+                    ft.Container(
+                        content= ft.Text("Empresa Importadora del Este y del oriente")
+                    ),
+                    ft.Container(
+                        content= ft.Text("$108,526,354.25")
+                    ),
+                    ft.Container(
+                        content= ft.Text("CUP")
+                    ),
+                    ft.Container(
+                        content= ft.TextButton(text="Facturar")
+                    ),
+                    ft.Container(
+                        content= ft.PopupMenuButton(
+                            items=[
+                                ft.PopupMenuItem("Borrador", height= 10),
+                                ft.PopupMenuItem("Enviada", height= 10),
+                                ft.PopupMenuItem("Facturar", height= 10),
+                                ft.PopupMenuItem(
+                                    content= ft.Column(controls=[
+                                        ft.Divider(height=8),
+                                        ft.Text("PDF"),
+                                    ], alignment= ft.alignment.top_center, spacing=0),
+                                    height= 10),
+                                ft.PopupMenuItem(
+                                    content= ft.Column(controls=[
+                                        ft.Divider(height=8),
+                                        ft.Text("Eliminar", color= ft.Colors.RED),
+                                    ], alignment= ft.alignment.top_center, spacing=0),
+                                    height= 10
+                                ),
+                            ]
+                        )
+                    ),
+            ],
+            height= 33,
             
+        )
+
+        tabla_controls = [
+            tabla_row,
         ]
 
         ## Widgets objects>
@@ -174,7 +235,7 @@ class Cotizacion(ft.Container):
         tabla = ft.Column(
             controls= tabla_controls,
             alignment= ft.MainAxisAlignment.START,
-            spacing= 0
+            spacing= 0,
         )
         
         columna_tabla = ft.Column(
@@ -189,7 +250,7 @@ class Cotizacion(ft.Container):
         contenedor3 = ft.Container(
             content=columna_tabla,
                 bgcolor= "#41da67",
-                margin= ft.margin.only(left=15, right=15, top= 12),
+                margin= ft.margin.only(left=15, right=15, top= 12)
         )
 
         columna_menu = ft.Column(controls= [contenedor_menu])
