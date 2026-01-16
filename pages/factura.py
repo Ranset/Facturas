@@ -18,13 +18,13 @@ class Cotizacion(ft.Container):
 
         ## <Widgets objects
         txt_Cotizacion_title = ft.Text(
-            "Cotizaciones",
+            "Cotizaciones" if States.where_i_am == States._cotizacion_location else "Facturas",
             size= 35,
             weight= ft.FontWeight.BOLD,
             )
 
         btn_crear_cotizacion = ft.ElevatedButton(
-            text="Crear Cotización",
+            text="Crear Cotización" if States.where_i_am == States._cotizacion_location else "Crear Factura",
             bgcolor= '#2c78d0',
             color= 'white',
         )
@@ -76,7 +76,7 @@ class Cotizacion(ft.Container):
         select_fecha_fin.height = inputs_height
 
         txt_nro_factura = ft.TextField(
-            label="# Factura",
+            label="# Cotización" if States.where_i_am == States._cotizacion_location else "# Factura",
             # expand=True,
             height= inputs_height,
             width= 140,

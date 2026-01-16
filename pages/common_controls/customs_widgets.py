@@ -1,8 +1,9 @@
 from flet_base import flet_instance as ft
 from decimal import Decimal
+from typing import Optional
 
 class CustomTextDatePicker(ft.TextField):
-    def __init__(self, page: ft.Page, label: str = "Fecha"):
+    def __init__(self, page: ft.Page, label: Optional[str] = None):
         super().__init__()
 
         self.select_fecha_inicio = ft.TextField(label= label, 

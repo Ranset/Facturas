@@ -9,7 +9,12 @@ class States:
     _configuracion_location = "configuracion"
     _acerca_location = "acerca"
 
-    # Variables
-    where_i_am = _cotizacion_location # Página actual
+    _formulario_factura_location = "formulario_factura"
 
-    i_come_from = _cotizacion_location # De donde viene flag
+    _Crear_btn_loc_cotizacion = "btn_cotizacion_page" # Botón crear cotización de la página cotización
+    _Crear_btn_loc_facturas = "btn_facturas_page" # Botón crear cotización de la página cotización
+
+    # Variables
+    where_i_am = _formulario_factura_location # Página actual
+
+    i_come_from = _Crear_btn_loc_cotizacion # De donde viene flag

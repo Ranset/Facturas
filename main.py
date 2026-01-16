@@ -16,10 +16,11 @@ def main(page: ft.Page):
     page.window.min_width = 1200
     page.window.min_height = 400
 
+    page.bgcolor = "#F4F5F7"
     page.padding = 0
 
     # on load
-    show_view(page, "cotizacion")
+    show_view(page, "formulario_factura")
 
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")
