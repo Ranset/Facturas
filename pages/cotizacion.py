@@ -1,7 +1,7 @@
-import flet as ft
+from flet_base import flet_instance as ft
 from pages.common_controls.menu import contenedor_menu
 from pages.common_controls.states import States
-from pages.common_controls.customs_widgets import CustomTextDatePicker, CustomTextFieldAutocomplete
+from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row
 
 class Cotizacion(ft.Container):
     def __init__(self, page: ft.Page):
@@ -123,106 +123,12 @@ class Cotizacion(ft.Container):
         divider_encabezado_de_tabla = ft.Divider(color= ft.Colors.GREY_700, height=1)
 
 
-
-        tabla_row = ft.Column(
-            alignment= ft.MainAxisAlignment.START,
-            spacing= 0,
-            controls=[
-                ft.Row(
-            controls=[
-                ft.Container(
-                    content= ft.Text(
-                        value= "Vencida",
-                        color= ft.Colors.WHITE
-                    ),
-                    bgcolor= "#CA1414",
-                    alignment= ft.alignment.center,
-                    border_radius= ft.border_radius.all(8),
-                    width= 70,
-                    height= 20,
-                    margin= ft.margin.only(left= 15)
-                    ),
-                    ft.Container(
-                        content= ft.Text("08-01-2025"),
-                        width= 80,
-                        margin= ft.margin.only(left= 15)
-                    ),
-                    ft.Container(
-                        content= ft.Text("250001"),
-                        width= 80,
-                        margin= ft.margin.only(left= 15)
-                    ),
-                    ft.Container(
-                        content= ft.Text("Empresa Importadora del Este y del oriente"),
-                        expand= 4
-                    ),
-                    ft.Container(
-                        content= ft.Text("$108,526,354.25"),
-                        width= 200
-                    ),
-                    ft.Container(
-                        content= ft.Text("CUP"),
-                        width= 50,
-                        margin= ft.margin.only(left= 15)
-                    ),
-                    ft.Container(
-                        content= ft.TextButton(text="Facturar"),
-                        width= 80
-                    ),
-                    ft.Container(
-                        content= ft.PopupMenuButton(
-                            items=[
-                                ft.PopupMenuItem("Borrador", height= 10),
-                                ft.PopupMenuItem("Enviada", height= 10),
-                                ft.PopupMenuItem("Facturar", height= 10),
-                                ft.PopupMenuItem(
-                                    content= ft.Column(controls=[
-                                        ft.Divider(height=8, color= "#ECEEF4"),
-                                        ft.Text("PDF"),
-                                    ], alignment= ft.alignment.top_center, spacing=0),
-                                    height= 10),
-                                ft.PopupMenuItem(
-                                    content= ft.Column(controls=[
-                                        ft.Divider(height=8, color= "#ECEEF4"),
-                                        ft.Text("Eliminar", color= ft.Colors.RED),
-                                    ], alignment= ft.alignment.top_center, spacing=0),
-                                    height= 10
-                                ),
-                            ]
-                        ),
-                        width= 40
-                    ),
-            ],
-            height= 33,
-            expand= True,
-            alignment= ft.MainAxisAlignment.START,
-            spacing= 0
-        ),
-        ft.Divider(height=0)
-            ]
-        ) 
-
         tabla_controls = [
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
-            tabla_row,
+            Tabla_Factura_Row("Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP").crear(),
+            Tabla_Factura_Row("Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP").crear(),
+            Tabla_Factura_Row("XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
+            Tabla_Factura_Row("Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
+            Tabla_Factura_Row("Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
             
         ]
 
@@ -276,7 +182,7 @@ class Cotizacion(ft.Container):
         
         tabla = ft.ListView(
             controls= tabla_controls,
-            height= page.window.height - 310
+            expand= True
         )
         
         columna_tabla = ft.Column(

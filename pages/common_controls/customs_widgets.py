@@ -1,4 +1,5 @@
-import flet as ft
+from flet_base import flet_instance as ft
+from decimal import Decimal
 
 class CustomTextDatePicker(ft.TextField):
     def __init__(self, page: ft.Page, label: str = "Fecha"):
@@ -147,3 +148,116 @@ class CustomTextFieldAutocomplete(ft.Stack):
 
     def Crear(self):
         return self.select_cliente
+    
+
+class Tabla_Factura_Row(ft.Column):
+    def __init__(self, estado: str, fecha: str, numero: str, cliente: str, total: str, moneda: str):
+        super().__init__()
+
+        self.estado = estado
+    
+        self.tabla_row = ft.Column(
+            alignment= ft.MainAxisAlignment.START,
+            spacing= 0,
+            controls=[
+                ft.Row(
+            controls=[
+                    ft.Container(
+                        content= ft.Text(
+                            value= estado,
+                            color= ft.Colors.WHITE,
+                        ),
+                        bgcolor= self._color_estado(),
+                        alignment= ft.alignment.center,
+                        border_radius= ft.border_radius.all(8),
+                        width= 70,
+                        height= 20,
+                        margin= ft.margin.only(left= 15),
+                        on_click= lambda e: print(f"Clic en factura {numero}")
+                        ),
+                    ft.Container(
+                        content= ft.Text(fecha),
+                        width= 80,
+                        margin= ft.margin.only(left= 15),
+                    ),
+                    ft.Container(
+                        content= ft.Text(numero),
+                        width= 80,
+                        margin= ft.margin.only(left= 15)
+                    ),
+                    ft.Container(
+                        content= ft.Text(cliente, no_wrap= True),
+                        expand= 4,
+                        on_click= lambda e: print(f"Clic en factura {numero}")
+                    ),
+                    ft.Container(
+                        content= ft.Text(self.formatear_con_comas(total)),
+                        width= 200,
+                        margin= ft.margin.only(left= 20)
+                    ),
+                    ft.Container(
+                        content= ft.Text(moneda),
+                        width= 50,
+                        margin= ft.margin.only(left= 15)
+                    ),
+                    ft.Container(
+                        content= ft.TextButton(text="Facturar"),
+                        width= 80
+                    ),
+                    ft.Container(
+                        content= ft.PopupMenuButton(
+                            items=[
+                                ft.PopupMenuItem("Borrador", height= 10),
+                                ft.PopupMenuItem("Enviada", height= 10),
+                                ft.PopupMenuItem("Facturar", height= 10),
+                                ft.PopupMenuItem(
+                                    content= ft.Column(controls=[
+                                        ft.Divider(height=8, color= "#ECEEF4"),
+                                        ft.Text("PDF"),
+                                    ], alignment= ft.alignment.top_center, spacing=0),
+                                    height= 10),
+                                ft.PopupMenuItem(
+                                    content= ft.Column(controls=[
+                                        ft.Divider(height=8, color= "#ECEEF4"),
+                                        ft.Text("Eliminar", color= ft.Colors.RED),
+                                    ], alignment= ft.alignment.top_center, spacing=0),
+                                    height= 10
+                                ),
+                            ],
+                            tooltip= "",
+                            icon= ft.Icons.ARROW_DROP_DOWN_OUTLINED
+                        ),
+                        width= 40
+                    ),
+            ],
+            height= 33,
+            expand= True,
+            alignment= ft.MainAxisAlignment.START,
+            spacing= 0
+        ),
+        ft.Divider(height=0)
+            ]
+        )
+
+    def _color_estado(self):
+        colores_de_estados = {
+            "Vencida": "#CA1414",
+            "Borrador": "#4E4E4E",
+            "Enviada": "#2c78d0",
+            "Pagada": "#028A0E",
+            "XEnviar": "#4E4E4E",
+        }
+        return colores_de_estados[self.estado]
+
+    def formatear_con_comas(self, texto_numero):
+        # 1. Convertimos el string a Decimal para evitar errores
+        numero = Decimal(texto_numero)
+        
+        # 2. Aplicamos formato:
+        # ,  -> Agrega la coma de miles
+        # .2f -> Asegura siempre 2 decimales (fixed point)
+        return f"${numero:,.2f}"
+
+
+    def crear(self):
+        return self.tabla_row

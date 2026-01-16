@@ -1,4 +1,4 @@
-import flet as ft
+from flet_base import flet_instance as ft
 
 def main(page: ft.Page):
     from router import show_view
@@ -14,7 +14,7 @@ def main(page: ft.Page):
     )
 
     page.window.min_width = 1200
-    page.window.min_height = 700
+    page.window.min_height = 400
 
     page.padding = 0
 

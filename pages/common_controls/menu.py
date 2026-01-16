@@ -1,4 +1,4 @@
-import flet as ft
+from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 
 location = States.where_i_am
