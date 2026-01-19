@@ -284,8 +284,54 @@ class FormularioFactura(ft.Container):
             width= 120,
         )
 
-        txt_subtotal = ft.Text("Subtotal:")
-        txt_total = ft.Text(f"Total {radio_monedas.value.upper()}:")
+        def chk_descuento_changed(e):
+            if e.control.value:
+                column_descuento.controls[1].visible = True
+                descuento.disabled = False
+                txt_descuento.visible = True
+                txt_descuento_value.visible = True
+            else:
+                column_descuento.controls[1].visible = False
+                descuento.disabled = True
+                txt_descuento.visible = False
+                txt_descuento_value.visible = False
+            page.update()
+
+        chk_descuento = ft.Checkbox(
+            label="Descuento",
+            on_change= chk_descuento_changed,
+        )
+
+        descuento = ft.TextField(
+            width= 90,
+            bgcolor= inputs_bgcolor,
+            border_width= 0,
+            height= 25,
+            hover_color= inputs_bgcolor,
+            text_size= 14,
+            cursor_height= 14,
+            text_vertical_align= -1.0,
+            content_padding= ft.padding.only(top= 0, bottom=0, left=10, right=5),
+            value= "10",
+            disabled= True,
+        )
+
+        txt_porciento_descuento = ft.Text("Porciento")
+        sw_descuento = ft.Switch(
+            value=False,
+            height= 20,
+            inactive_thumb_color= "white",
+            inactive_track_color= "#36618E"
+        )
+        txt_catidad_descuento = ft.Text("Cantidad")
+
+        txt_subtotal = ft.Text("Subtotal:", size= 18)
+        txt_descuento = ft.Text("Descuento:", size= 18, visible= False)
+        txt_total = ft.Text(f"Total {radio_monedas.value.upper()}:", weight= "bold", size= 18)
+
+        txt_subtotal_value = ft.Text("4,500,000.00", size= 18)
+        txt_descuento_value = ft.Text("450,000.00", size= 18, visible= False)
+        txt_total_value = ft.Text("444,500,000.00", weight= "bold", size= 18)
 
         ## Widgets objects>
         # Controls>
@@ -465,6 +511,26 @@ class FormularioFactura(ft.Container):
             expand= True
         )
 
+        column_descuento = ft.Column(
+            controls=[
+                ft.Row(
+                    controls=[
+                        chk_descuento,
+                        descuento
+                    ]
+                ),
+                ft.Row(
+                    controls=[
+                        txt_porciento_descuento,
+                        sw_descuento,
+                        txt_catidad_descuento
+                    ],
+                    visible= False
+                )
+            ],
+            spacing= 0
+        )
+
         Row_footer = ft.Container(
             content= ft.Row(
                 controls=[
@@ -476,30 +542,41 @@ class FormularioFactura(ft.Container):
                             ft.Row(controls= [btn_cancelar]),
                         ]
                     ),
+                    ft.Column(expand= True), # Espaciador
                     ft.Column(
                         controls=[
                             ft.Container(
-                                
+                                content= column_descuento,
+                                border= ft.border.all(2, "black"),
+                                border_radius= ft.border_radius.all(5),
+                                padding= ft.padding.all(10),
+                                height= 78,
+                                margin= ft.margin.only(right= 30)
                             )
                         ]
                     ),
                     ft.Column(
                         controls=[
-                                    ft.Text("Subtotal:"),
-                                    ft.Text("Descuento:"),
+                                    txt_subtotal,
+                                    txt_descuento,
                                     txt_total,
                                 ],
                         horizontal_alignment= ft.CrossAxisAlignment.END,
+                        alignment= ft.MainAxisAlignment.START,
+                        spacing= 0
                     ),
                     ft.Column(
                         controls=[
-                                    ft.Text("4,500,000.00"),
-                                    ft.Text("450,000.00"),
-                                    ft.Text("444,500,000.00"),
+                                    txt_subtotal_value,
+                                    txt_descuento_value,
+                                    txt_total_value,
                                 ],
                         horizontal_alignment= ft.CrossAxisAlignment.END,
+                        alignment= ft.MainAxisAlignment.START,
+                        spacing= 0
                     ),
-                ]
+                ],
+                expand= True,
         ),
             margin= ft.margin.only(left= 25, right=25)
         )
