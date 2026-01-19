@@ -1,9 +1,8 @@
 from flet_base import flet_instance as ft
-from pages.common_controls.menu import contenedor_menu
 from pages.common_controls.states import States
-from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row
+from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row, Menu
 
-class Cotizacion(ft.Container):
+class Factura(ft.Container):
     def __init__(self, page: ft.Page):
         super().__init__()
 
@@ -203,16 +202,11 @@ class Cotizacion(ft.Container):
                 expand= True
         )
 
-        columna_menu = ft.Column(controls= [contenedor_menu])
+        columna_menu = ft.Column(controls= [Menu().Crear()])
         column2 = ft.Column(controls=[contenedor1, contenedor2, contenedor3], expand= True)
 
         Row_generar = ft.Row(controls=[columna_menu, column2], alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)
 
         page.add(Row_generar)
 
-        def table_update(e):
-            tabla.height = page.window.height - 400
-            column2.update()
-
-        page.window.on_event = table_update
         # Layout>

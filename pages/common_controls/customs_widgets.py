@@ -7,7 +7,6 @@ class CustomTextDatePicker(ft.TextField):
         super().__init__()
 
         self.select_fecha_inicio = ft.TextField(label= label, 
-                                                # expand= True, 
                                                 suffix_icon= ft.Icons.CALENDAR_TODAY, 
                                                 width= 145,
                                                 bgcolor= ft.Colors.WHITE,
@@ -30,10 +29,12 @@ class CustomTextFieldAutocomplete(ft.Stack):
     def __init__(self, page: ft.Page, label: str, suggestions: list):
         super().__init__()
 
-        def on_suggestion_click(value):
-            select_cliente_field.value = value
+        def on_suggestion_click(value, price):
+            from pages.common_controls.states import States
+            self.select_cliente_field.value = value
+            States.selected_product_price = str(price)
             try:
-                select_cliente_field.update()
+                self.select_cliente_field.update()
             except Exception:
                 pass
             suggestions_container.visible = False
@@ -48,6 +49,7 @@ class CustomTextFieldAutocomplete(ft.Stack):
                     self.select_cliente.controls.append(overlay_wrapper)
             except Exception:
                 pass
+            self.select_cliente_field.focus()
             page.update()
 
         def on_cliente_change(e):
@@ -57,14 +59,14 @@ class CustomTextFieldAutocomplete(ft.Stack):
                 suggestions_container.visible = False
                 page.update()
                 return
-            matches = [c for c in suggestions if txt.lower() in c.lower()]
+            matches = [c for c in suggestions if txt.lower() in c[0].lower()]
             controls = []
             for m in matches:
                 controls.append(
                     ft.Container(
                         content=ft.GestureDetector(
-                            on_tap=lambda ev, v=m: on_suggestion_click(v),
-                            content=ft.Container(content=ft.Text(m)),
+                            on_tap=lambda ev, v=m: on_suggestion_click(v[0], v[1]),
+                            content=ft.Container(content=ft.Text(m[0])),
                         ),
                         padding=ft.padding.only(left=6, right=6),
                     )
@@ -104,10 +106,11 @@ class CustomTextFieldAutocomplete(ft.Stack):
 
             page.update()
 
-        select_cliente_field = ft.TextField(
+        self.select_cliente_field = ft.TextField(
             label=label,
             expand=True,
             on_change=on_cliente_change,
+            border_color= ft.Colors.GREY_400,
         )
 
         suggestions_container = ft.Container(
@@ -119,26 +122,24 @@ class CustomTextFieldAutocomplete(ft.Stack):
             ignore_interactions=False,
         )
 
-        def on_page_resize(e):
-            left_position = page.window.width / 2
-            overlay_wrapper.left = left_position
-            try:
-                overlay_wrapper.update()
-            except Exception:
-                pass
 
         # wrapper used both inside the Stack and (temporarily) in page.overlay
         # set a fixed width for the field+overlay so suggestions match field width
-        field_overlay_width = 360
-        left_position = page.window.width / 2
-        overlay_wrapper = ft.Container(content=suggestions_container, left=left_position, top=140, width=field_overlay_width)
-        page.on_resized = on_page_resize
+        field_overlay_width = 300
+        # left_position = page.window.width / 2
+        right_position = 20
+        overlay_wrapper = ft.Container(content=suggestions_container, right=right_position, bottom=20, width=field_overlay_width)
+
+        # Exponer referencias como atributos de instancia para manejar foco/overlay
+        self.page = page
+        self.overlay_wrapper = overlay_wrapper
+        self.suggestions_container = suggestions_container
 
         # show suggestions as an overlay so they don't change the Row2 height
         self.select_cliente = ft.Stack(
             controls=[
                 # base: the text field
-                ft.Container(content=select_cliente_field),
+                ft.Container(content=self.select_cliente_field),
                 # overlay wrapper: moved to page.overlay when visible
                 overlay_wrapper,
             ],
@@ -150,6 +151,9 @@ class CustomTextFieldAutocomplete(ft.Stack):
     def Crear(self):
         return self.select_cliente
     
+    def focus_field(self, delay_ms: int = 50):
+        self.select_cliente_field.focus()
+        
 
 class Tabla_Factura_Row(ft.Column):
     def __init__(self, estado: str, fecha: str, numero: str, cliente: str, total: str, moneda: str):
@@ -262,3 +266,128 @@ class Tabla_Factura_Row(ft.Column):
 
     def crear(self):
         return self.tabla_row
+    
+
+class Menu(ft.Column):
+    def __init__(self):
+        super().__init__()
+
+        from pages.common_controls.states import States
+
+        # <Functions
+        def click_inicio(e):
+            from router import show_view
+            States.where_i_am = States._inicio_location
+            show_view(States.states_page[0], States._inicio_location)
+
+        def click_cotizacion(e):
+            from router import show_view
+            States.where_i_am = States._cotizacion_location
+            show_view(States.states_page[0], States._cotizacion_location)
+
+        def click_factura(e):
+            from router import show_view
+            States.where_i_am = States._factura_location
+            show_view(States.states_page[0], States._factura_location)
+
+        # Functions>
+
+        # Controls
+        ## common variables
+        styles_btn_menu = ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(radius=0), 
+                alignment= ft.Alignment(-1,0),
+                padding= ft.padding.only(left= 30)
+                )
+        with_btn_menu = 200
+        bgcolor_btn_menu = '#222a31'
+        bgcolor_btn_menu_active = '#2c78d0'
+
+        ## Controls
+        btn_inicio_menu = ft.FilledButton(
+            text="Inicio",
+            icon=ft.Icons.HOME,
+            width=with_btn_menu,
+            style= styles_btn_menu,
+            bgcolor= bgcolor_btn_menu_active if States.where_i_am == "inicio" else bgcolor_btn_menu,
+            on_click= click_inicio
+        )
+
+        btn_cotizaciones_menu = ft.FilledButton(
+            text="Cotizaciones",
+            icon=ft.Icons.DESCRIPTION,
+            width=with_btn_menu,
+            style= styles_btn_menu,
+            bgcolor= bgcolor_btn_menu_active if States.where_i_am == "cotizacion" else bgcolor_btn_menu,
+            on_click= click_cotizacion
+        )
+
+        btn_facturas_menu = ft.FilledButton(
+            text="Facturas",
+            icon=ft.Icons.REQUEST_QUOTE,
+            width=with_btn_menu,
+            style= styles_btn_menu,
+            bgcolor= bgcolor_btn_menu_active if States.where_i_am == "factura" else bgcolor_btn_menu,
+            on_click= click_factura
+        )
+
+        btn_clientes_menu = ft.FilledButton(
+            text="Clientes",
+            icon=ft.Icons.PERSON,
+            width=with_btn_menu,
+            style= styles_btn_menu,
+            bgcolor= bgcolor_btn_menu_active if States.where_i_am == States._cliente_location else bgcolor_btn_menu,
+        )
+
+        btn_productos_menu = ft.FilledButton(
+            text="Productos",
+            icon=ft.Icons.INVENTORY_2,
+            width=with_btn_menu,
+            style= styles_btn_menu,
+            bgcolor= bgcolor_btn_menu_active if States.where_i_am == States._producto_location else bgcolor_btn_menu,
+        )
+
+        btn_configuracion_menu = ft.FilledButton(
+            text="Configuración",
+            icon=ft.Icons.SETTINGS,
+            width=with_btn_menu,
+            style= styles_btn_menu,
+            bgcolor= bgcolor_btn_menu_active if States.where_i_am == States._configuracion_location else bgcolor_btn_menu,
+        )
+
+        btn_acerca_menu = ft.FilledButton(
+            text="Acerca de",
+            icon=ft.Icons.INFO,
+            width=with_btn_menu,
+            style= styles_btn_menu,
+            bgcolor= bgcolor_btn_menu_active if States.where_i_am == States._acerca_location else bgcolor_btn_menu,
+        )
+
+        # Layout
+        ## Menu Lateral
+        menu = ft.Column(
+            controls= [
+                btn_inicio_menu, 
+                btn_cotizaciones_menu,
+                btn_facturas_menu,
+                btn_clientes_menu,
+                btn_productos_menu,
+                btn_configuracion_menu,
+                btn_acerca_menu,
+                ],
+            expand= True,
+            tight= True,
+            alignment= ft.MainAxisAlignment.START,
+            spacing= 4,
+            )
+        self.contenedor_menu = ft.Container(
+            content=menu,
+            bgcolor= '#222a31', 
+            expand= True,
+            width= 190,
+            padding= ft.padding.only(top= 30)
+            )
+
+    def Crear(self):
+        return self.contenedor_menu
+        print("Menu redraw")

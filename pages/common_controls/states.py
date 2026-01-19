@@ -15,6 +15,22 @@ class States:
     _Crear_btn_loc_facturas = "btn_facturas_page" # Botón crear cotización de la página cotización
 
     # Variables
-    where_i_am = _formulario_factura_location # Página actual
+    where_i_am = _inicio_location # Página actual
 
     i_come_from = _Crear_btn_loc_cotizacion # De donde viene flag
+
+    states_page = []
+
+    # Inicializar la lista como variable de clase
+    products_list: list = []
+
+    selected_product_price = ""
+
+    @classmethod
+    def set_product_row(cls, index):
+        cls.products_list.append(index)
+
+    @classmethod
+    def remove_product_row(cls, index):
+        if index in cls.products_list:
+            cls.products_list.remove(index)
