@@ -182,6 +182,8 @@ class FormularioFactura(ft.Container):
                     data= new_product
                 )
             dt_factura.rows.append(new_row)
+            self.productos.append(new_product)
+            actualizar_totales()
             # Limpiar valores usando la instancia
             select_product_instance.select_cliente_field.value = ""
             cantidad.value = ""
@@ -217,6 +219,7 @@ class FormularioFactura(ft.Container):
                     else:
                         row.selected = False
             # Rellenar los campos con los datos de la fila seleccionada
+            eliminar_producto_de_lista_productos()
             for row in dt_factura.rows:
                 if row.selected:
                     select_product_instance.select_cliente_field.value = row.data[0]
@@ -224,8 +227,8 @@ class FormularioFactura(ft.Container):
                     cantidad.value = str(row.data[2])
                     # Actualizar el precio seleccionado en el estado
                     States.selected_product_price = str(row.data[1])
-                    # break
             dt_factura.rows = [row for row in dt_factura.rows if not row.selected]
+            actualizar_totales()
             page.update()
 
         btn_editar = ft.TextButton(
@@ -235,8 +238,10 @@ class FormularioFactura(ft.Container):
             )
         
         def click_borrar(e):
+            eliminar_producto_de_lista_productos()
             # Filtrar las filas que NO están seleccionadas
             dt_factura.rows = [row for row in dt_factura.rows if not row.selected]
+            actualizar_totales()
             page.update()
         
         btn_borrar = ft.TextButton(
@@ -288,11 +293,15 @@ class FormularioFactura(ft.Container):
             if e.control.value:
                 column_descuento.controls[1].visible = True
                 descuento.disabled = False
+                txt_subtotal.visible = True
+                txt_subtotal_value.visible = True
                 txt_descuento.visible = True
                 txt_descuento_value.visible = True
             else:
                 column_descuento.controls[1].visible = False
                 descuento.disabled = True
+                txt_subtotal.visible = False
+                txt_subtotal_value.visible = False
                 txt_descuento.visible = False
                 txt_descuento_value.visible = False
             page.update()
@@ -325,11 +334,13 @@ class FormularioFactura(ft.Container):
         )
         txt_catidad_descuento = ft.Text("Cantidad")
 
-        txt_subtotal = ft.Text("Subtotal:", size= 18)
+        self.productos = []
+
+        txt_subtotal = ft.Text("Subtotal:", size= 18, visible= False)
         txt_descuento = ft.Text("Descuento:", size= 18, visible= False)
         txt_total = ft.Text(f"Total {radio_monedas.value.upper()}:", weight= "bold", size= 18)
 
-        txt_subtotal_value = ft.Text("4,500,000.00", size= 18)
+        txt_subtotal_value = ft.Text("4,500,000.00", size= 18, visible= False)
         txt_descuento_value = ft.Text("450,000.00", size= 18, visible= False)
         txt_total_value = ft.Text("444,500,000.00", weight= "bold", size= 18)
 
@@ -344,6 +355,27 @@ class FormularioFactura(ft.Container):
         
         def recalcular_monedas():
             pass
+
+        def eliminar_producto_de_lista_productos():
+            try:
+                for row in dt_factura.rows:
+                    if row.selected:
+                        nombre_producto = row.data[0]+str(row.data[4])  # Usar nombre e importe como identificador único
+                        # Buscar y eliminar el producto de la lista de productos
+                        Nueva_lista = [prod for prod in self.productos if prod[0]+str(prod[4]) != nombre_producto]
+                self.productos = Nueva_lista
+            except Exception as e:
+                pass
+
+
+        def actualizar_totales():
+            from decimal import Decimal
+
+            subtotal = Decimal("0")
+            for product in self.productos:
+                subtotal += Decimal(product[4])
+            
+            print(f"Subtotal calculado: {subtotal:,.2f}")
 
         # Functions>
 
@@ -550,7 +582,7 @@ class FormularioFactura(ft.Container):
                                 border= ft.border.all(2, "black"),
                                 border_radius= ft.border_radius.all(5),
                                 padding= ft.padding.all(10),
-                                height= 78,
+                                # height= 78,
                                 margin= ft.margin.only(right= 30)
                             )
                         ]
@@ -577,6 +609,7 @@ class FormularioFactura(ft.Container):
                     ),
                 ],
                 expand= True,
+                vertical_alignment= ft.CrossAxisAlignment.START,
         ),
             margin= ft.margin.only(left= 25, right=25)
         )
