@@ -182,7 +182,6 @@ class FormularioFactura(ft.Container):
                     data= new_product
                 )
             dt_factura.rows.append(new_row)
-            self.productos.append(new_product)
             actualizar_totales()
             # Limpiar valores usando la instancia
             select_product_instance.select_cliente_field.value = ""
@@ -219,7 +218,6 @@ class FormularioFactura(ft.Container):
                     else:
                         row.selected = False
             # Rellenar los campos con los datos de la fila seleccionada
-            eliminar_producto_de_lista_productos()
             for row in dt_factura.rows:
                 if row.selected:
                     select_product_instance.select_cliente_field.value = row.data[0]
@@ -238,7 +236,6 @@ class FormularioFactura(ft.Container):
             )
         
         def click_borrar(e):
-            eliminar_producto_de_lista_productos()
             # Filtrar las filas que NO están seleccionadas
             dt_factura.rows = [row for row in dt_factura.rows if not row.selected]
             actualizar_totales()
@@ -304,12 +301,17 @@ class FormularioFactura(ft.Container):
                 txt_subtotal_value.visible = False
                 txt_descuento.visible = False
                 txt_descuento_value.visible = False
+            actualizar_totales()
             page.update()
 
         chk_descuento = ft.Checkbox(
             label="Descuento",
             on_change= chk_descuento_changed,
         )
+
+        def descuento_changed(e):
+            actualizar_totales()
+            page.update()
 
         descuento = ft.TextField(
             width= 90,
@@ -323,26 +325,31 @@ class FormularioFactura(ft.Container):
             content_padding= ft.padding.only(top= 0, bottom=0, left=10, right=5),
             value= "10",
             disabled= True,
+            on_change= descuento_changed
         )
 
         txt_porciento_descuento = ft.Text("Porciento")
+
+        def sw_descuento_changed(e):
+            actualizar_totales()
+            page.update()
+
         sw_descuento = ft.Switch(
             value=False,
             height= 20,
             inactive_thumb_color= "white",
-            inactive_track_color= "#36618E"
+            inactive_track_color= "#36618E",
+            on_change= sw_descuento_changed
         )
         txt_catidad_descuento = ft.Text("Cantidad")
-
-        self.productos = []
 
         txt_subtotal = ft.Text("Subtotal:", size= 18, visible= False)
         txt_descuento = ft.Text("Descuento:", size= 18, visible= False)
         txt_total = ft.Text(f"Total {radio_monedas.value.upper()}:", weight= "bold", size= 18)
 
-        txt_subtotal_value = ft.Text("4,500,000.00", size= 18, visible= False)
-        txt_descuento_value = ft.Text("450,000.00", size= 18, visible= False)
-        txt_total_value = ft.Text("444,500,000.00", weight= "bold", size= 18)
+        txt_subtotal_value = ft.Text("0.00", size= 18, visible= False)
+        txt_descuento_value = ft.Text("0.00", size= 18, visible= False)
+        txt_total_value = ft.Text("0.00", weight= "bold", size= 18)
 
         ## Widgets objects>
         # Controls>
@@ -356,26 +363,20 @@ class FormularioFactura(ft.Container):
         def recalcular_monedas():
             pass
 
-        def eliminar_producto_de_lista_productos():
-            try:
-                for row in dt_factura.rows:
-                    if row.selected:
-                        nombre_producto = row.data[0]+str(row.data[4])  # Usar nombre e importe como identificador único
-                        # Buscar y eliminar el producto de la lista de productos
-                        Nueva_lista = [prod for prod in self.productos if prod[0]+str(prod[4]) != nombre_producto]
-                self.productos = Nueva_lista
-            except Exception as e:
-                pass
-
-
         def actualizar_totales():
             from decimal import Decimal
-
-            subtotal = Decimal("0")
-            for product in self.productos:
-                subtotal += Decimal(product[4])
             
-            print(f"Subtotal calculado: {subtotal:,.2f}")
+            subtotal = Decimal("0")
+
+            for row in dt_factura.rows:
+                subtotal += Decimal(row.data[4])
+            
+            descuento_total = float(subtotal) * float(descuento.value) / 100
+            
+            txt_subtotal_value.value = f"{subtotal:,.2f}"
+            txt_descuento_value.value = f"{descuento_total:,.2f}"
+            # txt_total_value.value = f"{subtotal:,.2f}" if not chk_descuento.value else f"{(subtotal - descuento_total):,.2f}"
+            print(f"Descuento: {descuento_total}")
 
         # Functions>
 
