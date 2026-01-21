@@ -2,3 +2,4 @@
 /.facturas_venv/
 /pages/__pycache__/
 pages/common_controls/__pycache__/
+.vscode/settings.json

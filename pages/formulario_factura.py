@@ -1,4 +1,5 @@
 from flet_base import flet_instance as ft
+from datetime import datetime
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row, Menu, CustomTextFieldAutocomplete
 
@@ -9,14 +10,21 @@ class FormularioFactura(ft.Container):
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
         # <Controls
-        ## <common variables
+        ## @note <common variables
         inputs_height = 48
         inputs_bgcolor = ft.Colors.WHITE
         inputs_border_color= ft.Colors.GREY_400
 
+        cup = 460
+        mlc = 250
+        usd = 1
+        tasa_fiscal = 25
+
+        self.price_multiply = 1.0
+
         ## common variables>
 
-        ## <Widgets objects
+        ## @note <Widgets objects
         def title():
             if States.i_come_from == States._Crear_btn_loc_facturas:
                 return "Crear Factura"
@@ -65,9 +73,8 @@ class FormularioFactura(ft.Container):
         txt_moneda = ft.Text("Moneda:")
 
         def moneda_change(e):
-            print(f"Moneda {e.control.value} seleccionada")
             txt_total.value = f"Total {e.control.value.upper()}:"
-            page.update()
+            recalcular_monedas(e.control.value)
 
         radio_monedas = ft.RadioGroup(
             content= ft.Row(
@@ -97,27 +104,33 @@ class FormularioFactura(ft.Container):
         txt_fecha = ft.Text("Fecha:")
 
         select_fecha_inicio = CustomTextDatePicker(page= page).Crear()
+        select_fecha_inicio.value = datetime.now().strftime("%d/%m/%Y")
 
         txt_finanzas_title = ft.Text("Configuración financiera", weight= ft.FontWeight.BOLD)
 
         cup_tasa = ft.Row(
             controls=[
                 ft.Text("CUP:"),
-                ft.TextField("460.74",border_color= ft.Colors.GREY_400,width= 80)
+                ft.TextField(str(cup),border_color= ft.Colors.GREY_400,width= 80)
             ]
         )
         
         mlc_tasa = ft.Row(
             controls=[
                 ft.Text("MLC:"),
-                ft.TextField("460.74",border_color= ft.Colors.GREY_400,width= 80)
+                ft.TextField(str(mlc),border_color= ft.Colors.GREY_400,width= 80)
             ]
         )
         
         tasa_fiscal = ft.Row(
             controls=[
                 ft.Text("Tasa Fiscal:"),
-                ft.TextField("10", suffix= ft.Text("%"),border_color= ft.Colors.GREY_400,width= 80)
+                ft.TextField(
+                    str(tasa_fiscal),
+                    suffix= ft.Text("%"),
+                    border_color= ft.Colors.GREY_400,width= 80,
+                    on_change= lambda e: recalcular_monedas(radio_monedas.value)
+                )
             ]
         )
 
@@ -153,6 +166,9 @@ class FormularioFactura(ft.Container):
         precio = ft.TextField(label="Precio USD", width= 150, border_color= inputs_border_color)
 
         def click_add_product(e):
+            # Remover overlay si está presente
+            if select_product_instance.overlay_wrapper in page.overlay:
+                page.overlay.remove(select_product_instance.overlay_wrapper)
             # Validar entradas antes de crear la fila de producto
             nombre_producto = select_product_instance.select_cliente_field.value
             if not nombre_producto:
@@ -168,15 +184,22 @@ class FormularioFactura(ft.Container):
             except Exception:
                 print("Precio inválido")
                 return
+            # Precio segun moneda seleccionada
+            if radio_monedas.value == "cup":
+                self.price_multiply = float(cup_tasa.controls[1].value)
+            elif radio_monedas.value == "mlc":
+                self.price_multiply = float(mlc_tasa.controls[1].value)
+            else:
+                self.price_multiply = 1.0
             # Creando nueva fila de producto
             new_product = (nombre_producto, price, qty, price * porciento_fiscal(tasa_fiscal), qty * price * porciento_fiscal(tasa_fiscal))
             new_row = ft.DataRow(
                     [
                         ft.DataCell(ft.Text(new_product[0], no_wrap= True)),
-                        ft.DataCell(ft.Text(Tabla_Factura_Row.formatear_con_comas(self,new_product[1]))),
+                        ft.DataCell(ft.Text(Tabla_Factura_Row.formatear_con_comas(self,new_product[1]*self.price_multiply))),
                         ft.DataCell(ft.Text(str(new_product[2]))),
-                        ft.DataCell(ft.Text(Tabla_Factura_Row.formatear_con_comas(self,new_product[3]))),
-                        ft.DataCell(ft.Text(Tabla_Factura_Row.formatear_con_comas(self,new_product[4]))),
+                        ft.DataCell(ft.Text(Tabla_Factura_Row.formatear_con_comas(self,new_product[3]*self.price_multiply))),
+                        ft.DataCell(ft.Text(Tabla_Factura_Row.formatear_con_comas(self,new_product[4]*self.price_multiply))),
                     ],
                     on_select_changed= on_select_row,
                     data= new_product
@@ -354,33 +377,64 @@ class FormularioFactura(ft.Container):
         ## Widgets objects>
         # Controls>
 
-        # <Functions
+        # @note <Functions
         
         def porciento_fiscal(tasa) -> float:
-            coeficiente = "1." + tasa.controls[1].value.replace("%","")
+            clean_tasa = tasa.controls[1].value.replace("%","")
+            delante = "1."
+            if len(clean_tasa) == 1:
+                clean_tasa = "0" + clean_tasa
+            if len(clean_tasa) == 3:
+                delante = "2."
+            coeficiente = delante + clean_tasa
+            print(coeficiente)
             return float(coeficiente)
         
-        def recalcular_monedas():
-            pass
+        def recalcular_monedas(moeneda: str):
+            if moeneda == "cup":
+                self.price_multiply = float(cup_tasa.controls[1].value)
+            elif moeneda == "mlc":
+                self.price_multiply = float(mlc_tasa.controls[1].value)
+            else:
+                self.price_multiply = 1.0
+            recargar_tabla()
+            actualizar_totales()
+            page.update()
+
+        def recargar_tabla():
+            for row in dt_factura.rows:
+                # Recalcular los valores de la fila según la nueva moneda
+                precio = row.data[1]
+                qty = row.data[2]
+                precio_con_tasa = precio * porciento_fiscal(tasa_fiscal)
+                importe = qty * precio_con_tasa
+                # Actualizar las celdas de la fila
+                row.cells[1].content.value = Tabla_Factura_Row.formatear_con_comas(self,precio * self.price_multiply)
+                row.cells[3].content.value = Tabla_Factura_Row.formatear_con_comas(self,precio_con_tasa * self.price_multiply)
+                row.cells[4].content.value = Tabla_Factura_Row.formatear_con_comas(self,importe * self.price_multiply)
+                row.data = (row.data[0], precio, qty, precio_con_tasa, importe)
+            
 
         def actualizar_totales():
-            from decimal import Decimal
-            
-            subtotal = Decimal("0")
+            subtotal = float("0")
 
             for row in dt_factura.rows:
-                subtotal += Decimal(row.data[4])
+                subtotal += float(row.data[4]) * float(self.price_multiply)
             
-            descuento_total = float(subtotal) * float(descuento.value) / 100
+            if not sw_descuento.value:
+                descuento_total = float(subtotal) * float(descuento.value) / 100
+                txt_descuento.value = f"Descuento {descuento.value}%:"
+            else:
+                descuento_total = float(descuento.value)
+                txt_descuento.value = "Descuento:"
             
             txt_subtotal_value.value = f"{subtotal:,.2f}"
             txt_descuento_value.value = f"{descuento_total:,.2f}"
-            # txt_total_value.value = f"{subtotal:,.2f}" if not chk_descuento.value else f"{(subtotal - descuento_total):,.2f}"
-            print(f"Descuento: {descuento_total}")
+            txt_total_value.value = f"{subtotal:,.2f}" if not chk_descuento.value else f"{(subtotal - float(descuento_total)):,.2f}"
 
         # Functions>
 
-        # <Layout
+        # @note <Layout
 
         Row_title = ft.Row(
             controls=[txt_formulario_title],
