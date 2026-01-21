@@ -111,14 +111,22 @@ class FormularioFactura(ft.Container):
         cup_tasa = ft.Row(
             controls=[
                 ft.Text("CUP:"),
-                ft.TextField(str(cup),border_color= ft.Colors.GREY_400,width= 80)
+                ft.TextField(str(cup),
+                            border_color= ft.Colors.GREY_400,
+                            width= 80,
+                            on_change= lambda e: recalcular_monedas(radio_monedas.value)
+                            )
             ]
         )
         
         mlc_tasa = ft.Row(
             controls=[
                 ft.Text("MLC:"),
-                ft.TextField(str(mlc),border_color= ft.Colors.GREY_400,width= 80)
+                ft.TextField(str(mlc),
+                            border_color= ft.Colors.GREY_400,
+                            width= 80,
+                            on_change= lambda e: recalcular_monedas(radio_monedas.value)
+                            )
             ]
         )
         
@@ -129,6 +137,7 @@ class FormularioFactura(ft.Container):
                     str(tasa_fiscal),
                     suffix= ft.Text("%"),
                     border_color= ft.Colors.GREY_400,width= 80,
+                    max_length= 2,
                     on_change= lambda e: recalcular_monedas(radio_monedas.value)
                 )
             ]
@@ -384,10 +393,7 @@ class FormularioFactura(ft.Container):
             delante = "1."
             if len(clean_tasa) == 1:
                 clean_tasa = "0" + clean_tasa
-            if len(clean_tasa) == 3:
-                delante = "2."
             coeficiente = delante + clean_tasa
-            print(coeficiente)
             return float(coeficiente)
         
         def recalcular_monedas(moeneda: str):
