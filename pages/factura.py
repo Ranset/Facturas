@@ -21,11 +21,23 @@ class Factura(ft.Container):
             size= 35,
             weight= ft.FontWeight.BOLD,
             )
+        
+        def _btn_crear_cotizacion_clicked(e):
+            from router import show_view
+            
+            if States.where_i_am == States._cotizacion_location:
+                States.i_come_from = States._Crear_btn_loc_cotizacion
+                States.where_i_am = States._formulario_factura_location
+            else:
+                States.i_come_from = States._Crear_btn_loc_facturas
+                States.where_i_am = States._formulario_factura_location
+            show_view(page, States._formulario_factura_location)
 
         btn_crear_cotizacion = ft.ElevatedButton(
             text="Crear Cotización" if States.where_i_am == States._cotizacion_location else "Crear Factura",
             bgcolor= '#2c78d0',
             color= 'white',
+            on_click= _btn_crear_cotizacion_clicked,
         )
 
         select_estatus = ft.Dropdown(

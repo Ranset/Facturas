@@ -23,7 +23,7 @@ def main(page: ft.Page):
     page.padding = 0
 
     # on load
-    show_view(page, "inicio")
+    show_view(page, "cotizacion")
 
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")

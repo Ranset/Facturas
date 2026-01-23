@@ -186,6 +186,7 @@ class FormularioFactura(ft.Container):
             try:
                 qty = int(cantidad.value)
             except Exception:
+                page.op
                 print("Cantidad inválida")
                 return
             try:
@@ -427,11 +428,11 @@ class FormularioFactura(ft.Container):
             for row in dt_factura.rows:
                 subtotal += float(row.data[4]) * float(self.price_multiply)
             
-            if not sw_descuento.value:
+            if not sw_descuento.value and descuento.value != "":
                 descuento_total = float(subtotal) * float(descuento.value) / 100
                 txt_descuento.value = f"Descuento {descuento.value}%:"
             else:
-                descuento_total = float(descuento.value)
+                descuento_total = float(descuento.value) if descuento.value != "" else 0.0
                 txt_descuento.value = "Descuento:"
             
             txt_subtotal_value.value = f"{subtotal:,.2f}"
@@ -677,10 +678,14 @@ class FormularioFactura(ft.Container):
         
         
 
-        columna_menu = ft.Column(controls= [Menu().Crear()])
+        # columna_menu = ft.Column(controls= [Menu().Crear()])
         column2 = ft.Column(controls=[contenedor_title, factura_body, Row_footer], expand= True)
 
-        Row_generar = ft.Row(controls=[columna_menu, column2], alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)
+        Row_generar = ft.Row(controls=[
+            # columna_menu,
+            column2
+            ],
+            alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)
 
         page.add(Row_generar)
 

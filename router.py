@@ -10,3 +10,6 @@ def show_view(page: ft.Page, route: str):
     if route == "cotizacion" or route == "factura":
         page.controls.clear()
         page.add(Factura(page))
+    if route == "formulario_factura":
+        page.controls.clear()
+        page.add(FormularioFactura(page))
