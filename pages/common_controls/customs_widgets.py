@@ -11,6 +11,7 @@ class CustomTextDatePicker(ft.TextField):
                                                 width= 145,
                                                 bgcolor= ft.Colors.WHITE,
                                                 border_color= ft.Colors.GREY_400,
+                                                hover_color= ft.Colors.WHITE,
                                                 on_click= lambda e: page.open(ft.DatePicker(on_change= self.poner_fecha))
                                                 )
 
@@ -290,6 +291,11 @@ class Menu(ft.Column):
             States.where_i_am = States._factura_location
             show_view(States.states_page[0], States._factura_location)
 
+        def click_clientes(e):
+            from router import show_view
+            States.where_i_am = States._cliente_location
+            show_view(States.states_page[0], States._cliente_location)
+
         # Functions>
 
         # Controls
@@ -337,6 +343,7 @@ class Menu(ft.Column):
             width=with_btn_menu,
             style= styles_btn_menu,
             bgcolor= bgcolor_btn_menu_active if States.where_i_am == States._cliente_location else bgcolor_btn_menu,
+            on_click= click_clientes
         )
 
         btn_productos_menu = ft.FilledButton(

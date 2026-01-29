@@ -42,17 +42,16 @@ class Factura(ft.Container):
 
         select_estatus = ft.Dropdown(
             options=[
-                # ft.dropdown.Option("Todas"),
                 ft.dropdown.Option("Borrador"),
                 ft.dropdown.Option("Enviada"),
                 ft.dropdown.Option("Vencida"),
             ],
-            # expand= True,
             label= "Estatus",
             width= 130,
             filled= True,
             fill_color= inputs_bgcolor,
-            border_color= inputs_border_color
+            border_color= inputs_border_color,
+            hover_color= inputs_bgcolor
         )
 
         cliente_suggestions = [
@@ -61,11 +60,6 @@ class Factura(ft.Container):
             "Cliente 3",
             "Distribuciones López",
         ]
-        # select_cliente = CustomTextFieldAutocomplete(
-        #     page= page,
-        #     label= "Clientes",
-        #     suggestions= cliente_suggestions
-        # ).Crear()
 
         select_cliente = ft.Dropdown(
             options=[
@@ -77,7 +71,8 @@ class Factura(ft.Container):
             editable=True,
             filled= True,
             fill_color= inputs_bgcolor,
-            border_color= inputs_border_color
+            border_color= inputs_border_color,
+            hover_color= ft.Colors.WHITE
         )
 
         select_fecha_inicio = CustomTextDatePicker(page= page,label= "Desde").Crear()
@@ -92,7 +87,8 @@ class Factura(ft.Container):
             height= inputs_height,
             width= 140,
             bgcolor= inputs_bgcolor,
-            border_color= inputs_border_color
+            border_color= inputs_border_color,
+            hover_color= inputs_bgcolor
         )
 
         btn_buscar = ft.FloatingActionButton(

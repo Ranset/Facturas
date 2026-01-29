@@ -313,10 +313,23 @@ class FormularioFactura(ft.Container):
             width= 120,
         )
 
+        def click_cancelar(e):
+            from router import show_view
+
+            if States.i_come_from == States._Crear_btn_loc_cotizacion:
+                States.where_i_am = States._cotizacion_location
+                States.i_come_from = States._formulario_factura_location
+                show_view(page, States._cotizacion_location)
+            if States.i_come_from == States._Crear_btn_loc_facturas:
+                States.where_i_am = States._factura_location
+                States.i_come_from = States._formulario_factura_location
+                show_view(page, States._factura_location)
+
         btn_cancelar = ft.OutlinedButton(
             "Cancelar",
             style= ft.ButtonStyle(side= ft.BorderSide(1, "#6d6d6d"), color= "#6d6d6d", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
+            on_click= click_cancelar
         )
 
         def chk_descuento_changed(e):
@@ -591,7 +604,6 @@ class FormularioFactura(ft.Container):
             border= ft.border.all(1, "#CBD5E1"),
             border_radius= ft.border_radius.all(5),
             margin= ft.margin.only(left= 25, right=25, top=10),
-            # padding= ft.padding.all(25)
         )
 
         factura_body = ft.ListView(
