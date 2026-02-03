@@ -2,6 +2,7 @@ from flet_base import flet_instance as ft
 from pages.factura import Factura
 from pages.formulario_factura import FormularioFactura
 from pages.clientes import Clientes
+from pages.productos import Productos
 
 def show_view(page: ft.Page, route: str):
 
@@ -17,3 +18,6 @@ def show_view(page: ft.Page, route: str):
     if route == "cliente":
         page.controls.clear()
         page.add(Clientes(page))
+    if route == "producto":
+        page.controls.clear()
+        page.add(Productos(page))

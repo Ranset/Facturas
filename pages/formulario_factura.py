@@ -1,7 +1,7 @@
 from flet_base import flet_instance as ft
 from datetime import datetime
 from pages.common_controls.states import States
-from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row, Menu, CustomTextFieldAutocomplete
+from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row, NewClientDialog, NewProductDialog, CustomTextFieldAutocomplete
 
 class FormularioFactura(ft.Container):
     def __init__(self, page: ft.Page):
@@ -61,6 +61,13 @@ class FormularioFactura(ft.Container):
             border_color= inputs_border_color
         )
 
+        new_client_dialog = NewClientDialog(page).Crear()
+
+        def abrir_dialogo(e):
+            page.overlay.append(new_client_dialog) # Agregar el diálogo a la superposición de la página
+            new_client_dialog.open = True   # Abrirlo
+            page.update()
+
         btn_agragar_cliente = ft.FloatingActionButton(
             bgcolor= "#2c78d0",
             foreground_color= 'white',
@@ -68,6 +75,7 @@ class FormularioFactura(ft.Container):
             shape= ft.RoundedRectangleBorder(radius= 5),
             width= inputs_height,
             height= inputs_height,
+            on_click= abrir_dialogo
         )
 
         txt_moneda = ft.Text("Moneda:")
@@ -145,7 +153,14 @@ class FormularioFactura(ft.Container):
 
         txt_title_add_product = ft.Text("Agregar Producto", weight= ft.FontWeight.BOLD)
 
-        btn_new_product = ft.ElevatedButton("Nuevo", bgcolor="#2c78d0", color= "white", width= 80, height= 25)
+        new_prouct_dialog = NewProductDialog(page).Crear()
+
+        def abrir_product_dialog(e):
+            page.overlay.append(new_prouct_dialog) # Agregar el diálogo a la superposición de la página
+            new_prouct_dialog.open = True   # Abrirlo
+            page.update()
+
+        btn_new_product = ft.ElevatedButton("Nuevo", bgcolor="#2c78d0", color= "white", width= 80, height= 25, on_click= abrir_product_dialog)
 
         product_suggestions = [
             #(nombre, precio, moneda, iva[bool], proveedor, peso, id)

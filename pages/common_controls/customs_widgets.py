@@ -296,6 +296,11 @@ class Menu(ft.Column):
             States.where_i_am = States._cliente_location
             show_view(States.states_page[0], States._cliente_location)
 
+        def click_productos(e):
+            from router import show_view
+            States.where_i_am = States._producto_location
+            show_view(States.states_page[0], States._producto_location)
+
         # Functions>
 
         # Controls
@@ -352,6 +357,7 @@ class Menu(ft.Column):
             width=with_btn_menu,
             style= styles_btn_menu,
             bgcolor= bgcolor_btn_menu_active if States.where_i_am == States._producto_location else bgcolor_btn_menu,
+            on_click= click_productos
         )
 
         btn_configuracion_menu = ft.FilledButton(
@@ -398,3 +404,286 @@ class Menu(ft.Column):
     def Crear(self):
         return self.contenedor_menu
         print("Menu redraw")
+
+
+class NewClientDialog(ft.AlertDialog):
+    def __init__(self, page: ft.Page):
+        super().__init__()
+
+        # 1. Definir el diálogo
+        txt_nombre = ft.CupertinoTextField(
+                            placeholder_text="Nombre Comercial", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 600,
+                            expand= True,
+                            )
+        
+        txt_nit = ft.CupertinoTextField(
+                            placeholder_text="NIT", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 200,
+                            expand= True,
+                            )
+        
+        txt_reeup = ft.CupertinoTextField(
+                            placeholder_text="REEUP", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 200,
+                            expand= True,
+                            )
+        
+        txt_onie = ft.CupertinoTextField(
+                            placeholder_text="ONIE", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 200,
+                            expand= True,
+                            )
+        
+        txt_domicilio = ft.CupertinoTextField(
+                            placeholder_text="Domcilio", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 600,
+                            expand= True,
+                            )
+        
+        txt_cta_cup = ft.CupertinoTextField(
+                            placeholder_text="# de Cuenta CUP", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 200,
+                            expand= True,
+                            )
+        
+        txt_cta_mlc = ft.CupertinoTextField(
+                            placeholder_text="# de Cuenta MLC", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 200,
+                            expand= True,
+                            )
+        
+        txt_telefono = ft.CupertinoTextField(
+                            placeholder_text="Teléfono", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 200,
+                            expand= True,
+                            )
+        
+        txt_email = ft.CupertinoTextField(
+                            placeholder_text="Email", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 200,
+                            )
+        
+        btn_guardar = ft.ElevatedButton(
+            "Guardar",
+            style= ft.ButtonStyle(bgcolor= "#2c78d0", color= "white", shape= ft.RoundedRectangleBorder(radius= 5)),
+            width= 120,
+        )
+
+        def cerrar_dialogo(e):
+            self.alert_dialog.open = False
+            page.update()
+            page.overlay.clear()
+        
+        btn_cancelar = ft.OutlinedButton(
+            "Canelar",
+            style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
+            width= 120,
+            on_click= cerrar_dialogo
+        )
+
+        btn_guardar_otra = ft.OutlinedButton(
+            "Guardar y Otro",
+            style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
+            width= 120,
+            
+        )
+
+        row_1 = ft.Row(controls= [txt_nombre], expand= True,)
+        row_2 = ft.Row(controls= [txt_nit, txt_reeup, txt_onie], expand= True)
+        row_3 = ft.Row(controls= [txt_domicilio], expand= True)
+        row_4 = ft.Row(controls= [txt_cta_cup, txt_cta_mlc, txt_telefono], expand= True)
+        row_5 = ft.Row(
+            controls= [
+                txt_email,
+                ft.Row(expand= True), # Divisor expansor
+                btn_guardar,
+                btn_guardar_otra,
+                btn_cancelar,
+                ], 
+                expand= True
+                )
+
+        self.alert_dialog = ft.AlertDialog(
+            title=ft.Text("Agregar Cliente", weight= "bold"),
+            content=ft.Column(
+                controls= [
+                    row_1,
+                    row_2,
+                    row_3,
+                    row_4,
+                    row_5
+                ],
+                alignment= ft.MainAxisAlignment.START,
+                spacing= 0,
+                height= 250,
+            ),
+            on_dismiss= cerrar_dialogo,
+        )
+
+    def Crear(self):
+        return self.alert_dialog
+    
+
+class NewProductDialog(ft.AlertDialog):
+    def __init__(self, page: ft.Page):
+        super().__init__()
+
+        # 1. Definir el diálogo
+        txt_nombre = ft.CupertinoTextField(
+                            placeholder_text="Producto", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 600,
+                            expand= True,
+                            )
+        
+        txt_precio = ft.CupertinoTextField(
+                            placeholder_text="Precio", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 200,
+                            expand= True,
+                            )
+        
+        rdo_moneda = ft.Container(
+            content= ft.Row(
+                controls= [
+                    ft.RadioGroup(
+                        content= ft.Row(
+                            [
+                                ft.Radio(label= "USD", value="usd"),
+                                ft.Radio(label= "MXN", value="mxn"),
+                            ]
+                        ),
+                        value= "usd"
+                    )
+                ]
+            ),
+            border= ft.border.all(1, "grey"),
+            border_radius= ft.border_radius.all(7),
+            padding= ft.padding.only(right= 5),
+            height= 40
+        )
+
+        chk_iva = ft.Checkbox(label= "Con IVA", value= True)
+        
+        txt_proveedor = ft.CupertinoTextField(
+                            placeholder_text="Proveedor", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 200,
+                            expand= True,
+                            )
+        
+        txt_peso = ft.CupertinoTextField(
+                            placeholder_text="Peso en Kg", 
+                            placeholder_style= ft.TextStyle(
+                                                    color= ft.Colors.GREY_500,
+                                                    size= 14
+                                                    ), 
+                            width= 200,
+                            )
+        
+        def click_guardar(e):
+            moneda = rdo_moneda.content.controls[0].value
+            print(moneda)
+        
+        btn_guardar = ft.ElevatedButton(
+            "Guardar",
+            style= ft.ButtonStyle(bgcolor= "#2c78d0", color= "white", shape= ft.RoundedRectangleBorder(radius= 5)),
+            width= 120,
+            on_click= click_guardar
+        )
+
+        def cerrar_dialogo(e):
+            self.alert_dialog.open = False
+            page.update()
+            page.overlay.clear()
+        
+        btn_cancelar = ft.OutlinedButton(
+            "Canelar",
+            style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
+            width= 120,
+            on_click= cerrar_dialogo
+        )
+
+        btn_guardar_otra = ft.OutlinedButton(
+            "Guardar y Otro",
+            style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
+            width= 120,
+            
+        )
+
+        row_1 = ft.Row(controls= [txt_nombre], expand= True,)
+        row_2 = ft.Row(controls= [txt_precio, rdo_moneda, chk_iva, txt_proveedor], expand= True)
+        row_3 = ft.Row(
+            controls= [
+                txt_peso,
+                ft.Row(expand= True), # Divisor expansor
+                btn_guardar,
+                btn_guardar_otra,
+                btn_cancelar,
+                ], 
+                expand= True
+                )
+
+        self.alert_dialog = ft.AlertDialog(
+            title=ft.Text("Agregar Producto", weight= "bold"),
+            content=ft.Column(
+                controls= [
+                    row_1,
+                    row_2,
+                    row_3
+                ],
+                alignment= ft.MainAxisAlignment.START,
+                spacing= 0,
+                height= 150,
+            ),
+            on_dismiss= cerrar_dialogo,
+        )
+
+    def Crear(self):
+        return self.alert_dialog

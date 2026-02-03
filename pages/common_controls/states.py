@@ -13,6 +13,7 @@ class States:
 
     _Crear_btn_loc_cotizacion = "btn_cotizacion_page" # Botón crear cotización de la página cotización
     _Crear_btn_loc_facturas = "btn_facturas_page" # Botón crear cotización de la página cotización
+    _Crear_btn_loc_clientes = "btn_clientes_page"
 
     # Variables
     where_i_am = _inicio_location # Página actual
