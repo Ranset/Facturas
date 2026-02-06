@@ -91,6 +91,14 @@ class Factura(ft.Container):
             hover_color= inputs_bgcolor
         )
 
+        def click_buscar (e):
+            self.tabla_controls = [Tabla_Factura_Row("Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),]
+            tabla.controls.clear()
+            for row in self.tabla_controls:
+                tabla.controls.append(row)
+            tabla.update()
+
+
         btn_buscar = ft.FloatingActionButton(
             bgcolor= "#838383",
             foreground_color= 'white',
@@ -98,7 +106,28 @@ class Factura(ft.Container):
             shape= ft.RoundedRectangleBorder(radius= 5),
             width= inputs_height,
             height= inputs_height,
+            on_click= click_buscar
         )
+
+        def click_clear (e):
+            self.tabla_controls = [
+            Tabla_Factura_Row("Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP").crear(),
+            Tabla_Factura_Row("Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP").crear(),
+            Tabla_Factura_Row("XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
+            Tabla_Factura_Row("Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
+            Tabla_Factura_Row("Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
+            ]
+
+            select_estatus.value = None
+            select_cliente.value = None
+            select_fecha_inicio.value = ""
+            select_fecha_fin.value = ""
+            txt_nro_factura.value = ""
+
+            tabla.controls.clear()
+            for row in self.tabla_controls:
+                tabla.controls.append(row)
+            page.update()
         
         btn_clear = ft.FloatingActionButton(
             bgcolor= '#838383',
@@ -107,6 +136,7 @@ class Factura(ft.Container):
             shape= ft.RoundedRectangleBorder(radius= 5),
             width= inputs_height,
             height= inputs_height,
+            on_click= click_clear
         )
 
         tabla_encabezado= ft.Container(content=ft.Row(
@@ -130,13 +160,12 @@ class Factura(ft.Container):
         divider_encabezado_de_tabla = ft.Divider(color= ft.Colors.GREY_700, height=1)
 
 
-        tabla_controls = [
+        self.tabla_controls = [
             Tabla_Factura_Row("Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP").crear(),
             Tabla_Factura_Row("Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP").crear(),
             Tabla_Factura_Row("XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
             Tabla_Factura_Row("Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
             Tabla_Factura_Row("Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-            
         ]
 
         ## Widgets objects>
@@ -188,7 +217,7 @@ class Factura(ft.Container):
         
         
         tabla = ft.ListView(
-            controls= tabla_controls,
+            controls= self.tabla_controls,
             expand= True
         )
         
