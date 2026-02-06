@@ -72,7 +72,7 @@ class Clientes(ft.Container):
             rows= [
                 ft.DataRow(
                     [
-                        ft.DataCell(ft.Text("Empresa importadora del centro", no_wrap= True)),
+                        ft.DataCell(ft.Text("Empresa importadora del centro y de todo el oriene de pais mas la zona especial y sociedades anónimas")),
                         ft.DataCell(ft.Text("123456789")),
                         ft.DataCell(ft.Text("empresa@importadora.com")),
                         ft.DataCell(ft.TextButton("Eliminar", on_click= lambda e: print("Eliminar cliente"), style= ft.ButtonStyle(color= "red"))),

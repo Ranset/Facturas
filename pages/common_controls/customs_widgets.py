@@ -192,7 +192,7 @@ class Tabla_Factura_Row(ft.Column):
                         margin= ft.margin.only(left= 15)
                     ),
                     ft.Container(
-                        content= ft.Text(cliente, no_wrap= True),
+                        content= ft.Text(cliente, no_wrap= True, overflow= "ellipsis"),
                         expand= 4,
                         on_click= lambda e: print(f"Clic en factura {numero}")
                     ),
@@ -300,6 +300,11 @@ class Menu(ft.Column):
             from router import show_view
             States.where_i_am = States._producto_location
             show_view(States.states_page[0], States._producto_location)
+        
+        def click_configuracion(e):
+            from router import show_view
+            States.where_i_am = States._configuracion_location
+            show_view(States.states_page[0], States._configuracion_location)
 
         # Functions>
 
@@ -366,6 +371,7 @@ class Menu(ft.Column):
             width=with_btn_menu,
             style= styles_btn_menu,
             bgcolor= bgcolor_btn_menu_active if States.where_i_am == States._configuracion_location else bgcolor_btn_menu,
+            on_click= click_configuracion
         )
 
         btn_acerca_menu = ft.FilledButton(

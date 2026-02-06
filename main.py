@@ -23,7 +23,7 @@ def main(page: ft.Page):
     page.padding = 0
 
     # on load
-    show_view(page, "producto")
+    show_view(page, States._configuracion_location)
 
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")

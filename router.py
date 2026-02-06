@@ -3,6 +3,7 @@ from pages.factura import Factura
 from pages.formulario_factura import FormularioFactura
 from pages.clientes import Clientes
 from pages.productos import Productos
+from pages.configuracion import Configuracion
 
 def show_view(page: ft.Page, route: str):
 
@@ -21,3 +22,6 @@ def show_view(page: ft.Page, route: str):
     if route == "producto":
         page.controls.clear()
         page.add(Productos(page))
+    if route == "configuracion":
+        page.controls.clear()
+        page.add(Configuracion(page))

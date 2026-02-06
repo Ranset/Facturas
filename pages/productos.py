@@ -73,7 +73,7 @@ class Productos(ft.Container):
             rows= [
                 ft.DataRow(
                     [
-                        ft.DataCell(ft.Text("Impresora Multifuncional Epson L3210", no_wrap= True)),
+                        ft.DataCell(ft.Text("Impresora Multifuncional Epson L3210")),
                         ft.DataCell(ft.Text("$250.00")),
                         ft.DataCell(ft.Text("Amazon")),
                         ft.DataCell(ft.Text("3")),
