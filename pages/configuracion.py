@@ -58,6 +58,38 @@ class Configuracion(ft.Container):
         txt_tarjeta_mlc = ft.Text(f"Tarjeta MLC: {datos_vendedor[7]}", size= text_size)
         txt_email = ft.Text(f"Email: {datos_vendedor[8]}", size= text_size)
 
+        txt_tasas_title = ft.Text("Tasas de cambios", size= 25)
+
+        ### tasa mxn
+        tasa_mxn = ft.Container(
+            content= ft.Column(
+                controls=[
+                    ft.Row(controls=[
+                        ft.Icon(ft.Icons.FLAG, color= "white"),
+                        ft.Row(expand= True),
+                        ft.Text("MXN", color="white", weight="bold", text_align= ft.TextAlign.END)
+                    ], expand= True),
+                    ft.Text("999.99", size=30, color= "white")
+                ],
+                horizontal_alignment= "center"
+            ),
+            bgcolor= "#067429",
+            padding= ft.padding.all(18),
+            width= 130
+        )
+
+        tasas = ft.Container(
+            ft.Column(
+                controls= [
+                    ft.Row(
+                        controls= [
+                            tasa_mxn,
+                        ]
+                    )
+                ]
+            )
+        )
+
         ## Widgets objects>
         # Controls>
 
@@ -83,6 +115,9 @@ class Configuracion(ft.Container):
             Row1,
             ft.Row(controls=[txt_nombre,txt_nit,txt_telf], spacing= spacig),
             ft.Row(controls=[txt_direccion], spacing= spacig),
+            ft.Row(controls=[txt_cuenta_cup, txt_tarjeta_cup], spacing= spacig),
+            ft.Row(controls=[txt_cuenta_mlc, txt_tarjeta_mlc], spacing= spacig),
+            ft.Row(controls=[txt_email], spacing= spacig),
             ],
         spacing= 2
         )
@@ -96,7 +131,11 @@ class Configuracion(ft.Container):
         )
 
         columna_menu = ft.Column(controls= [Menu().Crear()])
-        column2 = ft.Column(controls=[contenedor1], expand= True)
+        column2 = ft.Column(controls=[
+            contenedor1, 
+            ft.Container(txt_tasas_title, padding= ft.padding.only(left=20)),
+            tasas
+            ], expand= True, spacing= 20)
 
         Row_generar = ft.Row(controls=[columna_menu, column2], alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)
 
