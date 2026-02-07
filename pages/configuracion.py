@@ -67,15 +67,141 @@ class Configuracion(ft.Container):
                     ft.Row(controls=[
                         ft.Icon(ft.Icons.FLAG, color= "white"),
                         ft.Row(expand= True),
-                        ft.Text("MXN", color="white", weight="bold", text_align= ft.TextAlign.END)
+                        ft.Text("MXN", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.Text("999.99", size=30, color= "white")
+                    ft.Text("18.50", size=30, color= "white")
                 ],
                 horizontal_alignment= "center"
             ),
             bgcolor= "#067429",
             padding= ft.padding.all(18),
-            width= 130
+            width= 130,
+            border_radius= 20
+        )
+        
+        ### tasa cup
+        tasa_cup = ft.Container(
+            content= ft.Column(
+                controls=[
+                    ft.Row(controls=[
+                        ft.Icon(ft.Icons.FLAG, color= "white"),
+                        ft.Row(expand= True),
+                        ft.Text("CUP", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
+                    ], expand= True),
+                    ft.Text("450.00", size=30, color= "white")
+                ],
+                horizontal_alignment= "center"
+            ),
+            bgcolor= "red",
+            padding= ft.padding.all(18),
+            width= 130,
+            border_radius= 20
+        )
+        
+        ### tasa mlc
+        tasa_mlc = ft.Container(
+            content= ft.Column(
+                controls=[
+                    ft.Row(controls=[
+                        ft.Icon(ft.Icons.FLAG, color= "white"),
+                        ft.Row(expand= True),
+                        ft.Text("MLC", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
+                    ], expand= True),
+                    ft.Text("1.29", size=30, color= "white")
+                ],
+                horizontal_alignment= "center"
+            ),
+            bgcolor= "#305BAB",
+            padding= ft.padding.all(18),
+            width= 130,
+            border_radius= 20
+        )
+
+        def edit_tasa_click (e):
+            tasas.content.controls[0].visible= False
+            tasas.content.controls[1].visible= True
+            tasas.update()
+
+        btn_editar_tasa = ft.FloatingActionButton(
+            bgcolor= "#2c78d0",
+            foreground_color= 'white',
+            icon= ft.Icons.EDIT,
+            shape= ft.RoundedRectangleBorder(radius= 5),
+            width= 35,
+            height= 118,
+            on_click= edit_tasa_click
+        )
+
+        ### tasa mxn edit
+        tasa_mxn_edit = ft.Container(
+            content= ft.Column(
+                controls=[
+                    ft.Row(controls=[
+                        ft.Icon(ft.Icons.FLAG, color= "white"),
+                        ft.Row(expand= True),
+                        ft.Text("MXN", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
+                    ], expand= True),
+                    ft.TextField(value= "18.50", bgcolor= inputs_bgcolor)
+                ],
+                horizontal_alignment= "center"
+            ),
+            bgcolor= "#067429",
+            padding= ft.padding.all(18),
+            width= 130,
+            border_radius= 20
+        )
+        
+        ### tasa cup edit
+        tasa_cup_edit = ft.Container(
+            content= ft.Column(
+                controls=[
+                    ft.Row(controls=[
+                        ft.Icon(ft.Icons.FLAG, color= "white"),
+                        ft.Row(expand= True),
+                        ft.Text("CUP", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
+                    ], expand= True),
+                    ft.TextField(value= "450.00", bgcolor= inputs_bgcolor)
+                ],
+                horizontal_alignment= "center"
+            ),
+            bgcolor= "red",
+            padding= ft.padding.all(18),
+            width= 130,
+            border_radius= 20
+        )
+        
+        ### tasa mlc edit
+        tasa_mlc_edit = ft.Container(
+            content= ft.Column(
+                controls=[
+                    ft.Row(controls=[
+                        ft.Icon(ft.Icons.FLAG, color= "white"),
+                        ft.Row(expand= True),
+                        ft.Text("MLC", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
+                    ], expand= True),
+                    ft.TextField(value= "1.29", bgcolor= inputs_bgcolor)
+                ],
+                horizontal_alignment= "center"
+            ),
+            bgcolor= "#305BAB",
+            padding= ft.padding.all(18),
+            width= 130,
+            border_radius= 20
+        )
+
+        def check_tasa_click (e):
+            tasas.content.controls[1].visible= False
+            tasas.content.controls[0].visible= True
+            tasas.update()
+
+        btn_check_tasa = ft.FloatingActionButton(
+            bgcolor= "#2c78d0",
+            foreground_color= 'white',
+            icon= ft.Icons.CHECK,
+            shape= ft.RoundedRectangleBorder(radius= 5),
+            width= 35,
+            height= 120,
+            on_click= check_tasa_click
         )
 
         tasas = ft.Container(
@@ -84,11 +210,38 @@ class Configuracion(ft.Container):
                     ft.Row(
                         controls= [
                             tasa_mxn,
-                        ]
+                            tasa_cup,
+                            tasa_mlc,
+                            btn_editar_tasa
+                        ],
+                        spacing= 35
+                    ),
+                    ft.Row(
+                        controls= [
+                            tasa_mxn_edit,
+                            tasa_cup_edit,
+                            tasa_mlc_edit,
+                            btn_check_tasa
+                        ],
+                        spacing= 35,
+                        visible= False
                     )
                 ]
-            )
+            ),
+            margin= ft.margin.only(left= 20, right= 20)
         )
+
+        tasa_fiscal_tile = ft.Text("Tasas Fiscal", size= 25)
+        tasa_fiscal_icon = ft.Icon(ft.Icons.ACCOUNT_BALANCE, "black", 40)
+        tasa_fiscal = ft.TextField(
+                    "25",
+                    suffix= ft.Text("%"),
+                    border_color= inputs_border_color,
+                    max_length= 2,
+                    bgcolor= inputs_bgcolor,
+                    width= 70,
+                    # on_change= lambda e: recalcular_monedas(radio_monedas.value)
+                )
 
         ## Widgets objects>
         # Controls>
@@ -130,11 +283,18 @@ class Configuracion(ft.Container):
             border_radius= ft.border_radius.all(15)
         )
 
+        Row2 = ft.Row(controls=[
+            ft.Column([ft.Container(txt_tasas_title, padding= ft.padding.only(left=20)),tasas]),
+            ft.Column([tasa_fiscal_tile, ft.Row([tasa_fiscal_icon, tasa_fiscal])])
+        ],
+        vertical_alignment= ft.CrossAxisAlignment.START,
+        spacing= 40
+        )
+
         columna_menu = ft.Column(controls= [Menu().Crear()])
         column2 = ft.Column(controls=[
             contenedor1, 
-            ft.Container(txt_tasas_title, padding= ft.padding.only(left=20)),
-            tasas
+            Row2
             ], expand= True, spacing= 20)
 
         Row_generar = ft.Row(controls=[columna_menu, column2], alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)
