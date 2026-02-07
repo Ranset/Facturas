@@ -25,7 +25,8 @@ class Configuracion(ft.Container):
             )
         
         def _btn_editar_vendedor_clicked(e):
-            pass
+            from router import show_view
+            show_view(page, "vendedor")
 
         btn_editar_vendedor = ft.ElevatedButton(
             text="Editar",
@@ -141,7 +142,7 @@ class Configuracion(ft.Container):
                         ft.Row(expand= True),
                         ft.Text("MXN", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.TextField(value= "18.50", bgcolor= inputs_bgcolor)
+                    ft.TextField(value= "18.50", bgcolor= inputs_bgcolor, max_length= 6)
                 ],
                 horizontal_alignment= "center"
             ),
@@ -160,7 +161,7 @@ class Configuracion(ft.Container):
                         ft.Row(expand= True),
                         ft.Text("CUP", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.TextField(value= "450.00", bgcolor= inputs_bgcolor)
+                    ft.TextField(value= "450.00", bgcolor= inputs_bgcolor, max_length= 6)
                 ],
                 horizontal_alignment= "center"
             ),
@@ -179,7 +180,7 @@ class Configuracion(ft.Container):
                         ft.Row(expand= True),
                         ft.Text("MLC", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.TextField(value= "1.29", bgcolor= inputs_bgcolor)
+                    ft.TextField(value= "1.29", bgcolor= inputs_bgcolor, max_length= 6)
                 ],
                 horizontal_alignment= "center"
             ),
@@ -231,6 +232,10 @@ class Configuracion(ft.Container):
             margin= ft.margin.only(left= 20, right= 20)
         )
 
+        def tasa_fiscal_change(e):
+            btn_tasa_fiscal.visible = True
+            page.update()
+
         tasa_fiscal_tile = ft.Text("Tasas Fiscal", size= 25)
         tasa_fiscal_icon = ft.Icon(ft.Icons.ACCOUNT_BALANCE, "black", 40)
         tasa_fiscal = ft.TextField(
@@ -240,8 +245,75 @@ class Configuracion(ft.Container):
                     max_length= 2,
                     bgcolor= inputs_bgcolor,
                     width= 70,
-                    # on_change= lambda e: recalcular_monedas(radio_monedas.value)
+                    on_change= lambda e: tasa_fiscal_change(e)
                 )
+        
+        def click_btn_tasa_fiscal(e):
+            import asyncio
+
+            btn_tasa_fiscal.visible = False
+            txt_salvado.visible = True
+            page.update()
+            
+            async def hide_message():
+                await asyncio.sleep(2)
+                txt_salvado.visible = False
+                page.update()
+            
+            asyncio.run(hide_message())
+
+        btn_tasa_fiscal = ft.FloatingActionButton(
+            bgcolor= "#838383",
+            foreground_color= 'white',
+            icon= ft.Icons.CHECK,
+            shape= ft.RoundedRectangleBorder(radius= 5),
+            width= inputs_height,
+            height= inputs_height,
+            visible= False,
+            on_click= click_btn_tasa_fiscal
+        )
+        txt_salvado = ft.Text("Salvado!!", color= "green", visible= False)
+
+        def click_btn_nota(e):
+            import asyncio
+
+            btn_nota.visible = False
+            txt_salvado_nota.visible = True
+            page.update()
+            
+            async def hide_message():
+                await asyncio.sleep(2)
+                txt_salvado_nota.visible = False
+                page.update()
+            
+            asyncio.run(hide_message())
+
+        btn_nota = ft.FloatingActionButton(
+            bgcolor= "#838383",
+            foreground_color= 'white',
+            icon= ft.Icons.CHECK,
+            shape= ft.RoundedRectangleBorder(radius= 5),
+            width= inputs_height,
+            height= inputs_height,
+            visible= False,
+            on_click= click_btn_nota
+        )
+
+        txt_salvado_nota = ft.Text("Salvado!!", color= "green", visible= False)
+
+        def tasa_nota_change(e):
+            btn_nota.visible = True
+            page.update()
+
+        nota = ft.TextField(
+            "La reproducción apócrifa de este comprobante constituye un delito en los términos de las disposiciones fiscales.",
+            border_color= inputs_border_color,
+            max_length= 150,
+            bgcolor= inputs_bgcolor,
+            expand= True,
+            label= "Nota de términos",
+            on_change= lambda e: tasa_nota_change(e)
+        )
 
         ## Widgets objects>
         # Controls>
@@ -285,10 +357,21 @@ class Configuracion(ft.Container):
 
         Row2 = ft.Row(controls=[
             ft.Column([ft.Container(txt_tasas_title, padding= ft.padding.only(left=20)),tasas]),
-            ft.Column([tasa_fiscal_tile, ft.Row([tasa_fiscal_icon, tasa_fiscal])])
+            ft.Container(ft.Column(
+                [
+                    tasa_fiscal_tile,
+                    ft.Row([tasa_fiscal_icon, tasa_fiscal, btn_tasa_fiscal, txt_salvado]),
+                    ft.Container(ft.Row([nota, btn_nota, txt_salvado_nota]), margin= ft.margin.only(top= 20)),
+                    
+                ],
+                spacing= 5
+                    ),
+                    expand= True,
+                    margin= ft.margin.only(right= 20)
+                    )
         ],
         vertical_alignment= ft.CrossAxisAlignment.START,
-        spacing= 40
+        spacing= 70,
         )
 
         columna_menu = ft.Column(controls= [Menu().Crear()])
