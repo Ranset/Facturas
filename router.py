@@ -5,6 +5,7 @@ from pages.clientes import Clientes
 from pages.productos import Productos
 from pages.configuracion import Configuracion
 from pages.vendedor import Vendedor
+from pages.acerca import Acerca
 
 def show_view(page: ft.Page, route: str):
 
@@ -29,3 +30,6 @@ def show_view(page: ft.Page, route: str):
     if route == "vendedor":
         page.controls.clear()
         page.add(Vendedor(page))
+    if route == "acerca":
+        page.controls.clear()
+        page.add(Acerca(page))

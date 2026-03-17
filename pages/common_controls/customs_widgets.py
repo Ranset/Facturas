@@ -306,6 +306,11 @@ class Menu(ft.Column):
             States.where_i_am = States._configuracion_location
             show_view(States.states_page[0], States._configuracion_location)
 
+        def click_acerca(e):
+            from router import show_view
+            States.where_i_am = States._acerca_location
+            show_view(States.states_page[0], States._acerca_location)
+
         # Functions>
 
         # Controls
@@ -380,6 +385,7 @@ class Menu(ft.Column):
             width=with_btn_menu,
             style= styles_btn_menu,
             bgcolor= bgcolor_btn_menu_active if States.where_i_am == States._acerca_location else bgcolor_btn_menu,
+            on_click= click_acerca
         )
 
         # Layout
