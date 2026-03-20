@@ -6,12 +6,13 @@ from pages.productos import Productos
 from pages.configuracion import Configuracion
 from pages.vendedor import Vendedor
 from pages.acerca import Acerca
+from pages.inicio import Inicio
 
 def show_view(page: ft.Page, route: str):
 
     if route == "inicio":
         page.controls.clear()
-        page.add(FormularioFactura(page))
+        page.add(Inicio(page))
     if route == "cotizacion" or route == "factura":
         page.controls.clear()
         page.add(Factura(page))

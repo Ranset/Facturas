@@ -279,7 +279,7 @@ class Menu(ft.Column):
         def click_inicio(e):
             from router import show_view
             States.where_i_am = States._inicio_location
-            show_view(States.states_page[0], States._cliente_location)
+            show_view(States.states_page[0], States._inicio_location)
 
         def click_cotizacion(e):
             from router import show_view

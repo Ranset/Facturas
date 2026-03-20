@@ -1,0 +1,155 @@
+from flet_base import flet_instance as ft
+from pages.common_controls.states import States
+from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row, Menu
+
+class Inicio(ft.Container):
+    def __init__(self, page: ft.Page):
+        super().__init__()
+
+        page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+
+        # <Controls
+        ## <common variables
+        inputs_height = 48
+        inputs_bgcolor = ft.Colors.WHITE
+        inputs_border_color= ft.Colors.GREY_400
+        ## common variables>
+
+        ## <Widgets objects
+        txt_Cotizacion_title = ft.Text(
+            "Dashboard",
+            size= 35,
+            weight= ft.FontWeight.BOLD,
+            )
+        
+        def _btn_crear_cotizacion_clicked(e):
+            from router import show_view
+            
+            States.i_come_from = States._Crear_btn_loc_cotizacion
+            States.where_i_am = States._formulario_factura_location
+            show_view(page, States._formulario_factura_location)
+        
+        def _btn_crear_factura_clicked(e):
+            from router import show_view
+            
+            States.i_come_from = States._Crear_btn_loc_facturas
+            States.where_i_am = States._formulario_factura_location
+            show_view(page, States._formulario_factura_location)
+
+        btn_crear = ft.SubmenuButton(
+            content= ft.Text("    +  Crear    "),
+            style= ft.ButtonStyle(
+                bgcolor= '#2c78d0',
+                color= 'white',
+            ),
+            controls= [
+                ft.MenuItemButton(content=ft.Text("Factura"), on_click= _btn_crear_factura_clicked),
+                ft.MenuItemButton(content=ft.Text("Cotización"), on_click= _btn_crear_cotizacion_clicked),
+            ]
+        )
+
+        tabla_title = ft.Container(content= ft.Row(controls=[ft.Text("Actividad Reciente", size= 20, weight= ft.FontWeight.BOLD)], alignment= ft.MainAxisAlignment.START), margin= ft.margin.only(bottom= 10))
+
+        tabla_encabezado= ft.Container(content=ft.Row(
+            controls=[
+                ft.Container(content= ft.Text("Estado", weight= ft.FontWeight.BOLD, size=14), width= 70, margin= ft.margin.only(left= 15)),
+                ft.Container(content= ft.Text("Fecha", weight= ft.FontWeight.BOLD, size=14), width= 80, margin= ft.margin.only(left= 15)),
+                ft.Container(content= ft.Text("Número", weight= ft.FontWeight.BOLD, size=14), width= 80, margin= ft.margin.only(left= 15)),
+                ft.Container(content= ft.Text("Cliente", weight= ft.FontWeight.BOLD, size=14), expand= True),
+                ft.Container(content= ft.Text("Total", weight= ft.FontWeight.BOLD, size=14), width= 200),
+                ft.Container(content= ft.Text("Moneda", weight= ft.FontWeight.BOLD, size=14), width= 100),
+                ft.Container(content= ft.Text("Acción", weight= ft.FontWeight.BOLD, size=14), width= 80),
+            ],
+            height= 40,
+            expand= True,
+            alignment= ft.MainAxisAlignment.START,
+            spacing= 0
+            ),
+            bgcolor= ft.Colors.WHITE,
+            )
+
+        divider_encabezado_de_tabla = ft.Divider(color= ft.Colors.GREY_700, height=1)
+
+
+        self.tabla_controls = [
+            Tabla_Factura_Row("Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP").crear(),
+            Tabla_Factura_Row("Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP").crear(),
+            Tabla_Factura_Row("XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
+            Tabla_Factura_Row("Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
+            Tabla_Factura_Row("Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
+        ]
+
+        ## Widgets objects>
+        # Controls>
+
+        # <Layout
+        column_left = ft.Column(
+            controls= [
+                txt_Cotizacion_title,
+            ],
+            horizontal_alignment= ft.CrossAxisAlignment.START,
+            expand= True,
+        )
+        
+        column_Right = ft.Column(
+            controls= [
+                btn_crear,
+            ],
+            horizontal_alignment= ft.CrossAxisAlignment.END,
+        )
+
+        Row1 = ft.Row(controls=[column_left, column_Right], alignment= ft.MainAxisAlignment.CENTER)
+        contenedor1 = ft.Container(
+            content=Row1, 
+            # bgcolor= "#7979e6",
+            margin= ft.margin.only(top=30, left=15, right=15),
+        )
+
+        Row2 = ft.Row(
+            controls=[
+                
+                ],
+                vertical_alignment= ft.CrossAxisAlignment.START,
+                spacing= 10
+            )
+        contenedor2 = ft.Container(
+            content=Row2, 
+            # bgcolor= "#e67979",
+            margin= ft.margin.only(left=15, right=15),
+            )
+        
+        
+        
+        tabla = ft.ListView(
+            controls= self.tabla_controls,
+            expand= True
+        )
+        
+        columna_tabla = ft.Column(
+            controls=[
+                tabla_title,
+                divider_encabezado_de_tabla,
+                tabla_encabezado,
+                divider_encabezado_de_tabla,
+                tabla
+            ],
+            alignment= ft.MainAxisAlignment.START,
+            spacing= 0
+        )
+        contenedor3 = ft.Container(
+            content=columna_tabla,
+                bgcolor= ft.Colors.WHITE,
+                margin= ft.margin.only(left=15, right=15, top= 12),
+                border= ft.border.all(1,inputs_border_color),
+                border_radius= ft.border_radius.all(5),
+                expand= True
+        )
+
+        columna_menu = ft.Column(controls= [Menu().Crear()])
+        column2 = ft.Column(controls=[contenedor1, contenedor2, contenedor3], expand= True)
+
+        Row_generar = ft.Row(controls=[columna_menu, column2], alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)
+
+        page.add(Row_generar)
+
+        # Layout>

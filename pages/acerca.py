@@ -15,9 +15,14 @@ class Acerca(ft.Container):
 
         ## <Widgets objects
         txt_title = ft.Text(
-            "Acerca de",
+            "FACTURACIÓN CM",
             size= 35,
             weight= ft.FontWeight.BOLD,
+            )
+        
+        txt_version = ft.Text(
+            "Versión 0.1",
+            size= 20,
             )
         
 
@@ -28,7 +33,8 @@ class Acerca(ft.Container):
     
         column_central = ft.Column(
             controls=[
-                txt_title
+                txt_title,
+                txt_version
             ],
             horizontal_alignment= ft.CrossAxisAlignment.CENTER,
         )
@@ -36,7 +42,7 @@ class Acerca(ft.Container):
         contenedor_central = ft.Container(
             content= column_central,
             width= 600,
-            padding= ft.Padding
+            padding= ft.padding.only(top= 100)
         )
 
         columna_menu = ft.Column(controls= [Menu().Crear()])
