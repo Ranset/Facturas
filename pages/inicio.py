@@ -48,7 +48,26 @@ class Inicio(ft.Container):
             ]
         )
 
-        tabla_title = ft.Container(content= ft.Row(controls=[ft.Text("Actividad Reciente", size= 20, weight= ft.FontWeight.BOLD)], alignment= ft.MainAxisAlignment.START), margin= ft.margin.only(bottom= 10))
+        tasa_mxn = ft.Container(
+            content= ft.Column(
+                controls=[
+                    ft.Row(controls=[
+                        ft.Icon(ft.Icons.FLAG, color= "white"),
+                        ft.Row(expand= True),
+                        ft.Text("MXN", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
+                    ], expand= True),
+                    ft.Text("18.50", size=30, color= "white")
+                ],
+                horizontal_alignment= "center"
+            ),
+            bgcolor= "#067429",
+            padding= ft.padding.all(18),
+            width= 130,
+            border_radius= 20
+        )
+        
+
+        tabla_title = ft.Container(content= ft.Row(controls=[ft.Text("Actividad Reciente", size= 18, weight= ft.FontWeight.BOLD)], alignment= ft.MainAxisAlignment.START), margin= ft.margin.only(left=15, bottom= 7, top= 7))
 
         tabla_encabezado= ft.Container(content=ft.Row(
             controls=[
@@ -65,10 +84,10 @@ class Inicio(ft.Container):
             alignment= ft.MainAxisAlignment.START,
             spacing= 0
             ),
-            bgcolor= ft.Colors.WHITE,
+            bgcolor= "#F4F5F7",
             )
 
-        divider_encabezado_de_tabla = ft.Divider(color= ft.Colors.GREY_700, height=1)
+        divider_encabezado_de_tabla = ft.Divider(color= "#DFE1E4", height=1)
 
 
         self.tabla_controls = [
@@ -101,20 +120,18 @@ class Inicio(ft.Container):
         Row1 = ft.Row(controls=[column_left, column_Right], alignment= ft.MainAxisAlignment.CENTER)
         contenedor1 = ft.Container(
             content=Row1, 
-            # bgcolor= "#7979e6",
             margin= ft.margin.only(top=30, left=15, right=15),
         )
 
         Row2 = ft.Row(
             controls=[
-                
+                    tasa_mxn
                 ],
                 vertical_alignment= ft.CrossAxisAlignment.START,
                 spacing= 10
             )
         contenedor2 = ft.Container(
             content=Row2, 
-            # bgcolor= "#e67979",
             margin= ft.margin.only(left=15, right=15),
             )
         
