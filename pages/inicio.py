@@ -48,24 +48,82 @@ class Inicio(ft.Container):
             ]
         )
 
-        tasa_mxn = ft.Container(
+        total_facturado = ft.Container(
             content= ft.Column(
                 controls=[
                     ft.Row(controls=[
-                        ft.Icon(ft.Icons.FLAG, color= "white"),
+                        ft.Container(content= ft.Icon(ft.Icons.PAYMENTS_OUTLINED, color= "#005BAF"), bgcolor= "#DBEAFE", width= 40, height= 40, border_radius= ft.border_radius.all(8)),
                         ft.Row(expand= True),
-                        ft.Text("MXN", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
+                        ft.Text("Total Facturado", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.Text("18.50", size=30, color= "white")
+                    ft.Text("$18.50", size=30, color= "black", weight= ft.FontWeight.BOLD)
                 ],
                 horizontal_alignment= "center"
             ),
-            bgcolor= "#067429",
+            bgcolor= inputs_bgcolor,
             padding= ft.padding.all(18),
-            width= 130,
-            border_radius= 20
+            expand= True,
+            border_radius= 20,
+            shadow= ft.BoxShadow(
+                            spread_radius=0,
+                            blur_radius=2,
+                            color=ft.Colors.BLUE_GREY_200,
+                            offset=ft.Offset(0, 0),
+                            blur_style=ft.ShadowBlurStyle.OUTER,
+                        ),
+            margin= ft.margin.only(right= 20)
         )
         
+        cotizaciones_por_facturar = ft.Container(
+            content= ft.Column(
+                controls=[
+                    ft.Row(controls=[
+                        ft.Container(content= ft.Icon(ft.Icons.SWAP_HORIZONTAL_CIRCLE_OUTLINED, color= "#D97706"), bgcolor= "#FEF3C7", width= 40, height= 40, border_radius= ft.border_radius.all(8)),
+                        ft.Row(expand= True),
+                        ft.Text("Cotizaciones Sin Facturar", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.END)
+                    ], expand= True),
+                    ft.Text("$18.50", size=30, color= "black", weight= ft.FontWeight.BOLD)
+                ],
+                horizontal_alignment= "center"
+            ),
+            bgcolor= inputs_bgcolor,
+            padding= ft.padding.all(18),
+            expand= True,
+            border_radius= 20,
+            shadow= ft.BoxShadow(
+                            spread_radius=0,
+                            blur_radius=2,
+                            color=ft.Colors.BLUE_GREY_200,
+                            offset=ft.Offset(0, 0),
+                            blur_style=ft.ShadowBlurStyle.OUTER,
+                        ) 
+        )
+
+        facturas_por_pagar = ft.Container(
+            content= ft.Column(
+                controls=[
+                    ft.Row(controls=[
+                        ft.Container(content= ft.Icon(ft.Icons.REQUEST_QUOTE_OUTLINED, color= "#9333EA"), bgcolor= "#F3E8FF", width= 40, height= 40, border_radius= ft.border_radius.all(8)),
+                        ft.Row(expand= True),
+                        ft.Text("Facturas Por Pagar", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.END)
+                    ], expand= True),
+                    ft.Text("$18.50", size=30, color= "black", weight= ft.FontWeight.BOLD)
+                ],
+                horizontal_alignment= "center"
+            ),
+            bgcolor= inputs_bgcolor,
+            padding= ft.padding.all(18),
+            expand= True,
+            border_radius= 20,
+            shadow= ft.BoxShadow(
+                            spread_radius=0,
+                            blur_radius=2,
+                            color=ft.Colors.BLUE_GREY_200,
+                            offset=ft.Offset(0, 0),
+                            blur_style=ft.ShadowBlurStyle.OUTER,
+                        ),
+            margin= ft.margin.only(left= 20)
+        )
 
         tabla_title = ft.Container(content= ft.Row(controls=[ft.Text("Actividad Reciente", size= 18, weight= ft.FontWeight.BOLD)], alignment= ft.MainAxisAlignment.START), margin= ft.margin.only(left=15, bottom= 7, top= 7))
 
@@ -120,19 +178,21 @@ class Inicio(ft.Container):
         Row1 = ft.Row(controls=[column_left, column_Right], alignment= ft.MainAxisAlignment.CENTER)
         contenedor1 = ft.Container(
             content=Row1, 
-            margin= ft.margin.only(top=30, left=15, right=15),
+            margin= ft.margin.only(top=30, left=15, right=15, bottom= 12),
         )
 
         Row2 = ft.Row(
             controls=[
-                    tasa_mxn
+                    total_facturado,
+                    cotizaciones_por_facturar,
+                    facturas_por_pagar
                 ],
                 vertical_alignment= ft.CrossAxisAlignment.START,
                 spacing= 10
             )
         contenedor2 = ft.Container(
             content=Row2, 
-            margin= ft.margin.only(left=15, right=15),
+            margin= ft.margin.only(left=15, right=15, bottom= 12),
             )
         
         
