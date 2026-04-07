@@ -52,13 +52,16 @@ class Inicio(ft.Container):
             content= ft.Column(
                 controls=[
                     ft.Row(controls=[
-                        ft.Container(content= ft.Icon(ft.Icons.PAYMENTS_OUTLINED, color= "#005BAF"), bgcolor= "#DBEAFE", width= 40, height= 40, border_radius= ft.border_radius.all(8)),
+                        ft.Container(content= ft.Icon(ft.Icons.PAYMENTS_OUTLINED, color= "#005BAF"), bgcolor= "#DBEAFE", width= 40, height= 40, border_radius= ft.border_radius.all(8), margin= ft.margin.only(bottom= 10)),
                         ft.Row(expand= True),
-                        ft.Text("Total Facturado", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.END)
+                        ft.Text("25864", size= 27, color="#005BAF", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.Text("$18.50", size=30, color= "black", weight= ft.FontWeight.BOLD)
+                    ft.Text("Total Facturado", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
+                    ft.Text("$1,352,526.50", size=30, color= "black", weight= ft.FontWeight.BOLD)
                 ],
-                horizontal_alignment= "center"
+                horizontal_alignment= "start",
+                alignment= ft.MainAxisAlignment.START,
+                spacing= 0
             ),
             bgcolor= inputs_bgcolor,
             padding= ft.padding.all(18),
@@ -78,13 +81,16 @@ class Inicio(ft.Container):
             content= ft.Column(
                 controls=[
                     ft.Row(controls=[
-                        ft.Container(content= ft.Icon(ft.Icons.SWAP_HORIZONTAL_CIRCLE_OUTLINED, color= "#D97706"), bgcolor= "#FEF3C7", width= 40, height= 40, border_radius= ft.border_radius.all(8)),
+                        ft.Container(content= ft.Icon(ft.Icons.SWAP_HORIZONTAL_CIRCLE_OUTLINED, color= "#D97706"), bgcolor= "#FEF3C7", width= 40, height= 40, border_radius= ft.border_radius.all(8), margin= ft.margin.only(bottom= 10)),
                         ft.Row(expand= True),
-                        ft.Text("Cotizaciones Sin Facturar", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.END)
+                        ft.Text("5", size=27, color= "#D97706", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
                     ], expand= True),
+                    ft.Text("Cotizaciones Sin Facturar", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
                     ft.Text("$18.50", size=30, color= "black", weight= ft.FontWeight.BOLD)
                 ],
-                horizontal_alignment= "center"
+                horizontal_alignment= "start",
+                alignment= ft.MainAxisAlignment.START,
+                spacing= 0
             ),
             bgcolor= inputs_bgcolor,
             padding= ft.padding.all(18),
@@ -103,13 +109,16 @@ class Inicio(ft.Container):
             content= ft.Column(
                 controls=[
                     ft.Row(controls=[
-                        ft.Container(content= ft.Icon(ft.Icons.REQUEST_QUOTE_OUTLINED, color= "#9333EA"), bgcolor= "#F3E8FF", width= 40, height= 40, border_radius= ft.border_radius.all(8)),
+                        ft.Container(content= ft.Icon(ft.Icons.REQUEST_QUOTE_OUTLINED, color= "#9333EA"), bgcolor= "#F3E8FF", width= 40, height= 40, border_radius= ft.border_radius.all(8), margin= ft.margin.only(bottom= 10)),
                         ft.Row(expand= True),
-                        ft.Text("Facturas Por Pagar", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.END)
+                        ft.Text("5", size=27, color= "#9333EA", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
                     ], expand= True),
+                    ft.Text("Facturas Por Pagar", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
                     ft.Text("$18.50", size=30, color= "black", weight= ft.FontWeight.BOLD)
                 ],
-                horizontal_alignment= "center"
+                horizontal_alignment= "start",
+                alignment= ft.MainAxisAlignment.START,
+                spacing= 0
             ),
             bgcolor= inputs_bgcolor,
             padding= ft.padding.all(18),

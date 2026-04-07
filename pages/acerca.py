@@ -25,6 +25,12 @@ class Acerca(ft.Container):
             size= 20,
             )
         
+        txt_job = ft.Text(
+            "Desarrollado por: Ranset Fleites",
+            size= 16,
+            )
+
+        
 
         ## Widgets objects>
         # Controls>
@@ -34,7 +40,8 @@ class Acerca(ft.Container):
         column_central = ft.Column(
             controls=[
                 txt_title,
-                txt_version
+                txt_version,
+                txt_job
             ],
             horizontal_alignment= ft.CrossAxisAlignment.CENTER,
         )
