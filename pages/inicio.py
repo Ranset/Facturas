@@ -1,6 +1,6 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
-from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row, Menu
+from pages.common_controls.customs_widgets import Tabla_Factura_Row, Menu
 
 class Inicio(ft.Container):
     def __init__(self, page: ft.Page):
@@ -13,6 +13,30 @@ class Inicio(ft.Container):
         inputs_height = 48
         inputs_bgcolor = ft.Colors.WHITE
         inputs_border_color= ft.Colors.GREY_400
+
+        def get_data(self):
+            response = {
+                "Sucess": True,
+                "Data": {
+                    "total_facturado": "25864",
+                    "monto_facturado": "$2,352,526.50",
+                    "cotizaciones_sin_facturar": "5",
+                    "monto_cotizaciones_sin_facturar": "$188.50",
+                    "facturas_por_pagar": "3",
+                    "monto_facturas_por_pagar": "$20,000.88",
+                    "datos_tabla": [
+                        ("Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP"),
+                        ("Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP"),
+                        ("XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD"),
+                        ("Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD"),
+                        ("Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD"),
+                    ]
+                }
+            }
+            return response
+        
+        data = get_data(self)
+
         ## common variables>
 
         ## <Widgets objects
@@ -54,10 +78,10 @@ class Inicio(ft.Container):
                     ft.Row(controls=[
                         ft.Container(content= ft.Icon(ft.Icons.PAYMENTS_OUTLINED, color= "#005BAF"), bgcolor= "#DBEAFE", width= 40, height= 40, border_radius= ft.border_radius.all(8), margin= ft.margin.only(bottom= 10)),
                         ft.Row(expand= True),
-                        ft.Text("25864", size= 27, color="#005BAF", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
+                        ft.Text(data["Data"]["total_facturado"], size= 27, color="#005BAF", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
                     ], expand= True),
                     ft.Text("Total Facturado", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
-                    ft.Text("$1,352,526.50", size=30, color= "black", weight= ft.FontWeight.BOLD)
+                    ft.Text(data["Data"]["monto_facturado"], size=30, color= "black", weight= ft.FontWeight.BOLD)
                 ],
                 horizontal_alignment= "start",
                 alignment= ft.MainAxisAlignment.START,
@@ -83,10 +107,10 @@ class Inicio(ft.Container):
                     ft.Row(controls=[
                         ft.Container(content= ft.Icon(ft.Icons.SWAP_HORIZONTAL_CIRCLE_OUTLINED, color= "#D97706"), bgcolor= "#FEF3C7", width= 40, height= 40, border_radius= ft.border_radius.all(8), margin= ft.margin.only(bottom= 10)),
                         ft.Row(expand= True),
-                        ft.Text("5", size=27, color= "#D97706", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
+                        ft.Text(data["Data"]["cotizaciones_sin_facturar"], size=27, color= "#D97706", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
                     ], expand= True),
                     ft.Text("Cotizaciones Sin Facturar", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
-                    ft.Text("$18.50", size=30, color= "black", weight= ft.FontWeight.BOLD)
+                    ft.Text(data["Data"]["monto_cotizaciones_sin_facturar"], size=30, color= "black", weight= ft.FontWeight.BOLD)
                 ],
                 horizontal_alignment= "start",
                 alignment= ft.MainAxisAlignment.START,
@@ -111,10 +135,10 @@ class Inicio(ft.Container):
                     ft.Row(controls=[
                         ft.Container(content= ft.Icon(ft.Icons.REQUEST_QUOTE_OUTLINED, color= "#9333EA"), bgcolor= "#F3E8FF", width= 40, height= 40, border_radius= ft.border_radius.all(8), margin= ft.margin.only(bottom= 10)),
                         ft.Row(expand= True),
-                        ft.Text("5", size=27, color= "#9333EA", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
+                        ft.Text(data["Data"]["facturas_por_pagar"], size=27, color= "#9333EA", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
                     ], expand= True),
                     ft.Text("Facturas Por Pagar", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
-                    ft.Text("$18.50", size=30, color= "black", weight= ft.FontWeight.BOLD)
+                    ft.Text(data["Data"]["monto_facturas_por_pagar"], size=30, color= "black", weight= ft.FontWeight.BOLD)
                 ],
                 horizontal_alignment= "start",
                 alignment= ft.MainAxisAlignment.START,
@@ -157,13 +181,10 @@ class Inicio(ft.Container):
         divider_encabezado_de_tabla = ft.Divider(color= "#DFE1E4", height=1)
 
 
-        self.tabla_controls = [
-            Tabla_Factura_Row("Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP").crear(),
-            Tabla_Factura_Row("Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP").crear(),
-            Tabla_Factura_Row("XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-            Tabla_Factura_Row("Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-            Tabla_Factura_Row("Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-        ]
+        self.tabla_controls = []
+
+        for dato in data["Data"]["datos_tabla"]:
+            self.tabla_controls.append(Tabla_Factura_Row(dato[0], dato[1], dato[2], dato[3], dato[4], dato[5]).crear())
 
         ## Widgets objects>
         # Controls>
