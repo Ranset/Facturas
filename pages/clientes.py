@@ -1,6 +1,7 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import NewClientDialog, Menu
+from controller import get_clientes
 
 class Clientes(ft.Container):
     def __init__(self, page: ft.Page):
@@ -10,13 +11,7 @@ class Clientes(ft.Container):
 
         #  <Carga de datos
 
-        data = {
-            "Sucess": True,
-            "Data": [
-                    {"id": 1, "nombre": "Empresa de suministros integrales y cooperación económica", "telefono": "123456789", "correo": "empresa@importadora.com"},
-                    {"id": 2, "nombre": "Pedro", "telefono": "987654321", "correo": "pedro@cliente.com"}
-            ]
-        }
+        data = get_clientes()
 
         # <Fin Carga de datos
 
