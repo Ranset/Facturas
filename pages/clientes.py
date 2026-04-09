@@ -8,6 +8,18 @@ class Clientes(ft.Container):
 
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
+        #  <Carga de datos
+
+        data = {
+            "Sucess": True,
+            "Data": [
+                    {"id": 1, "nombre": "Empresa de suministros integrales y cooperación económica", "telefono": "123456789", "correo": "empresa@importadora.com"},
+                    {"id": 2, "nombre": "Pedro", "telefono": "987654321", "correo": "pedro@cliente.com"}
+            ]
+        }
+
+        # <Fin Carga de datos
+
         # <Controls
         ## <common variables
         inputs_height = 48
@@ -62,6 +74,22 @@ class Clientes(ft.Container):
             height= inputs_height,
         )
 
+        clientes = []
+
+        for c in data["Data"]:
+            clientes.append(
+                ft.DataRow(
+                    [
+                        ft.DataCell(ft.Text(c["nombre"])),
+                        ft.DataCell(ft.Text(c["telefono"])),
+                        ft.DataCell(ft.Text(c["correo"])),
+                        ft.DataCell(ft.TextButton("Eliminar", on_click= lambda e: print("Eliminar cliente"), style= ft.ButtonStyle(color= "red"))),
+                    ],
+                    # on_select_changed= on_select_row,
+                    data= c
+                )
+            )
+
         dt_clientes = ft.DataTable(
             columns= [
                 ft.DataColumn(ft.Text("Nombre Comercial", weight= ft.FontWeight.BOLD), heading_row_alignment= ft.MainAxisAlignment.CENTER),
@@ -69,18 +97,7 @@ class Clientes(ft.Container):
                 ft.DataColumn(ft.Text("Correo", weight= ft.FontWeight.BOLD)),
                 ft.DataColumn(ft.Text("Acción", weight= ft.FontWeight.BOLD)),
             ],
-            rows= [
-                ft.DataRow(
-                    [
-                        ft.DataCell(ft.Text("Empresa importadora del centro y de todo el oriene de pais mas la zona especial y sociedades anónimas")),
-                        ft.DataCell(ft.Text("123456789")),
-                        ft.DataCell(ft.Text("empresa@importadora.com")),
-                        ft.DataCell(ft.TextButton("Eliminar", on_click= lambda e: print("Eliminar cliente"), style= ft.ButtonStyle(color= "red"))),
-                    ],
-                    # on_select_changed= on_select_row,
-                    data= ""
-                )
-            ],
+            rows= clientes,
             heading_row_height= 40,
             data_row_max_height= 45,
         )

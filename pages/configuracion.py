@@ -8,6 +8,28 @@ class Configuracion(ft.Container):
 
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
+        #  <Carga de datos
+        data = {
+            "Sucess": True,
+            "Data": {
+                "nombre_vendedor": "Yadiraa Hernández Herrera",
+                "nit_vendedor": "88042108175",
+                "telf_vendedor": "+5354132764",
+                "direccion_vendedor": "Calle Serafina #12 e/ Ulacia y Castillo, Reparto Juanelo, San Miguel del Padrón. La Habana, Cuba. C.P. 11000.",
+                "cuenta_cup_vendedor": "0598770015216512",
+                "tarjeta_cup_vendedor": "9212959871557908",
+                "cuenta_mlc_vendedor": "0598770015216512",
+                "tarjeta_mlc_vendedor": "9212959871557908",
+                "email_vendedor": "yadirahernandez0421@gmail.com",
+                "tasa_mxn": "18.50",
+                "tasa_cup": "450.00",
+                "tasa_mlc": "1.29",
+                "tasa_fiscal": "25",
+                "nota": "La reproducción apócrifa de este comprobante constituye un delito en los términos de las disposiciones fiscales.",
+            }
+        }
+        # <Fin Carga de datos
+
         # <Controls
         ## <common variables
         inputs_height = 48
@@ -38,15 +60,15 @@ class Configuracion(ft.Container):
         )
 
         datos_vendedor = (
-            "Yadira Hernández Herrera",
-            "88042108175",
-            "+5354132764",
-            "Calle Serafina #12 e/ Ulacia y Castillo, Reparto Juanelo, San Miguel del Padrón. La Habana, Cuba. C.P. 11000.",
-            "0598770015216512",
-            "9212959871557908",
-            "0598770015216512",
-            "9212959871557908",
-            "yadirahernandez0421@gmail.com"
+            data["Data"]["nombre_vendedor"],
+            data["Data"]["nit_vendedor"],
+            data["Data"]["telf_vendedor"],
+            data["Data"]["direccion_vendedor"],
+            data["Data"]["cuenta_cup_vendedor"],
+            data["Data"]["tarjeta_cup_vendedor"],
+            data["Data"]["cuenta_mlc_vendedor"],
+            data["Data"]["tarjeta_mlc_vendedor"],
+            data["Data"]["email_vendedor"]
             )
         
         txt_nombre = ft.Text(datos_vendedor[0], size= text_size)
@@ -70,7 +92,7 @@ class Configuracion(ft.Container):
                         ft.Row(expand= True),
                         ft.Text("MXN", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.Text("18.50", size=30, color= "white")
+                    ft.Text(data["Data"]["tasa_mxn"], size=30, color= "white")
                 ],
                 horizontal_alignment= "center"
             ),
@@ -89,7 +111,7 @@ class Configuracion(ft.Container):
                         ft.Row(expand= True),
                         ft.Text("CUP", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.Text("450.00", size=30, color= "white")
+                    ft.Text(data["Data"]["tasa_cup"], size=30, color= "white")
                 ],
                 horizontal_alignment= "center"
             ),
@@ -108,7 +130,7 @@ class Configuracion(ft.Container):
                         ft.Row(expand= True),
                         ft.Text("MLC", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.Text("1.29", size=30, color= "white")
+                    ft.Text(data["Data"]["tasa_mlc"], size=30, color= "white")
                 ],
                 horizontal_alignment= "center"
             ),
@@ -142,7 +164,7 @@ class Configuracion(ft.Container):
                         ft.Row(expand= True),
                         ft.Text("MXN", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.TextField(value= "18.50", bgcolor= inputs_bgcolor, max_length= 6)
+                    ft.TextField(value= data["Data"]["tasa_mxn"], bgcolor= inputs_bgcolor, max_length= 6)
                 ],
                 horizontal_alignment= "center"
             ),
@@ -161,7 +183,7 @@ class Configuracion(ft.Container):
                         ft.Row(expand= True),
                         ft.Text("CUP", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.TextField(value= "450.00", bgcolor= inputs_bgcolor, max_length= 6)
+                    ft.TextField(value= data["Data"]["tasa_cup"], bgcolor= inputs_bgcolor, max_length= 6)
                 ],
                 horizontal_alignment= "center"
             ),
@@ -180,7 +202,7 @@ class Configuracion(ft.Container):
                         ft.Row(expand= True),
                         ft.Text("MLC", size= 22, color="white", weight="bold", text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.TextField(value= "1.29", bgcolor= inputs_bgcolor, max_length= 6)
+                    ft.TextField(value= data["Data"]["tasa_mlc"], bgcolor= inputs_bgcolor, max_length= 6)
                 ],
                 horizontal_alignment= "center"
             ),
@@ -239,7 +261,7 @@ class Configuracion(ft.Container):
         tasa_fiscal_tile = ft.Text("Tasas Fiscal", size= 25)
         tasa_fiscal_icon = ft.Icon(ft.Icons.ACCOUNT_BALANCE, "black", 40)
         tasa_fiscal = ft.TextField(
-                    "25",
+                    data["Data"]["tasa_fiscal"],
                     suffix= ft.Text("%"),
                     border_color= inputs_border_color,
                     max_length= 2,
@@ -306,7 +328,7 @@ class Configuracion(ft.Container):
             page.update()
 
         nota = ft.TextField(
-            "La reproducción apócrifa de este comprobante constituye un delito en los términos de las disposiciones fiscales.",
+            data["Data"]["nota"],
             border_color= inputs_border_color,
             max_length= 150,
             bgcolor= inputs_bgcolor,

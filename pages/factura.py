@@ -8,6 +8,45 @@ class Factura(ft.Container):
 
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
+        # <Carga de datos
+        if States.where_i_am == States._cotizacion_location:
+            data = {
+                "Sucess": True,
+                "Data": {
+                    "nombre_clientes": [
+                                    {"id": 1, "nombre": "ACME"},
+                                    {"id": 2, "nombre": "Beta S.A."},
+                                    {"id": 3, "nombre": "Cliente 3"},
+                                    {"id": 4, "nombre": "Distribuciones López"},
+                    ],
+                    "datos_tabla": [
+                                {"estado": "XEnviar", "fecha": "15-01-2025", "numero": "250012", "cliente": "Empresa de suministros integrales y cooperación económica", "total": "158548.52", "moneda": "CUP"},
+                                {"estado": "Enviada", "fecha": "15-01-2025", "numero": "250013", "cliente": "Pedro", "total": "150158548.00", "moneda": "CUP"},
+                                {"estado": "XEnviar", "fecha": "15-01-2025", "numero": "250015", "cliente": "Carlos Ace", "total": "548.99", "moneda": "USD"},
+                                {"estado": "Enviada", "fecha": "15-01-2025", "numero": "250012", "cliente": "Empresa de suministros integrales y cooperación económica", "total": "158548.52", "moneda": "CUP"},
+                    ]
+                }
+            }
+        else:
+            data = {
+                "Sucess": True,
+                "Data": {
+                    "nombre_clientes": [
+                                    {"id": 1, "nombre": "ACME"},
+                                    {"id": 2, "nombre": "Beta S.A."},
+                                    {"id": 3, "nombre": "Cliente 3"},
+                                    {"id": 4, "nombre": "Distribuciones López"},
+                    ],
+                    "datos_tabla": [
+                                {"estado": "Pagada", "fecha": "15-01-2025", "numero": "250012", "cliente": "Empresa de suministros integrales y cooperación económica", "total": "158548.52", "moneda": "CUP"},
+                {"estado": "Enviada", "fecha": "15-01-2025", "numero": "250013", "cliente": "Pedro", "total": "150158548.00", "moneda": "CUP"},
+                {"estado": "XEnviar", "fecha": "15-01-2025", "numero": "250015", "cliente": "Carlos Ace", "total": "548.99", "moneda": "USD"},
+                    ]
+                }
+            }
+
+        # <Fin de carga de datos>
+
         # <Controls
         ## <common variables
         inputs_height = 48
@@ -40,30 +79,39 @@ class Factura(ft.Container):
             on_click= _btn_crear_cotizacion_clicked,
         )
 
-        select_estatus = ft.Dropdown(
-            options=[
-                ft.dropdown.Option("Borrador"),
-                ft.dropdown.Option("Enviada"),
-                ft.dropdown.Option("Vencida"),
-            ],
-            label= "Estatus",
-            width= 130,
-            filled= True,
-            fill_color= inputs_bgcolor,
-            border_color= inputs_border_color,
-            hover_color= inputs_bgcolor
-        )
-
-        cliente_suggestions = [
-            "ACME",
-            "Beta S.A.",
-            "Cliente 3",
-            "Distribuciones López",
-        ]
+        if States.where_i_am == States._cotizacion_location:
+            select_estatus = ft.Dropdown(
+                options=
+                [
+                    ft.dropdown.Option("XEnviar"),
+                    ft.dropdown.Option("Enviada"),
+                ],
+                label= "Estatus",
+                width= 130,
+                filled= True,
+                fill_color= inputs_bgcolor,
+                border_color= inputs_border_color,
+                hover_color= inputs_bgcolor
+            )
+        else:
+            select_estatus = ft.Dropdown(
+                options=
+                [
+                    ft.dropdown.Option("XEnviar"),
+                    ft.dropdown.Option("Enviada"),
+                    ft.dropdown.Option("Pagada"),
+                ],
+                label= "Estatus",
+                width= 130,
+                filled= True,
+                fill_color= inputs_bgcolor,
+                border_color= inputs_border_color,
+                hover_color= inputs_bgcolor
+            )
 
         select_cliente = ft.Dropdown(
             options=[
-                ft.dropdown.Option(c) for c in cliente_suggestions
+                ft.dropdown.Option(c) for c in data["Data"]["nombre_clientes"]
             ],
             label="Clientes",
             expand=True,
@@ -159,14 +207,19 @@ class Factura(ft.Container):
 
         divider_encabezado_de_tabla = ft.Divider(color= ft.Colors.GREY_700, height=1)
 
+        self.tabla_controls = []
 
-        self.tabla_controls = [
-            Tabla_Factura_Row("Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP").crear(),
-            Tabla_Factura_Row("Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP").crear(),
-            Tabla_Factura_Row("XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-            Tabla_Factura_Row("Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-            Tabla_Factura_Row("Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-        ]
+        for row in data["Data"]["datos_tabla"]:
+                self.tabla_controls.append(
+                    Tabla_Factura_Row(
+                        estado= row["estado"],
+                        fecha= row["fecha"],
+                        numero= row["numero"],
+                        cliente= row["cliente"],
+                        total= row["total"],
+                        moneda= row["moneda"]
+                    ).crear()
+                )
 
         ## Widgets objects>
         # Controls>

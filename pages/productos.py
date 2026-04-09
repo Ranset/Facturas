@@ -8,6 +8,19 @@ class Productos(ft.Container):
 
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
+        #  <Carga de datos
+
+        data = {
+            "Sucess": True,
+            "Data": [
+                    {"id": 1, "nombre": "Impresora Multifuncional Epson L3210", "precio": "250.00", "proveedor": "Amazon", "peso": "3"},
+                    {"id": 2, "nombre": "Laptop HP Pavilion 15", "precio": "750.00", "proveedor": "Best Buy", "peso": "2.5"},
+                    {"id": 3, "nombre": "Smartphone Samsung Galaxy S21", "precio": "999.00", "proveedor": "Samsung Store", "peso": "0.5"},
+            ]
+        }
+
+        # <Fin Carga de datos
+
         # <Controls
         ## <common variables
         inputs_height = 48
@@ -62,6 +75,22 @@ class Productos(ft.Container):
             height= inputs_height,
         )
 
+        productos = []
+
+        for p in data["Data"]:
+            productos.append(
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text(p["nombre"])),
+                        ft.DataCell(ft.Text(f"${p['precio']}")),
+                        ft.DataCell(ft.Text(p["proveedor"])),
+                        ft.DataCell(ft.Text(p["peso"])),
+                        ft.DataCell(ft.TextButton("Eliminar", on_click= lambda e: print("Eliminar producto"), style= ft.ButtonStyle(color= "red"))),
+                    ],
+                    data= p,
+                )
+            )
+
         dt_productos = ft.DataTable(
             columns= [
                 ft.DataColumn(ft.Text("Producto", weight= ft.FontWeight.BOLD), heading_row_alignment= ft.MainAxisAlignment.CENTER),
@@ -70,19 +99,7 @@ class Productos(ft.Container):
                 ft.DataColumn(ft.Text("Peso Kg", weight= ft.FontWeight.BOLD)),
                 ft.DataColumn(ft.Text("Acción", weight= ft.FontWeight.BOLD)),
             ],
-            rows= [
-                ft.DataRow(
-                    [
-                        ft.DataCell(ft.Text("Impresora Multifuncional Epson L3210")),
-                        ft.DataCell(ft.Text("$250.00")),
-                        ft.DataCell(ft.Text("Amazon")),
-                        ft.DataCell(ft.Text("3")),
-                        ft.DataCell(ft.TextButton("Eliminar", on_click= lambda e: print("Eliminar producto"), style= ft.ButtonStyle(color= "red"))),
-                    ],
-                    # on_select_changed= on_select_row,
-                    data= ""
-                )
-            ],
+            rows= productos,
             heading_row_height= 40,
             data_row_max_height= 45,
         )

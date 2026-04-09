@@ -248,10 +248,10 @@ class Tabla_Factura_Row(ft.Column):
     def _color_estado(self):
         colores_de_estados = {
             "Vencida": "#CA1414",
-            "Borrador": "#4E4E4E",
+            "Borrador": "#CA1414",
             "Enviada": "#2c78d0",
             "Pagada": "#028A0E",
-            "XEnviar": "#4E4E4E",
+            "XEnviar": "#CA1414",
         }
         return colores_de_estados[self.estado]
 

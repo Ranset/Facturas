@@ -8,12 +8,7 @@ class Inicio(ft.Container):
 
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-        # <Controls
-        ## <common variables
-        inputs_height = 48
-        inputs_bgcolor = ft.Colors.WHITE
-        inputs_border_color= ft.Colors.GREY_400
-
+        #  <Carga de datos
         def get_data(self):
             response = {
                 "Sucess": True,
@@ -36,6 +31,14 @@ class Inicio(ft.Container):
             return response
         
         data = get_data(self)
+
+        # <Fin Carga de datos
+
+        # <Controls
+        ## <common variables
+        inputs_height = 48
+        inputs_bgcolor = ft.Colors.WHITE
+        inputs_border_color= ft.Colors.GREY_400
 
         ## common variables>
 
