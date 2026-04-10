@@ -50,7 +50,7 @@ def get_productos():
             "nombre": producto.Nombre,
             "proveedor": producto.Proveedor,
             "precio": producto.Precio,
-            "peso": producto.peso
+            "peso": float(producto.peso)
         }
         lista_productos.append(producto_dict)
     return {"Success": True, "Data": lista_productos}

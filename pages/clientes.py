@@ -157,8 +157,14 @@ class Clientes(ft.Container):
             alignment= ft.MainAxisAlignment.CENTER,
         )
 
+        lv_productos = ft.ListView(
+            controls= [Row3],
+            expand= True,
+            height= 500
+            )
+
         columna_menu = ft.Column(controls= [Menu().Crear()])
-        column2 = ft.Column(controls=[contenedor1, contenedor2, Row3], expand= True)
+        column2 = ft.Column(controls=[contenedor1, contenedor2, lv_productos], expand= True)
 
         Row_generar = ft.Row(controls=[columna_menu, column2], alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)
 

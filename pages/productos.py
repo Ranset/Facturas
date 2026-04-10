@@ -1,6 +1,7 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import NewProductDialog, Menu
+from controller import get_productos
 
 class Productos(ft.Container):
     def __init__(self, page: ft.Page):
@@ -10,14 +11,7 @@ class Productos(ft.Container):
 
         #  <Carga de datos
 
-        data = {
-            "Sucess": True,
-            "Data": [
-                    {"id": 1, "nombre": "Impresora Multifuncional Epson L3210", "precio": "250.00", "proveedor": "Amazon", "peso": "3"},
-                    {"id": 2, "nombre": "Laptop HP Pavilion 15", "precio": "750.00", "proveedor": "Best Buy", "peso": "2.5"},
-                    {"id": 3, "nombre": "Smartphone Samsung Galaxy S21", "precio": "999.00", "proveedor": "Samsung Store", "peso": "0.5"},
-            ]
-        }
+        data = get_productos()
 
         # <Fin Carga de datos
 
@@ -156,7 +150,7 @@ class Productos(ft.Container):
             margin= ft.margin.only(left= 15, right=15, top=10),
             expand= True,
         )
-
+        
         Row3 = ft.Row(
             controls=[
                 contenedor_tabled_productos
@@ -164,8 +158,14 @@ class Productos(ft.Container):
             alignment= ft.MainAxisAlignment.CENTER,
         )
 
+        lv_productos = ft.ListView(
+            controls= [Row3],
+            expand= True,
+            height= 500
+            )
+
         columna_menu = ft.Column(controls= [Menu().Crear()])
-        column2 = ft.Column(controls=[contenedor1, contenedor2, Row3], expand= True)
+        column2 = ft.Column(controls=[contenedor1, contenedor2, lv_productos], expand= True)
 
         Row_generar = ft.Row(controls=[columna_menu, column2], alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)
 
