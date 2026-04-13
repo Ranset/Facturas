@@ -1,6 +1,7 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import Tabla_Factura_Row, Menu
+from controller import dashboard_data
 
 class Inicio(ft.Container):
     def __init__(self, page: ft.Page):
@@ -9,28 +10,8 @@ class Inicio(ft.Container):
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
         #  <Carga de datos
-        def get_data(self):
-            response = {
-                "Sucess": True,
-                "Data": {
-                    "total_facturado": "25864",
-                    "monto_facturado": "$2,352,526.50",
-                    "cotizaciones_sin_facturar": "5",
-                    "monto_cotizaciones_sin_facturar": "$188.50",
-                    "facturas_por_pagar": "3",
-                    "monto_facturas_por_pagar": "$20,000.88",
-                    "datos_tabla": [
-                        ("Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP"),
-                        ("Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP"),
-                        ("XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD"),
-                        ("Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD"),
-                        ("Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD"),
-                    ]
-                }
-            }
-            return response
         
-        data = get_data(self)
+        data = dashboard_data()
 
         # <Fin Carga de datos
 

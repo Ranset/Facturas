@@ -1,6 +1,7 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import Menu
+from controller import get_configuration
 
 class Configuracion(ft.Container):
     def __init__(self, page: ft.Page):
@@ -9,25 +10,7 @@ class Configuracion(ft.Container):
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
         #  <Carga de datos
-        data = {
-            "Sucess": True,
-            "Data": {
-                "nombre_vendedor": "Yadiraa Hernández Herrera",
-                "nit_vendedor": "88042108175",
-                "telf_vendedor": "+5354132764",
-                "direccion_vendedor": "Calle Serafina #12 e/ Ulacia y Castillo, Reparto Juanelo, San Miguel del Padrón. La Habana, Cuba. C.P. 11000.",
-                "cuenta_cup_vendedor": "0598770015216512",
-                "tarjeta_cup_vendedor": "9212959871557908",
-                "cuenta_mlc_vendedor": "0598770015216512",
-                "tarjeta_mlc_vendedor": "9212959871557908",
-                "email_vendedor": "yadirahernandez0421@gmail.com",
-                "tasa_mxn": "18.50",
-                "tasa_cup": "450.00",
-                "tasa_mlc": "1.29",
-                "tasa_fiscal": "25",
-                "nota": "La reproducción apócrifa de este comprobante constituye un delito en los términos de las disposiciones fiscales.",
-            }
-        }
+        data = get_configuration()
         # <Fin Carga de datos
 
         # <Controls

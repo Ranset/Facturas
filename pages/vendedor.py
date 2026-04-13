@@ -1,12 +1,31 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import Menu
+from controller import get_configuration
 
 class Vendedor(ft.Container):
     def __init__(self, page: ft.Page):
         super().__init__()
 
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+
+        #  <Carga de datos
+
+        data = get_configuration()
+
+        datos_vendedor = (
+            data["Data"]["nombre_vendedor"],
+            data["Data"]["nit_vendedor"],
+            data["Data"]["telf_vendedor"],
+            data["Data"]["direccion_vendedor"],
+            data["Data"]["cuenta_cup_vendedor"],
+            data["Data"]["tarjeta_cup_vendedor"],
+            data["Data"]["cuenta_mlc_vendedor"],
+            data["Data"]["tarjeta_mlc_vendedor"],
+            data["Data"]["email_vendedor"]
+        )
+
+        # <Fin Carga de datos
 
         # <Controls
         ## <common variables
@@ -20,18 +39,6 @@ class Vendedor(ft.Container):
             "Vendedor",
             size= 35,
             weight= ft.FontWeight.BOLD,
-            )
-        
-        datos_vendedor = (
-            "Yadira Hernández Herrera",
-            "88042108175",
-            "+5354132764",
-            "Calle Serafina #12 e/ Ulacia y Castillo, Reparto Juanelo, San Miguel del Padrón. La Habana, Cuba. C.P. 11000.",
-            "0598770015216512",
-            "9212959871557908",
-            "0598770015216512",
-            "9212959871557908",
-            "yadirahernandez0421@gmail.com"
             )
 
         txt_nombre = ft.TextField(

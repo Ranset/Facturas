@@ -112,6 +112,8 @@ class Factura(Base):
     porciento_cta_fiscal = Column(Integer)
     Estado = Column(Integer, ForeignKey("Estados.id"))
 
+    total = Column(Numeric)
+
     cliente = relationship("Cliente", back_populates="facturas")
     vendedor = relationship("Vendedor", back_populates="facturas")
     tipo_rel = relationship("Tipo", back_populates="facturas")
