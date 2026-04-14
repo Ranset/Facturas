@@ -1,6 +1,7 @@
 from flet_base import flet_instance as ft
 from decimal import Decimal
 from typing import Optional
+from controller import delete_factura
 
 class CustomTextDatePicker(ft.TextField):
     def __init__(self, page: ft.Page, label: Optional[str] = None):
@@ -157,11 +158,13 @@ class CustomTextFieldAutocomplete(ft.Stack):
         
 
 class Tabla_Factura_Row(ft.Column):
-    def __init__(self, estado: str, fecha: str, numero: str, cliente: str, total: str, moneda: str):
+    def __init__(self, estado: str, fecha: str, numero: str, cliente: str, total: str, moneda: str, recargar_tabla: callable, page: ft.Page):
         super().__init__()
 
         self.estado = estado
-    
+        self.page = page
+        self.recargar_tabla = recargar_tabla
+
         self.tabla_row = ft.Column(
             alignment= ft.MainAxisAlignment.START,
             spacing= 0,
@@ -227,7 +230,8 @@ class Tabla_Factura_Row(ft.Column):
                                         ft.Divider(height=8, color= "#ECEEF4"),
                                         ft.Text("Eliminar", color= ft.Colors.RED),
                                     ], alignment= ft.alignment.top_center, spacing=0),
-                                    height= 10
+                                    height= 10,
+                                    on_click= lambda e: self.eliminar(numero)
                                 ),
                             ],
                             tooltip= "",
@@ -263,6 +267,12 @@ class Tabla_Factura_Row(ft.Column):
         # ,  -> Agrega la coma de miles
         # .2f -> Asegura siempre 2 decimales (fixed point)
         return f"${numero:,.2f}"
+    
+    def eliminar(self, factura_number):
+        eliminar_factura = delete_factura(factura_number)
+        if eliminar_factura["Success"]:
+            self.recargar_tabla()
+        print(eliminar_factura)
 
 
     def crear(self):

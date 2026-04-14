@@ -1,6 +1,7 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row, Menu
+from controller import get_facturas, get_cotizaciones
 
 class Factura(ft.Container):
     def __init__(self, page: ft.Page):
@@ -10,40 +11,9 @@ class Factura(ft.Container):
 
         # <Carga de datos
         if States.where_i_am == States._cotizacion_location:
-            data = {
-                "Sucess": True,
-                "Data": {
-                    "nombre_clientes": [
-                                    {"id": 1, "nombre": "ACME"},
-                                    {"id": 2, "nombre": "Beta S.A."},
-                                    {"id": 3, "nombre": "Cliente 3"},
-                                    {"id": 4, "nombre": "Distribuciones López"},
-                    ],
-                    "datos_tabla": [
-                                {"estado": "XEnviar", "fecha": "15-01-2025", "numero": "250012", "cliente": "Empresa de suministros integrales y cooperación económica", "total": "158548.52", "moneda": "CUP"},
-                                {"estado": "Enviada", "fecha": "15-01-2025", "numero": "250013", "cliente": "Pedro", "total": "150158548.00", "moneda": "CUP"},
-                                {"estado": "XEnviar", "fecha": "15-01-2025", "numero": "250015", "cliente": "Carlos Ace", "total": "548.99", "moneda": "USD"},
-                                {"estado": "Enviada", "fecha": "15-01-2025", "numero": "250012", "cliente": "Empresa de suministros integrales y cooperación económica", "total": "158548.52", "moneda": "CUP"},
-                    ]
-                }
-            }
+            data = get_cotizaciones()
         else:
-            data = {
-                "Sucess": True,
-                "Data": {
-                    "nombre_clientes": [
-                                    {"id": 1, "nombre": "ACME"},
-                                    {"id": 2, "nombre": "Beta S.A."},
-                                    {"id": 3, "nombre": "Cliente 3"},
-                                    {"id": 4, "nombre": "Distribuciones López"},
-                    ],
-                    "datos_tabla": [
-                                {"estado": "Pagada", "fecha": "15-01-2025", "numero": "250012", "cliente": "Empresa de suministros integrales y cooperación económica", "total": "158548.52", "moneda": "CUP"},
-                {"estado": "Enviada", "fecha": "15-01-2025", "numero": "250013", "cliente": "Pedro", "total": "150158548.00", "moneda": "CUP"},
-                {"estado": "XEnviar", "fecha": "15-01-2025", "numero": "250015", "cliente": "Carlos Ace", "total": "548.99", "moneda": "USD"},
-                    ]
-                }
-            }
+            data = get_facturas()
 
         # <Fin de carga de datos>
 
@@ -53,6 +23,29 @@ class Factura(ft.Container):
         inputs_bgcolor = ft.Colors.WHITE
         inputs_border_color= ft.Colors.GREY_400
         ## common variables>
+
+        # <Functions
+        def recargar_tabla():
+            self.tabla_controls = []
+            for row in data["Data"]["datos_tabla"]:
+                self.tabla_controls.append(
+                    Tabla_Factura_Row(
+                        estado= row["estado"],
+                        fecha= row["fecha"],
+                        numero= row["numero"],
+                        cliente= row["cliente"],
+                        total= row["total"],
+                        moneda= row["moneda"],
+                        recargar_tabla= recargar_tabla,
+                        page= page
+                    ).crear()
+                )
+            tabla.controls.clear()
+            for row in self.tabla_controls:
+                tabla.controls.append(row)
+            page.update()
+
+        # Functions>
 
         ## <Widgets objects
         txt_Cotizacion_title = ft.Text(
@@ -109,10 +102,13 @@ class Factura(ft.Container):
                 hover_color= inputs_bgcolor
             )
 
+        lista_clientes = []
+
+        for cliente in data["Data"]["nombre_clientes"]:
+            lista_clientes.append(ft.dropdown.Option(cliente["nombre"]))
+
         select_cliente = ft.Dropdown(
-            options=[
-                ft.dropdown.Option(c) for c in data["Data"]["nombre_clientes"]
-            ],
+            options=lista_clientes,
             label="Clientes",
             expand=True,
             enable_filter=True,
@@ -217,7 +213,9 @@ class Factura(ft.Container):
                         numero= row["numero"],
                         cliente= row["cliente"],
                         total= row["total"],
-                        moneda= row["moneda"]
+                        moneda= row["moneda"],
+                        recargar_tabla= recargar_tabla,
+                        page= page
                     ).crear()
                 )
 

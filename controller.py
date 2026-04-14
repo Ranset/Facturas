@@ -10,7 +10,33 @@ from models import (session,
 
 def get_facturas():
     facturas = session.query(Factura).filter(Factura.tipo == 2).all()
-    return facturas
+    clientes = get_clientes()
+    lista_clientes = []
+
+    for cliente in clientes["Data"]:
+        cliente_dict = {
+            "id": int(cliente["id"]),
+            "nombre": cliente["nombre"],
+        }
+        lista_clientes.append(cliente_dict)
+
+    tabla = []
+
+    for factura in facturas:
+        factura_dict = {
+            "id": factura.id,
+            "estado": factura.estado_rel.Estado,
+            "fecha": factura.Fecha,
+            "numero": factura.numero_factura,
+            "cliente": factura.cliente.Nombre,
+            "total": f"{factura.total:.2f}",
+            "moneda": factura.Moneda
+        }
+        tabla.append(factura_dict)
+
+    data = {"nombre_clientes": lista_clientes, "datos_tabla": tabla}
+
+    return {"Success": True, "Data": data}
 
 def get_recientes_facturas():
     recientes_facturas = session.query(Factura).order_by(Factura.id.desc()).limit(5).all()
@@ -31,7 +57,33 @@ def get_recientes_facturas():
 
 def get_cotizaciones():
     cotizaciones = session.query(Factura).filter(Factura.tipo == 1).all()
-    return cotizaciones
+    clientes = get_clientes()
+    lista_clientes = []
+
+    for cliente in clientes["Data"]:
+        cliente_dict = {
+            "id": int(cliente["id"]),
+            "nombre": cliente["nombre"],
+        }
+        lista_clientes.append(cliente_dict)
+
+    tabla = []
+
+    for cotizacion in cotizaciones:
+        cotizacion_dict = {
+            "id": cotizacion.id,
+            "estado": cotizacion.estado_rel.Estado,
+            "fecha": cotizacion.Fecha,
+            "numero": cotizacion.numero_factura,
+            "cliente": cotizacion.cliente.Nombre,
+            "total": f"{cotizacion.total:.2f}",
+            "moneda": cotizacion.Moneda
+        }
+        tabla.append(cotizacion_dict)
+
+    data = {"nombre_clientes": lista_clientes, "datos_tabla": tabla}
+
+    return {"Success": True, "Data": data}
 
 def get_cotizaciones_por_enviar():
     cotizaciones_por_enviar = session.query(Factura).filter(Factura.tipo == 1, Factura.Estado == 2).all()
@@ -133,19 +185,18 @@ def get_configuration():
 
     return {"Success": True, "Data": dict_data}
 
-if __name__ == "__main__":
-    facturas = get_facturas_pagadas()
-    print("Cantidad de facturas:", len(facturas))
-    print("Total de facturas:", f"{sum(factura.total for factura in facturas):.2f}")
-    facturas_por_pagar = get_facturas_pendientes()
-    print("Cantidad de facturas pendientes:", len(facturas_por_pagar))
-    print("Total de facturas pendientes:", f"{sum(factura.total for factura in facturas_por_pagar):.2f}")
-    cotizaciones = get_cotizaciones_por_enviar()
-    print("Cantidad de cotizaciones:", len(cotizaciones))
-    print("Total de cotizaciones:", f"{sum(factura.total for factura in cotizaciones):.2f}")
-    recientes = get_recientes_facturas()
-    print(recientes)
+def delete_factura(factura_number):
+    factura = session.query(Factura).filter(Factura.numero_factura == factura_number).first()
+    if factura:
+        session.delete(factura)
+        session.commit()
+        return {"Success": True, "Message": f"Factura {factura_number} eliminada correctamente."}
+    else:
+        return {"Success": False, "Message": f"Factura {factura_number} no encontrada."}
 
+if __name__ == "__main__":
+    borrar = delete_factura(260015)
+    print(borrar)
 
     # for factura in facturas:
     #     print(factura.numero_factura, factura.vendedor.Nombre, factura.tipo_rel.tipo_factura)

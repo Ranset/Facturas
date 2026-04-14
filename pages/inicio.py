@@ -15,6 +15,25 @@ class Inicio(ft.Container):
 
         # <Fin Carga de datos
 
+        def recargar_tabla():
+            self.tabla_controls = []
+            for row in data["Data"]["datos_tabla"]:
+                self.tabla_controls.append(
+                    Tabla_Factura_Row(
+                        estado= row["estado"],
+                        fecha= row["fecha"],
+                        numero= row["numero"],
+                        cliente= row["cliente"],
+                        total= row["total"],
+                        moneda= row["moneda"],
+                        page= page
+                    ).crear()
+                )
+            tabla.controls.clear()
+            for row in self.tabla_controls:
+                tabla.controls.append(row)
+            page.update()
+
         # <Controls
         ## <common variables
         inputs_height = 48
@@ -168,7 +187,7 @@ class Inicio(ft.Container):
         self.tabla_controls = []
 
         for dato in data["Data"]["datos_tabla"]:
-            self.tabla_controls.append(Tabla_Factura_Row(dato[0], dato[1], dato[2], dato[3], dato[4], dato[5]).crear())
+            self.tabla_controls.append(Tabla_Factura_Row(dato[0], dato[1], dato[2], dato[3], dato[4], dato[5], recargar_tabla, page).crear())
 
         ## Widgets objects>
         # Controls>
