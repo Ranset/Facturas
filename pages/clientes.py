@@ -1,7 +1,7 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import NewClientDialog, Menu
-from controller import get_clientes
+from controller import get_clientes, delete_cliente
 
 class Clientes(ft.Container):
     def __init__(self, page: ft.Page):
@@ -72,6 +72,67 @@ class Clientes(ft.Container):
 
         clientes = []
 
+        def recargar_tabla_clientes():
+            """Recarga la tabla de clientes con los datos actuales de la BD"""
+            clientes.clear()
+            data_actualizada = get_clientes()
+            
+            for c in data_actualizada["Data"]:
+                clientes.append(
+                    ft.DataRow(
+                        [
+                            ft.DataCell(ft.Text(c["nombre"])),
+                            ft.DataCell(ft.Text(c["telefono"])),
+                            ft.DataCell(ft.Text(c["correo"])),
+                            ft.DataCell(ft.Row(controls=[
+                                ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (c["id"], c["nombre"], c["NIT"], c["REEUP"], c["ONIE"], c["Domicilio"], c["nro_cta_CUP"], c["nro_cta_MLC"], c["telefono"], c["correo"])),
+                                ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= c["id"]),
+                                ],
+                                spacing= 0
+                            )
+                        ),
+                        ],
+                        data= c
+                    )
+                )
+            
+            dt_clientes.rows = clientes
+            page.update()
+
+        def eliminar_cliente(e, modal_dialog: ft.AlertDialog):
+            response = delete_cliente(e.control.data)
+            if response["Success"]:
+                print("Cliente eliminado exitosamente")
+                modal_dialog.open = False  # Cerrar el diálogo
+                recargar_tabla_clientes()  # Recargar la tabla
+
+        def click_btn_eliminar(id):
+            def cerrar_modal(e):
+                modal_dialog.open = False  # Cerrar el diálogo
+                page.update()
+
+            modal_dialog = ft.AlertDialog(
+                modal=True,
+                title=ft.Text("Confirmación", weight= "bold"),
+                content=ft.Text("¿Desea eliminar los datos de este cliente?"),
+                actions=[
+                    ft.TextButton("Si", on_click=lambda e: eliminar_cliente(id, modal_dialog)),
+                    ft.TextButton("No", on_click=cerrar_modal),
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
+                on_dismiss=lambda e: print("Modal dialog dismissed!"),
+            )
+
+            page.overlay.append(modal_dialog) # Agregar el diálogo a la superposición de la página
+            modal_dialog.open = True   # Abrirlo
+            page.update()
+
+        def click_btn_editar(e):
+            new_client_dialog = NewClientDialog(page, *e.control.data).Crear()
+            page.overlay.append(new_client_dialog) # Agregar el diálogo a la superposición de la página
+            new_client_dialog.open = True   # Abrirlo
+            page.update()
+
         for c in data["Data"]:
             clientes.append(
                 ft.DataRow(
@@ -79,7 +140,14 @@ class Clientes(ft.Container):
                         ft.DataCell(ft.Text(c["nombre"])),
                         ft.DataCell(ft.Text(c["telefono"])),
                         ft.DataCell(ft.Text(c["correo"])),
-                        ft.DataCell(ft.TextButton("Eliminar", on_click= lambda e: print("Eliminar cliente"), style= ft.ButtonStyle(color= "red"))),
+                        # ft.DataCell(ft.TextButton("Eliminar", on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= c["id"])),
+                        ft.DataCell(ft.Row(controls=[
+                                ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (c["id"], c["nombre"], c["NIT"], c["REEUP"], c["ONIE"], c["Domicilio"], c["nro_cta_CUP"], c["nro_cta_MLC"], c["telefono"], c["correo"])),
+                                ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= c["id"]),
+                                ],
+                                spacing= 0
+                            )
+                        ),
                     ],
                     # on_select_changed= on_select_row,
                     data= c
@@ -91,7 +159,7 @@ class Clientes(ft.Container):
                 ft.DataColumn(ft.Text("Nombre Comercial", weight= ft.FontWeight.BOLD), heading_row_alignment= ft.MainAxisAlignment.CENTER),
                 ft.DataColumn(ft.Text("Teléfono", weight= ft.FontWeight.BOLD)),
                 ft.DataColumn(ft.Text("Correo", weight= ft.FontWeight.BOLD)),
-                ft.DataColumn(ft.Text("Acción", weight= ft.FontWeight.BOLD)),
+                ft.DataColumn(ft.Text("Acciones", weight= ft.FontWeight.BOLD)),
             ],
             rows= clientes,
             heading_row_height= 40,

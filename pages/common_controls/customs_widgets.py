@@ -1,7 +1,10 @@
 from flet_base import flet_instance as ft
 from decimal import Decimal
 from typing import Optional
-from controller import delete_factura
+from controller import (
+                        delete_factura,
+                        add_cliente
+                        )
 
 class CustomTextDatePicker(ft.TextField):
     def __init__(self, page: ft.Page, label: Optional[str] = None):
@@ -455,7 +458,7 @@ class Menu(ft.Column):
 
 
 class NewClientDialog(ft.AlertDialog):
-    def __init__(self, page: ft.Page):
+    def __init__(self, page: ft.Page, id = None, nombre = None, NIT = None, REEUP = None, ONIE = None, Domicilio = None, nro_cta_CUP = None, nro_cta_MLC = None, telefono = None, correo = None):
         super().__init__()
 
         # 1. Definir el diálogo
@@ -467,6 +470,8 @@ class NewClientDialog(ft.AlertDialog):
                                                     ), 
                             width= 600,
                             expand= True,
+                            value= nombre if nombre else "",
+                            autofocus= True
                             )
         
         txt_nit = ft.CupertinoTextField(
@@ -477,6 +482,7 @@ class NewClientDialog(ft.AlertDialog):
                                                     ), 
                             width= 200,
                             expand= True,
+                            value= NIT if NIT else "",
                             )
         
         txt_reeup = ft.CupertinoTextField(
@@ -487,6 +493,7 @@ class NewClientDialog(ft.AlertDialog):
                                                     ), 
                             width= 200,
                             expand= True,
+                            value= REEUP if REEUP else "",
                             )
         
         txt_onie = ft.CupertinoTextField(
@@ -497,6 +504,7 @@ class NewClientDialog(ft.AlertDialog):
                                                     ), 
                             width= 200,
                             expand= True,
+                            value= ONIE if ONIE else "",
                             )
         
         txt_domicilio = ft.CupertinoTextField(
@@ -507,6 +515,7 @@ class NewClientDialog(ft.AlertDialog):
                                                     ), 
                             width= 600,
                             expand= True,
+                            value= Domicilio if Domicilio else "",
                             )
         
         txt_cta_cup = ft.CupertinoTextField(
@@ -517,6 +526,7 @@ class NewClientDialog(ft.AlertDialog):
                                                     ), 
                             width= 200,
                             expand= True,
+                            value= nro_cta_CUP if nro_cta_CUP else "",
                             )
         
         txt_cta_mlc = ft.CupertinoTextField(
@@ -527,6 +537,7 @@ class NewClientDialog(ft.AlertDialog):
                                                     ), 
                             width= 200,
                             expand= True,
+                            value= nro_cta_MLC if nro_cta_MLC else "",
                             )
         
         txt_telefono = ft.CupertinoTextField(
@@ -537,6 +548,7 @@ class NewClientDialog(ft.AlertDialog):
                                                     ), 
                             width= 200,
                             expand= True,
+                            value= telefono if telefono else "",
                             )
         
         txt_email = ft.CupertinoTextField(
@@ -546,12 +558,32 @@ class NewClientDialog(ft.AlertDialog):
                                                     size= 14
                                                     ), 
                             width= 200,
+                            value= correo if correo else "",
                             )
+        
+        def click_guardar(e):
+            from pages.common_controls.states import States
+            from router import show_view
+
+            add_cliente(cliente_data= {
+                "nombre": txt_nombre.value,
+                "NIT": txt_nit.value,
+                "REEUP": txt_reeup.value,
+                "ONIE": txt_onie.value,
+                "Domicilio": txt_domicilio.value,
+                "nro_cta_CUP": txt_cta_cup.value,
+                "nro_cta_MLC": txt_cta_mlc.value,
+                "telefono": txt_telefono.value,
+                "correo": txt_email.value,
+            })
+            self.alert_dialog.open = False
+            show_view(page, States.where_i_am)
         
         btn_guardar = ft.ElevatedButton(
             "Guardar",
             style= ft.ButtonStyle(bgcolor= "#2c78d0", color= "white", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
+            on_click= click_guardar
         )
 
         def cerrar_dialogo(e):

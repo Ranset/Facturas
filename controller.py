@@ -28,7 +28,7 @@ def get_facturas():
             "estado": factura.estado_rel.Estado,
             "fecha": factura.Fecha,
             "numero": factura.numero_factura,
-            "cliente": factura.cliente.Nombre,
+            "cliente": factura.cliente.Nombre if factura.cliente else "Sin cliente",
             "total": f"{factura.total:.2f}",
             "moneda": factura.Moneda
         }
@@ -47,7 +47,7 @@ def get_recientes_facturas():
             factura.estado_rel.Estado,
             factura.Fecha,
             factura.numero_factura,
-            factura.cliente.Nombre,
+            factura.cliente.Nombre if factura.cliente else "Sin cliente",
             f"{factura.total:.2f}",
             factura.Moneda
         )
@@ -75,7 +75,7 @@ def get_cotizaciones():
             "estado": cotizacion.estado_rel.Estado,
             "fecha": cotizacion.Fecha,
             "numero": cotizacion.numero_factura,
-            "cliente": cotizacion.cliente.Nombre,
+            "cliente": cotizacion.cliente.Nombre if cotizacion.cliente else "Sin cliente",
             "total": f"{cotizacion.total:.2f}",
             "moneda": cotizacion.Moneda
         }
@@ -104,6 +104,15 @@ def get_factura_by_id(factura_id):
 def get_facturas_products(factura_id):
     Productos = session.query(DetalleFactura).filter(DetalleFactura.factura_id == factura_id).all()
     return Productos
+
+def delete_factura(factura_number):
+    factura = session.query(Factura).filter(Factura.numero_factura == factura_number).first()
+    if factura:
+        session.delete(factura)
+        session.commit()
+        return {"Success": True, "Message": f"Factura {factura_number} eliminada correctamente."}
+    else:
+        return {"Success": False, "Message": f"Factura {factura_number} no encontrada."}
 
 def dashboard_data():
     facturas = get_facturas_pagadas()
@@ -141,6 +150,50 @@ def get_clientes():
         }
         lista_clientes.append(cliente_dict)
     return {"Success": True, "Data": lista_clientes}
+
+def delete_cliente(cliente_id):
+    cliente = session.query(Cliente).filter(Cliente.id == cliente_id).first()
+    if cliente:
+        session.delete(cliente)
+        session.commit()
+        return {"Success": True, "Message": f"Cliente {cliente.Nombre} eliminado correctamente."}
+    else:
+        return {"Success": False, "Message": f"Cliente con ID {cliente_id} no encontrado."}
+
+def update_cliente(cliente_id, updated_data):
+    cliente = session.query(Cliente).filter(Cliente.id == cliente_id).first()
+    if cliente:
+        cliente.Nombre = updated_data.get("nombre", cliente.Nombre)
+        cliente.NIT = updated_data.get("NIT", cliente.NIT)
+        cliente.REEUP = updated_data.get("REEUP", cliente.REEUP)
+        cliente.ONIE = updated_data.get("ONIE", cliente.ONIE)
+        cliente.Domicilio = updated_data.get("Domicilio", cliente.Domicilio)
+        cliente.nro_cta_CUP = updated_data.get("nro_cta_CUP", cliente.nro_cta_CUP)
+        cliente.nro_cta_MLC = updated_data.get("nro_cta_MLC", cliente.nro_cta_MLC)
+        cliente.Telefono = updated_data.get("telefono", cliente.Telefono)
+        cliente.email = updated_data.get("correo", cliente.email)
+
+        session.commit()
+        return {"Success": True, "Message": f"Cliente {cliente.Nombre} actualizado correctamente."}
+    else:
+        return {"Success": False, "Message": f"Cliente con ID {cliente_id} no encontrado."}
+
+def add_cliente(cliente_data):
+    nuevo_cliente = Cliente(
+        Nombre=cliente_data["nombre"],
+        NIT=cliente_data["NIT"],
+        REEUP=cliente_data["REEUP"],
+        ONIE=cliente_data["ONIE"],
+        Domicilio=cliente_data["Domicilio"],
+        nro_cta_CUP=cliente_data["nro_cta_CUP"],
+        nro_cta_MLC=cliente_data["nro_cta_MLC"],
+        Telefono=cliente_data["telefono"],
+        email=cliente_data["correo"]
+    )
+    session.add(nuevo_cliente)
+    session.commit()
+    return {"Success": True, "Message": f"Cliente {nuevo_cliente.Nombre} agregado correctamente."}
+
 
 def get_productos():
     productos = session.query(Producto).all()
@@ -185,14 +238,7 @@ def get_configuration():
 
     return {"Success": True, "Data": dict_data}
 
-def delete_factura(factura_number):
-    factura = session.query(Factura).filter(Factura.numero_factura == factura_number).first()
-    if factura:
-        session.delete(factura)
-        session.commit()
-        return {"Success": True, "Message": f"Factura {factura_number} eliminada correctamente."}
-    else:
-        return {"Success": False, "Message": f"Factura {factura_number} no encontrada."}
+
 
 if __name__ == "__main__":
     borrar = delete_factura(260015)
