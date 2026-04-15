@@ -58,6 +58,7 @@ class Clientes(ft.Container):
             shape= ft.RoundedRectangleBorder(radius= 5),
             width= inputs_height,
             height= inputs_height,
+            # on_click= abrir_modal
         )
         
         btn_clear = ft.FloatingActionButton(

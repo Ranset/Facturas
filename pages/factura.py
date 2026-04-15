@@ -25,25 +25,7 @@ class Factura(ft.Container):
         ## common variables>
 
         # <Functions
-        def recargar_tabla():
-            self.tabla_controls = []
-            for row in data["Data"]["datos_tabla"]:
-                self.tabla_controls.append(
-                    Tabla_Factura_Row(
-                        estado= row["estado"],
-                        fecha= row["fecha"],
-                        numero= row["numero"],
-                        cliente= row["cliente"],
-                        total= row["total"],
-                        moneda= row["moneda"],
-                        recargar_tabla= recargar_tabla,
-                        page= page
-                    ).crear()
-                )
-            tabla.controls.clear()
-            for row in self.tabla_controls:
-                tabla.controls.append(row)
-            page.update()
+
 
         # Functions>
 
@@ -214,7 +196,6 @@ class Factura(ft.Container):
                         cliente= row["cliente"],
                         total= row["total"],
                         moneda= row["moneda"],
-                        recargar_tabla= recargar_tabla,
                         page= page
                     ).crear()
                 )

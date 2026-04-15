@@ -158,12 +158,11 @@ class CustomTextFieldAutocomplete(ft.Stack):
         
 
 class Tabla_Factura_Row(ft.Column):
-    def __init__(self, estado: str, fecha: str, numero: str, cliente: str, total: str, moneda: str, recargar_tabla: callable, page: ft.Page):
+    def __init__(self, estado: str, fecha: str, numero: str, cliente: str, total: str, moneda: str, page: ft.Page):
         super().__init__()
 
         self.estado = estado
         self.page = page
-        self.recargar_tabla = recargar_tabla
 
         self.tabla_row = ft.Column(
             alignment= ft.MainAxisAlignment.START,
@@ -231,7 +230,7 @@ class Tabla_Factura_Row(ft.Column):
                                         ft.Text("Eliminar", color= ft.Colors.RED),
                                     ], alignment= ft.alignment.top_center, spacing=0),
                                     height= 10,
-                                    on_click= lambda e: self.eliminar(numero)
+                                    on_click= lambda e: self.modal(numero, page)
                                 ),
                             ],
                             tooltip= "",
@@ -268,11 +267,38 @@ class Tabla_Factura_Row(ft.Column):
         # .2f -> Asegura siempre 2 decimales (fixed point)
         return f"${numero:,.2f}"
     
-    def eliminar(self, factura_number):
+    def eliminar(self, factura_number, modal_dialog: ft.AlertDialog):
+        from router import show_view
+        from pages.common_controls.states import States
         eliminar_factura = delete_factura(factura_number)
+        modal_dialog.open = False  # Cerrar el diálogo
         if eliminar_factura["Success"]:
-            self.recargar_tabla()
+            if States.where_i_am == States._inicio_location:
+                show_view(self.page, "inicio")
+            if States.where_i_am == States._factura_location or States.where_i_am == States._cotizacion_location:
+                show_view(self.page, "factura")
         print(eliminar_factura)
+    
+    def modal(self, factura_number, page: ft.Page):
+        def cerrar_modal(e):
+            modal_dialog.open = False  # Cerrar el diálogo
+            page.update()
+
+        modal_dialog = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Confirmación", weight= "bold"),
+            content=ft.Text("¿Realmente desea eliminar esta factura/cotización?"),
+            actions=[
+                ft.TextButton("Si", on_click=lambda e: self.eliminar(factura_number, modal_dialog)),
+                ft.TextButton("No", on_click=cerrar_modal),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+            on_dismiss=lambda e: print("Modal dialog dismissed!"),
+        )
+
+        page.overlay.append(modal_dialog) # Agregar el diálogo a la superposición de la página
+        modal_dialog.open = True   # Abrirlo
+        page.update()
 
 
     def crear(self):

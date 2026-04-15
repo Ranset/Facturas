@@ -94,7 +94,7 @@ def get_facturas_pagadas():
     return facturas_pagadas
 
 def get_facturas_pendientes():
-    facturas_pendientes = session.query(Factura).filter(Factura.Estado != 4).all()
+    facturas_pendientes = session.query(Factura).filter(Factura.tipo == 2, Factura.Estado != 4).all()
     return facturas_pendientes
 
 def get_factura_by_id(factura_id):
