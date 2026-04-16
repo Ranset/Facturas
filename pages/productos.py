@@ -1,7 +1,7 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import NewProductDialog, Menu
-from controller import get_productos
+from controller import get_productos, delete_producto
 
 class Productos(ft.Container):
     def __init__(self, page: ft.Page):
@@ -69,7 +69,60 @@ class Productos(ft.Container):
             height= inputs_height,
         )
 
+        def eliminar_producto(e, modal_dialog: ft.AlertDialog):
+            response = delete_producto(e.control.data)
+            if response["Success"]:
+                print("Producto eliminado exitosamente")
+                modal_dialog.open = False  # Cerrar el diálogo
+                recargar_tabla_productos()  # Recargar la tabla
+
+        def click_btn_eliminar(id):
+            def cerrar_modal(e):
+                modal_dialog.open = False  # Cerrar el diálogo
+                page.update()
+
+            modal_dialog = ft.AlertDialog(
+                modal=True,
+                title=ft.Text("Confirmación", weight= "bold"),
+                content=ft.Text("¿Desea eliminar los datos de este producto?"),
+                actions=[
+                    ft.TextButton("Si", on_click=lambda e: eliminar_producto(id, modal_dialog)),
+                    ft.TextButton("No", on_click=cerrar_modal),
+                ],
+                actions_alignment=ft.MainAxisAlignment.END,
+                on_dismiss=lambda e: print("Modal dialog dismissed!"),
+            )
+
+            page.overlay.append(modal_dialog) # Agregar el diálogo a la superposición de la página
+            modal_dialog.open = True   # Abrirlo
+            page.update()
+
+        def click_btn_editar(e):
+            pass
+
         productos = []
+
+        def recargar_tabla_productos():
+                productos.clear() 
+                data = get_productos()  # Obtener los datos actualizados de los productos
+
+                for p in data["Data"]:
+                    productos.append(
+                        ft.DataRow(
+                            cells=[
+                                ft.DataCell(ft.Text(p["nombre"])),
+                                ft.DataCell(ft.Text(f"${p['precio']}")),
+                                ft.DataCell(ft.Text(p["proveedor"])),
+                                ft.DataCell(ft.Text(p["peso"])),
+                                ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (p["id"], p["nombre"], p["proveedor"], p["precio"], p["peso"])),
+                                ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= p["id"]),
+                            ],
+                            data= p,
+                        )
+                    )
+
+                    dt_productos.rows = productos  # Actualizar las filas de la tabla con la nueva lista de productos
+                    page.update()  
 
         for p in data["Data"]:
             productos.append(
@@ -79,7 +132,8 @@ class Productos(ft.Container):
                         ft.DataCell(ft.Text(f"${p['precio']}")),
                         ft.DataCell(ft.Text(p["proveedor"])),
                         ft.DataCell(ft.Text(p["peso"])),
-                        ft.DataCell(ft.TextButton("Eliminar", on_click= lambda e: print("Eliminar producto"), style= ft.ButtonStyle(color= "red"))),
+                        ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (p["id"], p["nombre"], p["proveedor"], p["precio"], p["peso"])),
+                        ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= p["id"]),
                     ],
                     data= p,
                 )

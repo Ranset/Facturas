@@ -209,6 +209,15 @@ def get_productos():
         lista_productos.append(producto_dict)
     return {"Success": True, "Data": lista_productos}
 
+def delete_producto(producto_id):
+    producto = session.query(Producto).filter(Producto.id == producto_id).first()
+    if producto:
+        session.delete(producto)
+        session.commit()
+        return {"Success": True, "Message": f"Producto {producto.Nombre} eliminado correctamente."}
+    else:
+        return {"Success": False, "Message": f"Producto con ID {producto_id} no encontrado."}
+
 def get_configuration():
     tasas = session.query(Tasa).all()
     vendedor = session.query(Vendedor).first()

@@ -5,6 +5,7 @@ from controller import (
                         delete_factura,
                         add_cliente
                         )
+from pages.common_controls.states import States
 
 class CustomTextDatePicker(ft.TextField):
     def __init__(self, page: ft.Page, label: Optional[str] = None):
@@ -462,6 +463,12 @@ class NewClientDialog(ft.AlertDialog):
         super().__init__()
 
         # 1. Definir el diálogo
+        txt_error = ft.Text(
+                            "El campo nombre es obligatorio",
+                            color= ft.Colors.RED,
+                            visible= False
+                            )
+
         txt_nombre = ft.CupertinoTextField(
                             placeholder_text="Nombre Comercial", 
                             placeholder_style= ft.TextStyle(
@@ -561,10 +568,52 @@ class NewClientDialog(ft.AlertDialog):
                             value= correo if correo else "",
                             )
         
-        def click_guardar(e):
+        def validar_campos():
+            '''Valida que el campo nombre no esté vacío antes de guardar'''
+            if not txt_nombre.value.strip():
+                return False
+            else:
+                return True
+
+        
+        def click_guardar(e):            
             from pages.common_controls.states import States
             from router import show_view
 
+            if not validar_campos():
+                txt_error.visible = True
+                page.update()
+            else:
+                guardar(e)
+                self.alert_dialog.open = False
+                show_view(page, States.where_i_am)
+
+        def click_guardar_y_otro(e):            
+            from pages.common_controls.states import States
+            from router import show_view
+
+            if not validar_campos():
+                txt_error.visible = True
+                page.update()
+            else:
+                guardar(e)
+                
+                # Limpiar campos para nuevo ingreso
+                txt_nombre.value = ""
+                txt_nit.value = ""
+                txt_reeup.value = ""
+                txt_onie.value = ""
+                txt_domicilio.value = ""
+                txt_cta_cup.value = ""
+                txt_cta_mlc.value = ""
+                txt_telefono.value = ""
+                txt_email.value = ""
+                txt_error.visible = False
+                txt_nombre.focus()  # Volver a enfocar el campo nombre para agilizar ingreso
+
+                show_view(page, States.where_i_am)
+        
+        def guardar(e):
             add_cliente(cliente_data= {
                 "nombre": txt_nombre.value,
                 "NIT": txt_nit.value,
@@ -576,8 +625,7 @@ class NewClientDialog(ft.AlertDialog):
                 "telefono": txt_telefono.value,
                 "correo": txt_email.value,
             })
-            self.alert_dialog.open = False
-            show_view(page, States.where_i_am)
+            
         
         btn_guardar = ft.ElevatedButton(
             "Guardar",
@@ -602,7 +650,7 @@ class NewClientDialog(ft.AlertDialog):
             "Guardar y Otro",
             style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
-            
+            on_click= click_guardar_y_otro
         )
 
         row_1 = ft.Row(controls= [txt_nombre], expand= True,)
@@ -624,6 +672,7 @@ class NewClientDialog(ft.AlertDialog):
             title=ft.Text("Agregar Cliente", weight= "bold"),
             content=ft.Column(
                 controls= [
+                    txt_error,
                     row_1,
                     row_2,
                     row_3,
