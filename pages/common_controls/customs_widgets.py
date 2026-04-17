@@ -3,7 +3,9 @@ from decimal import Decimal
 from typing import Optional
 from controller import (
                         delete_factura,
-                        add_cliente
+                        add_cliente,
+                        add_producto,
+                        update_producto
                         )
 from pages.common_controls.states import States
 
@@ -691,10 +693,16 @@ class NewClientDialog(ft.AlertDialog):
     
 
 class NewProductDialog(ft.AlertDialog):
-    def __init__(self, page: ft.Page):
+    def __init__(self, page: ft.Page, id = None, nombre = None, proveedor = None, precio = None, peso = None):
         super().__init__()
 
         # 1. Definir el diálogo
+        txt_error = ft.Text(
+                    "El campo nombre es obligatorio",
+                    color= ft.Colors.RED,
+                    visible= False
+                    )
+        
         txt_nombre = ft.CupertinoTextField(
                             placeholder_text="Producto", 
                             placeholder_style= ft.TextStyle(
@@ -703,6 +711,8 @@ class NewProductDialog(ft.AlertDialog):
                                                     ), 
                             width= 600,
                             expand= True,
+                            value= nombre if nombre else "",
+                            autofocus= True
                             )
         
         txt_precio = ft.CupertinoTextField(
@@ -713,6 +723,7 @@ class NewProductDialog(ft.AlertDialog):
                                                     ), 
                             width= 200,
                             expand= True,
+                            value= precio if precio else "",
                             )
         
         rdo_moneda = ft.Container(
@@ -735,7 +746,7 @@ class NewProductDialog(ft.AlertDialog):
             height= 40
         )
 
-        chk_iva = ft.Checkbox(label= "Con IVA", value= True)
+        chk_iva = ft.Checkbox(label= "Agregar IVA", value= False)
         
         txt_proveedor = ft.CupertinoTextField(
                             placeholder_text="Proveedor", 
@@ -745,6 +756,7 @@ class NewProductDialog(ft.AlertDialog):
                                                     ), 
                             width= 200,
                             expand= True,
+                            value= proveedor if proveedor else "",
                             )
         
         txt_peso = ft.CupertinoTextField(
@@ -754,11 +766,84 @@ class NewProductDialog(ft.AlertDialog):
                                                     size= 14
                                                     ), 
                             width= 200,
+                            value= peso if peso else "",
                             )
         
+        def validar_campos():
+            '''Valida que el campo nombre no esté vacío antes de guardar'''
+            if not txt_nombre.value.strip():
+                return False
+            else:
+                return True
+        
         def click_guardar(e):
-            moneda = rdo_moneda.content.controls[0].value
-            print(moneda)
+            from pages.common_controls.states import States
+            from router import show_view
+            if not validar_campos():
+                txt_error.visible = True
+                page.update()
+            else:
+                if id is not None:
+                    actualizar_producto(e)
+                    print("Se ejecutó actualizar producto")
+                else:
+                    guardar(e)
+                    print("Se ejecutó guardar producto")
+                self.alert_dialog.open = False
+                show_view(page, States.where_i_am)
+
+        def click_guardar_y_otro(e):
+            from pages.common_controls.states import States
+            from router import show_view
+
+            if not validar_campos():
+                txt_error.visible = True
+                page.update()
+            else:
+                if id is not None:
+                    actualizar_producto(e)
+                else:
+                    guardar(e)
+                
+                # Limpiar campos para nuevo ingreso
+                txt_nombre.value = ""
+                txt_precio.value = ""
+                txt_proveedor.value = ""
+                txt_peso.value = ""
+                chk_iva.value = True
+                rdo_moneda.content.controls[0].value = "usd"
+                txt_error.visible = False
+                txt_nombre.focus()  # Volver a enfocar el campo nombre para agilizar ingreso
+
+                show_view(page, States.where_i_am)
+
+        def guardar(e):
+            if chk_iva.value:
+                txt_precio.value = str(float(txt_precio.value) * 1.16)
+
+            if rdo_moneda.content.controls[0].value == "mxn":
+                txt_precio.value = str(float(txt_precio.value) / 16)
+
+            add_producto(producto_data= {
+                "nombre": txt_nombre.value,
+                "precio": txt_precio.value,
+                "proveedor": txt_proveedor.value,
+                "peso": txt_peso.value,
+            })
+
+        def actualizar_producto(e):
+            if chk_iva.value:
+                txt_precio.value = str(float(txt_precio.value) * 1.16)
+
+            if rdo_moneda.content.controls[0].value == "mxn":
+                txt_precio.value = str(float(txt_precio.value) / 16)
+
+            update_producto(id, producto_data= {
+                "nombre": txt_nombre.value,
+                "precio": txt_precio.value,
+                "proveedor": txt_proveedor.value,
+                "peso": txt_peso.value,
+            })
         
         btn_guardar = ft.ElevatedButton(
             "Guardar",
@@ -783,7 +868,7 @@ class NewProductDialog(ft.AlertDialog):
             "Guardar y Otro",
             style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
-            
+            on_click= click_guardar_y_otro
         )
 
         row_1 = ft.Row(controls= [txt_nombre], expand= True,)
@@ -803,6 +888,7 @@ class NewProductDialog(ft.AlertDialog):
             title=ft.Text("Agregar Producto", weight= "bold"),
             content=ft.Column(
                 controls= [
+                    txt_error,
                     row_1,
                     row_2,
                     row_3

@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, Text, Numeric, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, Text, Numeric, ForeignKey, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
 Base = declarative_base()
@@ -38,8 +38,11 @@ class Producto(Base):
     Precio = Column(Text)
     Proveedor = Column(Text)
     peso = Column(Numeric)
+    Moneda = Column(Integer, ForeignKey("Tasas.id"))
+    Iva = Column(Integer, default=0)
 
     detalles = relationship("DetalleFactura", back_populates="producto")
+    tasa_rel = relationship("Tasa", back_populates="productos")
 
 
 class Vendedor(Base):
@@ -92,6 +95,8 @@ class Tasa(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     Divisa = Column(Text, nullable=False, unique=True)
     tasa = Column(Numeric, nullable=False)
+
+    productos = relationship("Producto", back_populates="tasa_rel")
 
 
 class Factura(Base):

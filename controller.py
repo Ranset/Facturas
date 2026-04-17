@@ -202,9 +202,9 @@ def get_productos():
         producto_dict = {
             "id": producto.id,
             "nombre": producto.Nombre,
-            "proveedor": producto.Proveedor,
             "precio": producto.Precio,
-            "peso": float(producto.peso)
+            "proveedor": producto.Proveedor,
+            "peso": float(producto.peso),
         }
         lista_productos.append(producto_dict)
     return {"Success": True, "Data": lista_productos}
@@ -217,6 +217,30 @@ def delete_producto(producto_id):
         return {"Success": True, "Message": f"Producto {producto.Nombre} eliminado correctamente."}
     else:
         return {"Success": False, "Message": f"Producto con ID {producto_id} no encontrado."}
+    
+def update_producto(producto_id, updated_data):
+    producto = session.query(Producto).filter(Producto.id == producto_id).first()
+    if producto:
+        producto.Nombre = updated_data.get("nombre", producto.Nombre)
+        producto.Proveedor = updated_data.get("proveedor", producto.Proveedor)
+        producto.Precio = updated_data.get("precio", producto.Precio)
+        producto.peso = updated_data.get("peso", producto.peso)
+
+        session.commit()
+        return {"Success": True, "Message": f"Producto {producto.Nombre} actualizado correctamente."}
+    else:
+        return {"Success": False, "Message": f"Producto con ID {producto_id} no encontrado."}
+    
+def add_producto(producto_data):
+    nuevo_producto = Producto(
+        Nombre=producto_data["nombre"],
+        Proveedor=producto_data["proveedor"],
+        Precio=producto_data["precio"],
+        peso=producto_data["peso"]
+    )
+    session.add(nuevo_producto)
+    session.commit()
+    return {"Success": True, "Message": f"Producto {nuevo_producto.Nombre} agregado correctamente."}
 
 def get_configuration():
     tasas = session.query(Tasa).all()
@@ -250,8 +274,8 @@ def get_configuration():
 
 
 if __name__ == "__main__":
-    borrar = delete_factura(260015)
-    print(borrar)
+    producto = session.query(Producto).first()
+    print(producto.Nombre, producto.Proveedor, producto.Precio, float(producto.peso), producto.tasa_rel.Divisa, True if producto.Iva == 1 else False)
 
     # for factura in facturas:
     #     print(factura.numero_factura, factura.vendedor.Nombre, factura.tipo_rel.tipo_factura)

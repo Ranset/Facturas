@@ -98,7 +98,10 @@ class Productos(ft.Container):
             page.update()
 
         def click_btn_editar(e):
-            pass
+            new_product_dialog = NewProductDialog(page, *e.control.data).Crear()
+            page.overlay.append(new_product_dialog) # Agregar el diálogo a la superposición de la página
+            new_product_dialog.open = True   # Abrirlo
+            page.update()
 
         productos = []
 
@@ -109,16 +112,21 @@ class Productos(ft.Container):
                 for p in data["Data"]:
                     productos.append(
                         ft.DataRow(
-                            cells=[
-                                ft.DataCell(ft.Text(p["nombre"])),
-                                ft.DataCell(ft.Text(f"${p['precio']}")),
-                                ft.DataCell(ft.Text(p["proveedor"])),
-                                ft.DataCell(ft.Text(p["peso"])),
+                    cells=[
+                        ft.DataCell(ft.Text(p["nombre"])),
+                        ft.DataCell(ft.Text(f"${float(p['precio']):.2f}")),
+                        ft.DataCell(ft.Text(p["proveedor"])),
+                        ft.DataCell(ft.Text(p["peso"])),
+                        ft.DataCell(ft.Row(controls=[
                                 ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (p["id"], p["nombre"], p["proveedor"], p["precio"], p["peso"])),
                                 ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= p["id"]),
-                            ],
-                            data= p,
-                        )
+                                ],
+                                spacing= 0
+                            )
+                        ),
+                    ],
+                    data= p,
+                )
                     )
 
                     dt_productos.rows = productos  # Actualizar las filas de la tabla con la nueva lista de productos
@@ -129,11 +137,16 @@ class Productos(ft.Container):
                 ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Text(p["nombre"])),
-                        ft.DataCell(ft.Text(f"${p['precio']}")),
+                        ft.DataCell(ft.Text(f"${float(p['precio']):.2f}")),
                         ft.DataCell(ft.Text(p["proveedor"])),
                         ft.DataCell(ft.Text(p["peso"])),
-                        ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (p["id"], p["nombre"], p["proveedor"], p["precio"], p["peso"])),
-                        ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= p["id"]),
+                        ft.DataCell(ft.Row(controls=[
+                                ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (p["id"], p["nombre"], p["proveedor"], p["precio"], p["peso"])),
+                                ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= p["id"]),
+                                ],
+                                spacing= 0
+                            )
+                        ),
                     ],
                     data= p,
                 )
@@ -142,7 +155,7 @@ class Productos(ft.Container):
         dt_productos = ft.DataTable(
             columns= [
                 ft.DataColumn(ft.Text("Producto", weight= ft.FontWeight.BOLD), heading_row_alignment= ft.MainAxisAlignment.CENTER),
-                ft.DataColumn(ft.Text("Preecio USD", weight= ft.FontWeight.BOLD)),
+                ft.DataColumn(ft.Text("Precio USD", weight= ft.FontWeight.BOLD)),
                 ft.DataColumn(ft.Text("Proveedor", weight= ft.FontWeight.BOLD)),
                 ft.DataColumn(ft.Text("Peso Kg", weight= ft.FontWeight.BOLD)),
                 ft.DataColumn(ft.Text("Acción", weight= ft.FontWeight.BOLD)),
