@@ -4,6 +4,7 @@ from typing import Optional
 from controller import (
                         delete_factura,
                         add_cliente,
+                        update_cliente,
                         add_producto,
                         update_producto
                         )
@@ -586,7 +587,10 @@ class NewClientDialog(ft.AlertDialog):
                 txt_error.visible = True
                 page.update()
             else:
-                guardar(e)
+                if id is not None:
+                    actualizar_cliente(e)
+                else:
+                    guardar(e)
                 self.alert_dialog.open = False
                 show_view(page, States.where_i_am)
 
@@ -598,7 +602,10 @@ class NewClientDialog(ft.AlertDialog):
                 txt_error.visible = True
                 page.update()
             else:
-                guardar(e)
+                if id is not None:
+                    actualizar_cliente(e)
+                else:
+                    guardar(e)
                 
                 # Limpiar campos para nuevo ingreso
                 txt_nombre.value = ""
@@ -627,6 +634,21 @@ class NewClientDialog(ft.AlertDialog):
                 "telefono": txt_telefono.value,
                 "correo": txt_email.value,
             })
+
+        def actualizar_cliente(e):
+            cliente_data = {
+                "nombre": txt_nombre.value,
+                "NIT": txt_nit.value,
+                "REEUP": txt_reeup.value,
+                "ONIE": txt_onie.value,
+                "Domicilio": txt_domicilio.value,
+                "nro_cta_CUP": txt_cta_cup.value,
+                "nro_cta_MLC": txt_cta_mlc.value,
+                "telefono": txt_telefono.value,
+                "correo": txt_email.value,
+            }
+
+            update_cliente(id, cliente_data)
             
         
         btn_guardar = ft.ElevatedButton(
@@ -785,10 +807,8 @@ class NewProductDialog(ft.AlertDialog):
             else:
                 if id is not None:
                     actualizar_producto(e)
-                    print("Se ejecutó actualizar producto")
                 else:
                     guardar(e)
-                    print("Se ejecutó guardar producto")
                 self.alert_dialog.open = False
                 show_view(page, States.where_i_am)
 
@@ -810,8 +830,8 @@ class NewProductDialog(ft.AlertDialog):
                 txt_precio.value = ""
                 txt_proveedor.value = ""
                 txt_peso.value = ""
-                chk_iva.value = True
-                rdo_moneda.content.controls[0].value = "usd"
+                # chk_iva.value = False # Decidí no resetear el checkbox ni la selección de moneda para agilizar ingreso de productos similares
+                # rdo_moneda.content.controls[0].value = "usd" 
                 txt_error.visible = False
                 txt_nombre.focus()  # Volver a enfocar el campo nombre para agilizar ingreso
 
@@ -826,9 +846,9 @@ class NewProductDialog(ft.AlertDialog):
 
             add_producto(producto_data= {
                 "nombre": txt_nombre.value,
-                "precio": txt_precio.value,
-                "proveedor": txt_proveedor.value,
-                "peso": txt_peso.value,
+                "precio": txt_precio.value if txt_precio.value else "0",
+                "proveedor": txt_proveedor.value if txt_proveedor.value else "",
+                "peso": txt_peso.value if txt_peso.value else "0",
             })
 
         def actualizar_producto(e):
@@ -838,12 +858,14 @@ class NewProductDialog(ft.AlertDialog):
             if rdo_moneda.content.controls[0].value == "mxn":
                 txt_precio.value = str(float(txt_precio.value) / 16)
 
-            update_producto(id, producto_data= {
+            product_data = {
                 "nombre": txt_nombre.value,
                 "precio": txt_precio.value,
                 "proveedor": txt_proveedor.value,
                 "peso": txt_peso.value,
-            })
+            }
+
+            update_producto(id, product_data)
         
         btn_guardar = ft.ElevatedButton(
             "Guardar",
