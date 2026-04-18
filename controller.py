@@ -151,6 +151,33 @@ def get_clientes():
         lista_clientes.append(cliente_dict)
     return {"Success": True, "Data": lista_clientes}
 
+def get_cliente_filter(search_term):
+    from sqlalchemy import or_
+    clientes = session.query(Cliente).filter(
+        or_(
+            Cliente.Nombre.ilike(f"%{search_term}%"),
+            # Cliente.Domicilio.ilike(f"%{search_term}%"),
+            Cliente.Telefono.ilike(f"%{search_term}%"),
+            Cliente.email.ilike(f"%{search_term}%")
+        )
+    ).all()
+    lista_clientes = []
+    for cliente in clientes:
+        cliente_dict = {
+            "id": cliente.id,
+            "nombre": cliente.Nombre,
+            "NIT": cliente.NIT,
+            "REEUP": cliente.REEUP,
+            "ONIE": cliente.ONIE,
+            "Domicilio": cliente.Domicilio,
+            "nro_cta_CUP": cliente.nro_cta_CUP,
+            "nro_cta_MLC": cliente.nro_cta_MLC,
+            "telefono": cliente.Telefono,
+            "correo": cliente.email
+        }
+        lista_clientes.append(cliente_dict)
+    return {"Success": True, "Data": lista_clientes}
+
 def delete_cliente(cliente_id):
     cliente = session.query(Cliente).filter(Cliente.id == cliente_id).first()
     if cliente:
@@ -274,8 +301,8 @@ def get_configuration():
 
 
 if __name__ == "__main__":
-    producto = session.query(Producto).first()
-    print(producto.Nombre, producto.Proveedor, producto.Precio, float(producto.peso), producto.tasa_rel.Divisa, True if producto.Iva == 1 else False)
+    cliente = get_cliente_filter("contacto")
+    print(cliente)
 
     # for factura in facturas:
     #     print(factura.numero_factura, factura.vendedor.Nombre, factura.tipo_rel.tipo_factura)

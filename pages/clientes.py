@@ -1,7 +1,7 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import NewClientDialog, Menu
-from controller import get_clientes, delete_cliente
+from controller import get_clientes, delete_cliente, get_cliente_filter
 
 class Clientes(ft.Container):
     def __init__(self, page: ft.Page):
@@ -12,6 +12,33 @@ class Clientes(ft.Container):
         #  <Carga de datos
 
         data = get_clientes()
+
+        def recargar_tabla_clientes():
+            """Recarga la tabla de clientes con los datos actuales de la BD"""
+            clientes.clear()
+            data_actualizada = get_clientes()
+            
+            for c in data_actualizada["Data"]:
+                clientes.append(
+                    ft.DataRow(
+                        [
+                            ft.DataCell(ft.Text(c["nombre"])),
+                            ft.DataCell(ft.Text(c["telefono"])),
+                            ft.DataCell(ft.Text(c["correo"])),
+                            ft.DataCell(ft.Row(controls=[
+                                ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (c["id"], c["nombre"], c["NIT"], c["REEUP"], c["ONIE"], c["Domicilio"], c["nro_cta_CUP"], c["nro_cta_MLC"], c["telefono"], c["correo"])),
+                                ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= c["id"]),
+                                ],
+                                spacing= 0
+                            )
+                        ),
+                        ],
+                        data= c
+                    )
+                )
+            
+            dt_clientes.rows = clientes
+            page.update()
 
         # <Fin Carga de datos
 
@@ -41,6 +68,36 @@ class Clientes(ft.Container):
             on_click= abrir_dialogo,
         )
 
+        def click_btn_buscar(e):
+            search_term = txt_buscar_persona.value
+            if search_term:
+                resultado = get_cliente_filter(search_term)
+                # Cargar resultados en la tabla
+                clientes.clear()
+                for c in resultado["Data"]:
+                    clientes.append(
+                        ft.DataRow(
+                            [
+                                ft.DataCell(ft.Text(c["nombre"])),
+                                ft.DataCell(ft.Text(c["telefono"])),
+                                ft.DataCell(ft.Text(c["correo"])),
+                                ft.DataCell(ft.Row(controls=[
+                                    ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (c["id"], c["nombre"], c["NIT"], c["REEUP"], c["ONIE"], c["Domicilio"], c["nro_cta_CUP"], c["nro_cta_MLC"], c["telefono"], c["correo"])),
+                                    ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= c["id"]),
+                                    ],
+                                    spacing= 0
+                                )
+                            ),
+                            ],
+                            data= c
+                        )
+                    )
+                
+                dt_clientes.rows = clientes
+                page.update()
+            else:
+                print("Término de búsqueda en blanco.")
+
         txt_buscar_persona = ft.TextField(
             label="Buscar Cliente",
             # expand=True,
@@ -48,7 +105,8 @@ class Clientes(ft.Container):
             width= 400,
             bgcolor= inputs_bgcolor,
             border_color= inputs_border_color,
-            hover_color= inputs_bgcolor
+            hover_color= inputs_bgcolor,
+            on_submit= click_btn_buscar
         )
 
         btn_buscar = ft.FloatingActionButton(
@@ -58,8 +116,12 @@ class Clientes(ft.Container):
             shape= ft.RoundedRectangleBorder(radius= 5),
             width= inputs_height,
             height= inputs_height,
-            # on_click= abrir_modal
+            on_click= click_btn_buscar
         )
+
+        def click_btn_clear(e):
+            txt_buscar_persona.value = ""
+            recargar_tabla_clientes()
         
         btn_clear = ft.FloatingActionButton(
             bgcolor= '#838383',
@@ -68,36 +130,10 @@ class Clientes(ft.Container):
             shape= ft.RoundedRectangleBorder(radius= 5),
             width= inputs_height,
             height= inputs_height,
+            on_click= click_btn_clear
         )
 
         clientes = []
-
-        def recargar_tabla_clientes():
-            """Recarga la tabla de clientes con los datos actuales de la BD"""
-            clientes.clear()
-            data_actualizada = get_clientes()
-            
-            for c in data_actualizada["Data"]:
-                clientes.append(
-                    ft.DataRow(
-                        [
-                            ft.DataCell(ft.Text(c["nombre"])),
-                            ft.DataCell(ft.Text(c["telefono"])),
-                            ft.DataCell(ft.Text(c["correo"])),
-                            ft.DataCell(ft.Row(controls=[
-                                ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (c["id"], c["nombre"], c["NIT"], c["REEUP"], c["ONIE"], c["Domicilio"], c["nro_cta_CUP"], c["nro_cta_MLC"], c["telefono"], c["correo"])),
-                                ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= c["id"]),
-                                ],
-                                spacing= 0
-                            )
-                        ),
-                        ],
-                        data= c
-                    )
-                )
-            
-            dt_clientes.rows = clientes
-            page.update()
 
         def eliminar_cliente(e, modal_dialog: ft.AlertDialog):
             response = delete_cliente(e.control.data)

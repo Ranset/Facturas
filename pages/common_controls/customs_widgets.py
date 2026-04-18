@@ -465,6 +465,13 @@ class NewClientDialog(ft.AlertDialog):
     def __init__(self, page: ft.Page, id = None, nombre = None, NIT = None, REEUP = None, ONIE = None, Domicilio = None, nro_cta_CUP = None, nro_cta_MLC = None, telefono = None, correo = None):
         super().__init__()
 
+        def keyboard_event_handler(e):
+            print(f"Key event: ctrl={e.ctrl}, key={e.key}")
+            if e.ctrl and e.key.lower() == "g":
+                click_guardar_y_otro(e)
+
+        page.on_keyboard_event = keyboard_event_handler
+
         # 1. Definir el diálogo
         txt_error = ft.Text(
                             "El campo nombre es obligatorio",
@@ -481,8 +488,32 @@ class NewClientDialog(ft.AlertDialog):
                             width= 600,
                             expand= True,
                             value= nombre if nombre else "",
-                            autofocus= True
+                            autofocus= True,
+                            on_submit= lambda e: click_guardar(e)
                             )
+
+        self.txt_del_nit = ""
+        
+        def rellenar_formato_NIT(e):
+            # Obtener el texto actual sin los caracteres de la máscara (_)
+            # Esto asume que el usuario solo escribe números o letras, no '_'
+            texto_limpio = e.control.value.replace("_", "")
+            self.txt_del_nit += texto_limpio
+            
+            # Limitar la longitud a 11
+            if len(self.txt_del_nit) > 11:
+                self.txt_del_nit = self.txt_del_nit[:11]
+                
+            # Calcular cuántos guiones bajos faltan
+            faltantes = 11 - len(self.txt_del_nit)
+            
+            # Actualizar el valor del textfield con la máscara
+            e.control.value = self.txt_del_nit + ("_" * faltantes)
+            
+            # Mover el cursor al final de la entrada actual (opcional pero recomendado)
+
+            
+            txt_nit.update()
         
         txt_nit = ft.CupertinoTextField(
                             placeholder_text="NIT", 
@@ -493,6 +524,10 @@ class NewClientDialog(ft.AlertDialog):
                             width= 200,
                             expand= True,
                             value= NIT if NIT else "",
+                            on_submit= lambda e: click_guardar(e),
+                            input_filter= ft.InputFilter(allow=True, regex_string=r"^\d{0,11}$", replacement_string=""), # Solo números y máximo 11 dígitos
+                            on_change= rellenar_formato_NIT,
+                            text_align=ft.TextAlign.LEFT,
                             )
         
         txt_reeup = ft.CupertinoTextField(
@@ -504,6 +539,7 @@ class NewClientDialog(ft.AlertDialog):
                             width= 200,
                             expand= True,
                             value= REEUP if REEUP else "",
+                            on_submit= lambda e: click_guardar(e)
                             )
         
         txt_onie = ft.CupertinoTextField(
@@ -515,6 +551,7 @@ class NewClientDialog(ft.AlertDialog):
                             width= 200,
                             expand= True,
                             value= ONIE if ONIE else "",
+                            on_submit= lambda e: click_guardar(e)
                             )
         
         txt_domicilio = ft.CupertinoTextField(
@@ -526,6 +563,7 @@ class NewClientDialog(ft.AlertDialog):
                             width= 600,
                             expand= True,
                             value= Domicilio if Domicilio else "",
+                            on_submit= lambda e: click_guardar(e)
                             )
         
         txt_cta_cup = ft.CupertinoTextField(
@@ -537,6 +575,8 @@ class NewClientDialog(ft.AlertDialog):
                             width= 200,
                             expand= True,
                             value= nro_cta_CUP if nro_cta_CUP else "",
+                            on_submit= lambda e: click_guardar(e),
+                            input_filter= ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string="") # Solo números
                             )
         
         txt_cta_mlc = ft.CupertinoTextField(
@@ -548,6 +588,8 @@ class NewClientDialog(ft.AlertDialog):
                             width= 200,
                             expand= True,
                             value= nro_cta_MLC if nro_cta_MLC else "",
+                            on_submit= lambda e: click_guardar(e),
+                            input_filter= ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string="") # Solo números
                             )
         
         txt_telefono = ft.CupertinoTextField(
@@ -559,6 +601,8 @@ class NewClientDialog(ft.AlertDialog):
                             width= 200,
                             expand= True,
                             value= telefono if telefono else "",
+                            on_submit= lambda e: click_guardar(e),
+                            input_filter= ft.InputFilter(allow=True, regex_string=r"^\+?\d+$", replacement_string=""), # Solo números y opcionalmente un + al inicio para códigos internacionales
                             )
         
         txt_email = ft.CupertinoTextField(
@@ -569,6 +613,8 @@ class NewClientDialog(ft.AlertDialog):
                                                     ), 
                             width= 200,
                             value= correo if correo else "",
+                            on_submit= lambda e: click_guardar(e),
+                            input_filter= ft.InputFilter(allow=True, regex_string=r"^[a-zA-Z0-9._%+-]*@?[a-zA-Z0-9.-]*\.?[a-zA-Z]{2,}$", replacement_string="") # Permite caracteres válidos en emails y opcionalmente un @ y dominio para ayudar en la escritura
                             )
         
         def validar_campos():
@@ -671,7 +717,16 @@ class NewClientDialog(ft.AlertDialog):
         )
 
         btn_guardar_otra = ft.OutlinedButton(
-            "Guardar y Otro",
+            content= ft.Row(
+                [
+                    ft.Text(
+                        spans= [
+                            ft.TextSpan("G", style=ft.TextStyle(decoration=ft.TextDecoration.UNDERLINE)), # Subrayar la "G" para indicar el atajo de teclado
+                            ft.TextSpan("uardar y Otro"),
+                        ]
+                    )
+                ]
+            ),
             style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
             on_click= click_guardar_y_otro
