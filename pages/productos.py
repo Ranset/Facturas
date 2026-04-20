@@ -1,7 +1,7 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import NewProductDialog, Menu
-from controller import get_productos, delete_producto
+from controller import get_productos, delete_producto, get_productos_filter
 
 class Productos(ft.Container):
     def __init__(self, page: ft.Page):
@@ -41,6 +41,37 @@ class Productos(ft.Container):
             on_click= abrir_dialogo,
         )
 
+        def click_btn_buscar(e):
+            search_term = txt_buscar_producto.value
+            if search_term:
+                resultado = get_productos_filter(search_term)
+                # Cargar resultados en la tabla
+                productos.clear()
+                for p in resultado["Data"]:
+                    productos.append(
+                        ft.DataRow(
+                            [
+                                ft.DataCell(ft.Text(p["nombre"])),
+                                ft.DataCell(ft.Text(f"${float(p['precio']):.2f}")),
+                                ft.DataCell(ft.Text(p["proveedor"])),
+                                ft.DataCell(ft.Text(p["peso"])),
+                                ft.DataCell(ft.Row(controls=[
+                                ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (p["id"], p["nombre"], p["proveedor"], p["precio"], p["peso"])),
+                                ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= p["id"]),
+                            ],
+                            spacing= 0
+                            )
+                        ),
+                            ],
+                            data= p
+                        )
+                    )
+                
+                dt_productos.rows = productos
+                page.update()
+            else:
+                print("Término de búsqueda en blanco.")
+
         txt_buscar_producto = ft.TextField(
             label="Buscar Producto",
             # expand=True,
@@ -48,7 +79,8 @@ class Productos(ft.Container):
             width= 400,
             bgcolor= inputs_bgcolor,
             border_color= inputs_border_color,
-            hover_color= inputs_bgcolor
+            hover_color= inputs_bgcolor,
+            on_submit= click_btn_buscar
         )
 
         btn_buscar = ft.FloatingActionButton(
@@ -58,7 +90,12 @@ class Productos(ft.Container):
             shape= ft.RoundedRectangleBorder(radius= 5),
             width= inputs_height,
             height= inputs_height,
+            on_click= click_btn_buscar
         )
+
+        def click_btn_limpiar(e):
+            txt_buscar_producto.value = ""
+            recargar_tabla_productos()
         
         btn_clear = ft.FloatingActionButton(
             bgcolor= '#838383',
@@ -67,6 +104,7 @@ class Productos(ft.Container):
             shape= ft.RoundedRectangleBorder(radius= 5),
             width= inputs_height,
             height= inputs_height,
+            on_click= click_btn_limpiar
         )
 
         def eliminar_producto(e, modal_dialog: ft.AlertDialog):

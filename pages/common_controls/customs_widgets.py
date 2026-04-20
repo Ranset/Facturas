@@ -6,7 +6,8 @@ from controller import (
                         add_cliente,
                         update_cliente,
                         add_producto,
-                        update_producto
+                        update_producto,
+                        convertir_de_mxm_a_usd
                         )
 from pages.common_controls.states import States
 
@@ -466,7 +467,6 @@ class NewClientDialog(ft.AlertDialog):
         super().__init__()
 
         def keyboard_event_handler(e):
-            print(f"Key event: ctrl={e.ctrl}, key={e.key}")
             if e.ctrl and e.key.lower() == "g":
                 click_guardar_y_otro(e)
 
@@ -514,6 +514,10 @@ class NewClientDialog(ft.AlertDialog):
 
             
             txt_nit.update()
+
+        def clear_txt_nit(e):
+            txt_nit.value = ""
+            txt_nit.update()
         
         txt_nit = ft.CupertinoTextField(
                             placeholder_text="NIT", 
@@ -528,7 +532,13 @@ class NewClientDialog(ft.AlertDialog):
                             input_filter= ft.InputFilter(allow=True, regex_string=r"^\d{0,11}$", replacement_string=""), # Solo números y máximo 11 dígitos
                             on_change= rellenar_formato_NIT,
                             text_align=ft.TextAlign.LEFT,
+                            # Botón para limpar el TextField
+                            suffix=ft.IconButton(
+                                icon= ft.Icons.CLEAR, # Icono de 'X' para limpiar
+                                icon_color= ft.Colors.GREY_400,
+                                on_click= lambda e: clear_txt_nit(e)  # Llama a la función al hacer clic
                             )
+                        )
         
         txt_reeup = ft.CupertinoTextField(
                             placeholder_text="REEUP", 
@@ -614,7 +624,6 @@ class NewClientDialog(ft.AlertDialog):
                             width= 200,
                             value= correo if correo else "",
                             on_submit= lambda e: click_guardar(e),
-                            input_filter= ft.InputFilter(allow=True, regex_string=r"^[a-zA-Z0-9._%+-]*@?[a-zA-Z0-9.-]*\.?[a-zA-Z]{2,}$", replacement_string="") # Permite caracteres válidos en emails y opcionalmente un @ y dominio para ayudar en la escritura
                             )
         
         def validar_campos():
@@ -773,6 +782,14 @@ class NewProductDialog(ft.AlertDialog):
     def __init__(self, page: ft.Page, id = None, nombre = None, proveedor = None, precio = None, peso = None):
         super().__init__()
 
+        def keyboard_event_handler(e):
+            if e.key == "Enter":
+                click_guardar(e)
+            if e.ctrl and e.key.lower() == "g":
+                click_guardar_y_otro(e)
+
+        page.on_keyboard_event = keyboard_event_handler
+
         # 1. Definir el diálogo
         txt_error = ft.Text(
                     "El campo nombre es obligatorio",
@@ -789,7 +806,7 @@ class NewProductDialog(ft.AlertDialog):
                             width= 600,
                             expand= True,
                             value= nombre if nombre else "",
-                            autofocus= True
+                            autofocus= True,
                             )
         
         txt_precio = ft.CupertinoTextField(
@@ -897,7 +914,7 @@ class NewProductDialog(ft.AlertDialog):
                 txt_precio.value = str(float(txt_precio.value) * 1.16)
 
             if rdo_moneda.content.controls[0].value == "mxn":
-                txt_precio.value = str(float(txt_precio.value) / 16)
+                txt_precio.value = convertir_de_mxm_a_usd(float(txt_precio.value))["Monto USD"]
 
             add_producto(producto_data= {
                 "nombre": txt_nombre.value,
@@ -911,7 +928,7 @@ class NewProductDialog(ft.AlertDialog):
                 txt_precio.value = str(float(txt_precio.value) * 1.16)
 
             if rdo_moneda.content.controls[0].value == "mxn":
-                txt_precio.value = str(float(txt_precio.value) / 16)
+                txt_precio.value = convertir_de_mxm_a_usd(float(txt_precio.value))["Monto USD"]
 
             product_data = {
                 "nombre": txt_nombre.value,
@@ -942,7 +959,16 @@ class NewProductDialog(ft.AlertDialog):
         )
 
         btn_guardar_otra = ft.OutlinedButton(
-            "Guardar y Otro",
+            content= ft.Row(
+                [
+                    ft.Text(
+                        spans= [
+                            ft.TextSpan("G", style=ft.TextStyle(decoration=ft.TextDecoration.UNDERLINE)), # Subrayar la "G" para indicar el atajo de teclado
+                            ft.TextSpan("uardar y Otro"),
+                        ]
+                    )
+                ]
+            ),
             style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
             on_click= click_guardar_y_otro

@@ -1,3 +1,5 @@
+from operator import or_
+
 from models import (session, 
                     Tasa,
                     Tipo,
@@ -236,6 +238,25 @@ def get_productos():
         lista_productos.append(producto_dict)
     return {"Success": True, "Data": lista_productos}
 
+def get_productos_filter(search_term):
+    productos = session.query(Producto).filter(
+        or_(
+            Producto.Nombre.ilike(f"%{search_term}%"),
+            Producto.Proveedor.ilike(f"%{search_term}%"),
+        )
+    ).all()
+    lista_productos = []
+    for producto in productos:
+        producto_dict = {
+            "id": producto.id,
+            "nombre": producto.Nombre,
+            "precio": producto.Precio,
+            "proveedor": producto.Proveedor,
+            "peso": float(producto.peso),
+        }
+        lista_productos.append(producto_dict)
+    return {"Success": True, "Data": lista_productos}
+
 def delete_producto(producto_id):
     producto = session.query(Producto).filter(Producto.id == producto_id).first()
     if producto:
@@ -297,6 +318,14 @@ def get_configuration():
     }
 
     return {"Success": True, "Data": dict_data}
+
+def convertir_de_mxm_a_usd(monto_mxn: float):
+    tasa_mxn = session.query(Tasa).filter(Tasa.Divisa == "MXN").first()
+    if tasa_mxn:
+        monto_usd = monto_mxn / float(tasa_mxn.tasa)
+        return {"Success": True, "Monto USD": f"{monto_usd:.2f}"}
+    else:
+        return {"Success": False, "Message": "Tasa para MXN no encontrada."}
 
 
 
