@@ -2,12 +2,23 @@ from flet_base import flet_instance as ft
 from datetime import datetime
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row, NewClientDialog, NewProductDialog, CustomTextFieldAutocomplete
+from controller import get_clientes, get_configuration, get_productos
 
 class FormularioFactura(ft.Container):
     def __init__(self, page: ft.Page):
         super().__init__()
 
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+
+        #  <Carga de datos
+        clientes_data = get_clientes()
+        clientes = []
+
+        for cliente in clientes_data["Data"]:
+            clientes.append([cliente["id"], cliente["nombre"]])
+        
+
+        # <Fin Carga de datos
 
         # <Controls
         ## @note <common variables
@@ -41,16 +52,9 @@ class FormularioFactura(ft.Container):
 
         txt_info_title = ft.Text("Información General", weight= ft.FontWeight.BOLD)
 
-        cliente_suggestions = [
-            "ACME",
-            "Beta S.A.",
-            "Cliente 3",
-            "Distribuciones López",
-        ]
-
         select_cliente = ft.Dropdown(
             options=[
-                ft.dropdown.Option(c) for c in cliente_suggestions
+                ft.dropdown.Option(c[0], c[1]) for c in clientes
             ],
             label="Clientes",
             expand=True,
@@ -322,10 +326,14 @@ class FormularioFactura(ft.Container):
             
         )
 
+        def click_guardar(e):
+            print(select_cliente.value)
+
         btn_guardar = ft.ElevatedButton(
             "Guardar",
             style= ft.ButtonStyle(bgcolor= "#2c78d0", color= "white", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
+            on_click= click_guardar
         )
 
         def click_cancelar(e):

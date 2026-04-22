@@ -1,7 +1,7 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import Menu
-from controller import get_configuration
+from controller import get_configuration, update_tasas, update_tasa_fiscal, update_nota_terminos
 
 class Configuracion(ft.Container):
     def __init__(self, page: ft.Page):
@@ -11,6 +11,7 @@ class Configuracion(ft.Container):
 
         #  <Carga de datos
         data = get_configuration()
+
         # <Fin Carga de datos
 
         # <Controls
@@ -196,9 +197,20 @@ class Configuracion(ft.Container):
         )
 
         def check_tasa_click (e):
+            from router import show_view
+            from pages.common_controls.states import States
+
+            update_tasas(
+                {
+                    "tasa_mxn": tasa_mxn_edit.content.controls[1].value,
+                    "tasa_cup": tasa_cup_edit.content.controls[1].value,
+                    "tasa_mlc": tasa_mlc_edit.content.controls[1].value
+                }
+            )
+
             tasas.content.controls[1].visible= False
             tasas.content.controls[0].visible= True
-            tasas.update()
+            show_view(page, States.where_i_am)
 
         btn_check_tasa = ft.FloatingActionButton(
             bgcolor= "#2c78d0",
@@ -256,16 +268,23 @@ class Configuracion(ft.Container):
         def click_btn_tasa_fiscal(e):
             import asyncio
 
-            btn_tasa_fiscal.visible = False
-            txt_salvado.visible = True
-            page.update()
-            
-            async def hide_message():
-                await asyncio.sleep(2)
-                txt_salvado.visible = False
+            response = update_tasa_fiscal({"tasa_fiscal": tasa_fiscal.value})
+
+            if not response["Success"]:
+                # Manejar el error, por ejemplo, mostrando un mensaje al usuario
+                print("Error al actualizar la tasa fiscal:", response["Message"])
+                return
+            else:
+                btn_tasa_fiscal.visible = False
+                txt_salvado.visible = True
                 page.update()
-            
-            asyncio.run(hide_message())
+                
+                async def hide_message():
+                    await asyncio.sleep(2)
+                    txt_salvado.visible = False
+                    page.update()
+                
+                asyncio.run(hide_message())
 
         btn_tasa_fiscal = ft.FloatingActionButton(
             bgcolor= "#838383",
@@ -282,16 +301,23 @@ class Configuracion(ft.Container):
         def click_btn_nota(e):
             import asyncio
 
-            btn_nota.visible = False
-            txt_salvado_nota.visible = True
-            page.update()
-            
-            async def hide_message():
-                await asyncio.sleep(2)
-                txt_salvado_nota.visible = False
+            response = update_nota_terminos({"nota": nota.value})
+
+            if not response["Success"]:
+                # Manejar el error, por ejemplo, mostrando un mensaje al usuario
+                print("Error al actualizar la nota de términos:", response["Message"])
+                return
+            else:
+                btn_nota.visible = False
+                txt_salvado_nota.visible = True
                 page.update()
-            
-            asyncio.run(hide_message())
+                
+                async def hide_message():
+                    await asyncio.sleep(2)
+                    txt_salvado_nota.visible = False
+                    page.update()
+                
+                asyncio.run(hide_message())
 
         btn_nota = ft.FloatingActionButton(
             bgcolor= "#838383",

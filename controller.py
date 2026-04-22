@@ -326,6 +326,56 @@ def convertir_de_mxm_a_usd(monto_mxn: float):
         return {"Success": True, "Monto USD": f"{monto_usd:.2f}"}
     else:
         return {"Success": False, "Message": "Tasa para MXN no encontrada."}
+    
+
+def update_vendedor(updated_data):
+    vendedor = session.query(Vendedor).first()
+    if vendedor:
+        vendedor.Nombre = updated_data.get("nombre_vendedor", vendedor.Nombre)
+        vendedor.NIT = updated_data.get("nit_vendedor", vendedor.NIT)
+        vendedor.Telefono = updated_data.get("telf_vendedor", vendedor.Telefono)
+        vendedor.Domicilio = updated_data.get("direccion_vendedor", vendedor.Domicilio)
+        vendedor.nro_cta_CUP = updated_data.get("cuenta_cup_vendedor", vendedor.nro_cta_CUP)
+        vendedor.Tarjeta_CUP = updated_data.get("tarjeta_cup_vendedor", vendedor.Tarjeta_CUP)
+        vendedor.nro_cta_MLC = updated_data.get("cuenta_mlc_vendedor", vendedor.nro_cta_MLC)
+        vendedor.Tarjeta_MLC = updated_data.get("tarjeta_mlc_vendedor", vendedor.Tarjeta_MLC)
+        vendedor.email = updated_data.get("email_vendedor", vendedor.email)
+
+        session.commit()
+        return {"Success": True, "Message": f"Vendedor {vendedor.Nombre} actualizado correctamente."}
+    else:
+        return {"Success": False, "Message": f"Vendedor no encontrado."}
+    
+def update_tasas(updated_data):
+    tasas = session.query(Tasa).all()
+    for tasa in tasas:
+        if tasa.Divisa == "CUP":
+            tasa.tasa = updated_data.get("tasa_cup", tasa.tasa)
+        elif tasa.Divisa == "MLC":
+            tasa.tasa = updated_data.get("tasa_mlc", tasa.tasa)
+        elif tasa.Divisa == "MXN":
+            tasa.tasa = updated_data.get("tasa_mxn", tasa.tasa)
+
+    session.commit()
+    return {"Success": True, "Message": "Tasas actualizadas correctamente."}
+
+def update_tasa_fiscal(updated_data):
+    config = session.query(Config).first()
+    if config:
+        config.porciento_cta_fiscal = updated_data.get("tasa_fiscal", config.porciento_cta_fiscal)
+        session.commit()
+        return {"Success": True, "Message": "Tasa fiscal actualizada correctamente."}
+    else:
+        return {"Success": False, "Message": "Configuración no encontrada."}
+    
+def update_nota_terminos(updated_data):
+    config = session.query(Config).first()
+    if config:
+        config.nota_terminos = updated_data.get("nota", config.nota_terminos)
+        session.commit()
+        return {"Success": True, "Message": "Nota de términos actualizada correctamente."}
+    else:
+        return {"Success": False, "Message": "Configuración no encontrada."}
 
 
 

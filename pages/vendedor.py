@@ -1,7 +1,7 @@
 from flet_base import flet_instance as ft
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import Menu
-from controller import get_configuration
+from controller import get_configuration, update_vendedor
 
 class Vendedor(ft.Container):
     def __init__(self, page: ft.Page):
@@ -78,10 +78,11 @@ class Vendedor(ft.Container):
         
         txt_domicilio = ft.TextField(
                             value= datos_vendedor[3],
-                            label="Domcilio",
-                            height= inputs_height,
+                            label="Domicilio",
+                            height= 96,
                             bgcolor= inputs_bgcolor,
                             border_color= inputs_border_color,
+                            multiline= True,
                             )
         
         txt_cta_cup = ft.TextField(
@@ -122,6 +123,20 @@ class Vendedor(ft.Container):
         
         def click_guardar(e):
             from router import show_view
+            update_vendedor(
+                {
+                    "nombre_vendedor": txt_nombre.value,
+                    "nit_vendedor": txt_nit.value,
+                    "telf_vendedor": txt_telefono.value,
+                    "email_vendedor": txt_email.value,
+                    "direccion_vendedor": txt_domicilio.value,
+                    "cuenta_cup_vendedor": txt_cta_cup.value,
+                    "tarjeta_cup_vendedor": txt_tarjeta_cup.value,
+                    "cuenta_mlc_vendedor": txt_cta_mlc.value,
+                    "tarjeta_mlc_vendedor": txt_tarjeta_mlc.value
+                }
+            )
+
             show_view(page, States._configuracion_location)
         
         btn_guardar = ft.ElevatedButton(
