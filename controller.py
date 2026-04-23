@@ -234,6 +234,8 @@ def get_productos():
             "precio": producto.Precio,
             "proveedor": producto.Proveedor,
             "peso": float(producto.peso),
+            "moneda": producto.Moneda,
+            "iva": producto.Iva
         }
         lista_productos.append(producto_dict)
     return {"Success": True, "Data": lista_productos}
@@ -253,6 +255,8 @@ def get_productos_filter(search_term):
             "precio": producto.Precio,
             "proveedor": producto.Proveedor,
             "peso": float(producto.peso),
+            "moneda": producto.Moneda,
+            "iva": producto.Iva
         }
         lista_productos.append(producto_dict)
     return {"Success": True, "Data": lista_productos}
@@ -273,7 +277,7 @@ def update_producto(producto_id, updated_data):
         producto.Proveedor = updated_data.get("proveedor", producto.Proveedor)
         producto.Precio = updated_data.get("precio", producto.Precio)
         producto.peso = updated_data.get("peso", producto.peso)
-
+        producto.Moneda = updated_data.get("moneda", producto.Moneda)
         session.commit()
         return {"Success": True, "Message": f"Producto {producto.Nombre} actualizado correctamente."}
     else:
@@ -376,7 +380,48 @@ def update_nota_terminos(updated_data):
         return {"Success": True, "Message": "Nota de términos actualizada correctamente."}
     else:
         return {"Success": False, "Message": "Configuración no encontrada."}
+    
 
+def guardar_nueva_factura(factura_data):
+    # Generar número de factura único. Inicia con dos dígitos del año, seguido de 4 dígitos secuenciales.
+    from datetime import datetime
+
+    year = datetime.now().year
+
+    ultimo_numero = session.query(Factura).order_by(Factura.id.desc()).first()
+    if ultimo_numero:
+        nuevo_numero = f"{str(year)[-2:]}{ultimo_numero.id + 1:04d}"
+    else:
+        nuevo_numero = f"{str(year)[-2:]}0001"
+    
+    nueva_factura = Factura(
+        numero_factura=nuevo_numero,
+        Fecha=factura_data["fecha"],
+        cliente_id=factura_data["cliente_id"],
+        total=factura_data["total"],
+        Moneda=factura_data["moneda"],
+        tasa_cambio=factura_data["tasa_cambio"],
+        tipo=factura_data["tipo"],
+        metodo_pago=factura_data["metodo_pago"],
+        porciento_cta_fiscal=factura_data["porciento_cta_fiscal"],
+        Estado= 2,  # Estado "XEnviar"
+        descuento=factura_data.get("descuento", 0),
+        descuento_tipo=factura_data.get("descuento_tipo", True),
+        total =factura_data["total"]
+    )
+    session.add(nueva_factura)
+
+    session.commit()
+    for item in factura_data["items"]:
+        detalle = DetalleFactura(
+            factura_id=nueva_factura.id,
+            producto_id=item["producto_id"],
+            Cantidad=item["cantidad"],
+            Precio_venta=item["precio_venta"]
+        )
+        session.add(detalle)
+
+    session.commit()
 
 
 if __name__ == "__main__":

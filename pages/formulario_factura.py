@@ -2,7 +2,7 @@ from flet_base import flet_instance as ft
 from datetime import datetime
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row, NewClientDialog, NewProductDialog, CustomTextFieldAutocomplete
-from controller import get_clientes, get_configuration, get_productos
+from controller import get_clientes, get_configuration, get_productos, guardar_nueva_factura
 
 class FormularioFactura(ft.Container):
     def __init__(self, page: ft.Page):
@@ -16,7 +16,14 @@ class FormularioFactura(ft.Container):
 
         for cliente in clientes_data["Data"]:
             clientes.append([cliente["id"], cliente["nombre"]])
-        
+
+        configuracion = get_configuration()
+        usd = 1
+        cup = configuracion["Data"]["tasa_cup"]
+        mlc = configuracion["Data"]["tasa_mlc"]
+        tasa_fiscal = configuracion["Data"]["tasa_fiscal"]
+
+        productos = get_productos()
 
         # <Fin Carga de datos
 
@@ -25,11 +32,6 @@ class FormularioFactura(ft.Container):
         inputs_height = 48
         inputs_bgcolor = ft.Colors.WHITE
         inputs_border_color= ft.Colors.GREY_400
-
-        cup = 460
-        mlc = 250
-        usd = 1
-        tasa_fiscal = 25
 
         self.price_multiply = 1.0
 
@@ -166,14 +168,11 @@ class FormularioFactura(ft.Container):
 
         btn_new_product = ft.ElevatedButton("Nuevo", bgcolor="#2c78d0", color= "white", width= 80, height= 25, on_click= abrir_product_dialog)
 
-        product_suggestions = [
-            #(nombre, precio, moneda, iva[bool], proveedor, peso, id)
-            ("Impresora Multifuncional",105.25,"USD",True,"CVA",10,1),
-            ("Laptop Gamer",1500.00,"USD",True,"Amazon",5,2),
-            ("Monitor 24 pulgadas",200.75,"MXN",False,"ML",15,3),
-            ("Teclado Mecánico",85.50,"USD",True,"Ciberpuerta",20,4),
-            ("Ratón Inalámbrico",45.00,"MXN",False,"CVA",25,5),
-        ]
+        product_suggestions = []
+
+        for producto in productos["Data"]:
+            # print((producto["nombre"], float(producto["precio"]), producto["moneda"], producto["iva"], producto["proveedor"], producto["peso"], producto["id"]))
+            product_suggestions.append((producto["nombre"], float(producto["precio"]), producto["moneda"], producto["iva"], producto["proveedor"], producto["peso"], producto["id"]))
 
         def update_price():
             precio.value = States.selected_product_price
@@ -327,7 +326,56 @@ class FormularioFactura(ft.Container):
         )
 
         def click_guardar(e):
-            print(select_cliente.value)
+            # 1. Validar que haya productos en la factura
+            if len(dt_factura.rows) == 0:
+                print("No hay productos en la factura")
+                return
+            # 2. Validar que se haya seleccionado un cliente
+            if not select_cliente.value:
+                print("No se ha seleccionado un cliente")
+                return
+            
+            factura_data = {
+                "cliente_id": select_cliente.value,
+                "moneda": radio_monedas.value,
+                "metodo_pago": dd_pago.value,
+                "fecha": select_fecha_inicio.value,
+                "tasa_cambio": cup_tasa.controls[1].value,
+                "tasa_fiscal": tasa_fiscal.controls[1].value,
+                "descuento": float(descuento.value) if descuento.value else 0.0,
+                "descuento_tipo": "porciento" if not sw_descuento.value else "cantidad",
+                "Total": txt_total_value.value,
+                "productos": [
+                    {
+                        "nombre": row.data[0],
+                        "precio": row.data[1],
+                        "cantidad": row.data[2],
+                        "precio_con_tasa": row.data[3],
+                        "importe": row.data[4]
+                    }
+                    for row in dt_factura.rows
+                ]
+            }
+
+            # Registrar número de factura
+            # id Tipo (factura o cotización)
+            # id vendedor
+            # id cliente
+            # Fecha
+            # Moneda
+            # Tasa de cambio
+            # Método de pago
+            # Porciento de cuenta fiscal
+            # Estado (activa, pagada, anulada, etc)
+            # Descuento
+            # Descuento tipo (0 porcentaje o 1 cantidad) 
+            # Total
+            # Registrar y asociar los detalles de factura:
+                # id factura
+                # id producto
+                # Cantidad
+                # Precio de venta
+            guardar_nueva_factura(factura_data)
 
         btn_guardar = ft.ElevatedButton(
             "Guardar",

@@ -646,8 +646,12 @@ class NewClientDialog(ft.AlertDialog):
                     actualizar_cliente(e)
                 else:
                     guardar(e)
-                self.alert_dialog.open = False
-                show_view(page, States.where_i_am)
+                if States.where_i_am != States._formulario_factura_location:
+                    self.alert_dialog.open = False
+                    show_view(page, States.where_i_am)
+                else:
+                    self.alert_dialog.open = False
+                    page.update()
 
         def click_guardar_y_otro(e):            
             from pages.common_controls.states import States
@@ -881,8 +885,12 @@ class NewProductDialog(ft.AlertDialog):
                     actualizar_producto(e)
                 else:
                     guardar(e)
-                self.alert_dialog.open = False
-                show_view(page, States.where_i_am)
+                if States.where_i_am != States._formulario_factura_location:
+                    self.alert_dialog.open = False
+                    show_view(page, States.where_i_am)
+                else:
+                    self.alert_dialog.open = False
+                    page.update()
 
         def click_guardar_y_otro(e):
             from pages.common_controls.states import States
