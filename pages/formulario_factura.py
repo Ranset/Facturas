@@ -35,6 +35,8 @@ class FormularioFactura(ft.Container):
 
         self.price_multiply = 1.0
 
+        tipo = 2 if States.i_come_from == States._Crear_btn_loc_facturas else 1 # 1 cotización, 2 factura
+
         ## common variables>
 
         ## @note <Widgets objects
@@ -108,10 +110,10 @@ class FormularioFactura(ft.Container):
 
         dd_pago = ft.Dropdown(
             options=[
-                ft.DropdownOption("Transferencia"),
-                ft.DropdownOption("Efectivo"),
+                ft.DropdownOption("1", "Transferencia"),
+                ft.DropdownOption("2", "Efectivo"),
             ],
-            value= "Transferencia",
+            value= "1",
             border_color= ft.Colors.GREY_400,
         )
 
@@ -318,64 +320,64 @@ class FormularioFactura(ft.Container):
             data_row_max_height= 45
         )
 
+        def click_guardar_otra(e):
+            from router import show_view
+            i_come_before = States.i_come_from
+            guardar = click_guardar(e) # Guardar la factura actual
+            States.i_come_from = i_come_before # Restaurar el estado de dónde vengo para evitar problemas al volver a cargar el formulario
+            if guardar is not False: # Si la factura se guardó correctamente, cargar un nuevo formulario
+                show_view(page, States._formulario_factura_location) # Volver a cargar el formulario para crear otra factura
+
         btn_guardar_otra = ft.OutlinedButton(
             "Guardar y otra",
             style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
-            
+            on_click= click_guardar_otra
         )
 
         def click_guardar(e):
             # 1. Validar que haya productos en la factura
             if len(dt_factura.rows) == 0:
                 print("No hay productos en la factura")
-                return
+                return False
             # 2. Validar que se haya seleccionado un cliente
             if not select_cliente.value:
                 print("No se ha seleccionado un cliente")
-                return
+                return False
+            
+            tipo_descuento = 0
+
+            if chk_descuento.value:
+                if not sw_descuento.value:
+                    tipo_descuento = 1
+                else:
+                    tipo_descuento = 2
             
             factura_data = {
                 "cliente_id": select_cliente.value,
                 "moneda": radio_monedas.value,
-                "metodo_pago": dd_pago.value,
+                "metodo_pago": int(dd_pago.value),
                 "fecha": select_fecha_inicio.value,
                 "tasa_cambio": cup_tasa.controls[1].value,
                 "tasa_fiscal": tasa_fiscal.controls[1].value,
                 "descuento": float(descuento.value) if descuento.value else 0.0,
-                "descuento_tipo": "porciento" if not sw_descuento.value else "cantidad",
-                "Total": txt_total_value.value,
+                "descuento_tipo": tipo_descuento,
+                "total": txt_total_value.value,
+                "tipo": tipo,
                 "productos": [
                     {
                         "nombre": row.data[0],
                         "precio": row.data[1],
                         "cantidad": row.data[2],
-                        "precio_con_tasa": row.data[3],
-                        "importe": row.data[4]
+                        # "precio_con_tasa": row.data[3],
+                        # "importe": row.data[4]
                     }
                     for row in dt_factura.rows
                 ]
             }
 
-            # Registrar número de factura
-            # id Tipo (factura o cotización)
-            # id vendedor
-            # id cliente
-            # Fecha
-            # Moneda
-            # Tasa de cambio
-            # Método de pago
-            # Porciento de cuenta fiscal
-            # Estado (activa, pagada, anulada, etc)
-            # Descuento
-            # Descuento tipo (0 porcentaje o 1 cantidad) 
-            # Total
-            # Registrar y asociar los detalles de factura:
-                # id factura
-                # id producto
-                # Cantidad
-                # Precio de venta
             guardar_nueva_factura(factura_data)
+            click_cancelar(e) # Volver a la vista anterior después de guardar
 
         btn_guardar = ft.ElevatedButton(
             "Guardar",

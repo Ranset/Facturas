@@ -397,27 +397,26 @@ def guardar_nueva_factura(factura_data):
     nueva_factura = Factura(
         numero_factura=nuevo_numero,
         Fecha=factura_data["fecha"],
-        cliente_id=factura_data["cliente_id"],
-        total=factura_data["total"],
+        Cliente=factura_data["cliente_id"],
+        total=factura_data["total"].replace(",", ""),
         Moneda=factura_data["moneda"],
         tasa_cambio=factura_data["tasa_cambio"],
         tipo=factura_data["tipo"],
         metodo_pago=factura_data["metodo_pago"],
-        porciento_cta_fiscal=factura_data["porciento_cta_fiscal"],
+        porciento_cta_fiscal=factura_data["tasa_fiscal"],
         Estado= 2,  # Estado "XEnviar"
         descuento=factura_data.get("descuento", 0),
-        descuento_tipo=factura_data.get("descuento_tipo", True),
-        total =factura_data["total"]
+        descuento_tipo=factura_data.get("descuento_tipo", 0),
     )
     session.add(nueva_factura)
 
     session.commit()
-    for item in factura_data["items"]:
+    for item in factura_data["productos"]:
         detalle = DetalleFactura(
             factura_id=nueva_factura.id,
-            producto_id=item["producto_id"],
+            Nombre=item["nombre"],
             Cantidad=item["cantidad"],
-            Precio_venta=item["precio_venta"]
+            Precio_venta=item["precio"]
         )
         session.add(detalle)
 

@@ -41,7 +41,7 @@ class Producto(Base):
     Moneda = Column(Integer, ForeignKey("Tasas.id"))
     Iva = Column(Integer, default=0)
 
-    detalles = relationship("DetalleFactura", back_populates="producto")
+    # detalles = relationship("DetalleFactura", back_populates="producto")
     tasa_rel = relationship("Tasa", back_populates="productos")
 
 
@@ -118,7 +118,7 @@ class Factura(Base):
     Estado = Column(Integer, ForeignKey("Estados.id"))
 
     descuento = Column(Numeric)
-    descuento_tipo = Column(Boolean)  # True para porcentaje, False para monto fijo
+    descuento_tipo = Column(Integer)  # 1 para porcentaje, 2 para monto fijo
 
     total = Column(Numeric)
 
@@ -140,12 +140,13 @@ class DetalleFactura(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     factura_id = Column(Integer, ForeignKey("Facturas.id"))
-    Producto_id = Column(Integer, ForeignKey("Productos.id"))
+    Nombre = Column(Text)
+    # Producto_id = Column(Integer, ForeignKey("Productos.id"))
     Cantidad = Column(Integer)
     Precio_venta = Column(Numeric)
 
     factura = relationship("Factura", back_populates="detalles")
-    producto = relationship("Producto", back_populates="detalles")
+    # producto = relationship("Producto", back_populates="detalles")
 
 # Fin Modelos
 
