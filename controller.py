@@ -10,6 +10,7 @@ from models import (session,
                     Producto,
                     Vendedor,
                     Config)
+from pages import factura
 
 def get_facturas():
     facturas = session.query(Factura).order_by(Factura.id.desc()).filter(Factura.tipo == 2).all()
@@ -33,7 +34,8 @@ def get_facturas():
             "numero": factura.numero_factura,
             "cliente": factura.cliente.Nombre if factura.cliente else "Sin cliente",
             "total": f"{factura.total:.2f}",
-            "moneda": factura.Moneda
+            "moneda": factura.Moneda,
+            "tipo": factura.tipo
         }
         tabla.append(factura_dict)
 
@@ -47,12 +49,13 @@ def get_recientes_facturas():
     para_tabla_resumen = []
     for factura in recientes_facturas:
         factura_tuple = (
+            factura.tipo,
             factura.estado_rel.Estado,
             factura.Fecha,
             factura.numero_factura,
             factura.cliente.Nombre if factura.cliente else "Sin cliente",
             f"{factura.total:.2f}",
-            factura.Moneda
+            factura.Moneda,
         )
         para_tabla_resumen.append(factura_tuple)
     
@@ -80,7 +83,8 @@ def get_cotizaciones():
             "numero": cotizacion.numero_factura,
             "cliente": cotizacion.cliente.Nombre if cotizacion.cliente else "Sin cliente",
             "total": f"{cotizacion.total:.2f}",
-            "moneda": cotizacion.Moneda
+            "moneda": cotizacion.Moneda,
+            "tipo": cotizacion.tipo
         }
         tabla.append(cotizacion_dict)
 
@@ -118,6 +122,44 @@ def delete_factura(factura_number):
         session.delete(factura)
         session.commit()
         return {"Success": True, "Message": f"Factura {factura_number} eliminada correctamente."}
+    else:
+        return {"Success": False, "Message": f"Factura {factura_number} no encontrada."}
+    
+def update_factura(factura_number, updated_data):
+    factura = session.query(Factura).filter(Factura.numero_factura == factura_number).first()
+    if factura:
+        factura.Fecha = updated_data.get("fecha", factura.Fecha)
+        factura.Cliente = updated_data.get("cliente_id", factura.Cliente)
+        factura.total = updated_data.get("total", factura.total)
+        factura.Moneda = updated_data.get("moneda", factura.Moneda)
+        factura.tasa_cambio = updated_data.get("tasa_cambio", factura.tasa_cambio)
+        factura.tipo = updated_data.get("tipo", factura.tipo)
+        factura.metodo_pago = updated_data.get("metodo_pago", factura.metodo_pago)
+        factura.porciento_cta_fiscal = updated_data.get("tasa_fiscal", factura.porciento_cta_fiscal)
+        factura.descuento = updated_data.get("descuento", factura.descuento)
+        factura.descuento_tipo = updated_data.get("descuento_tipo", factura.descuento_tipo)
+        factura.Estado = updated_data["estado"]
+        factura.Vendedor = updated_data.get("vendedor_id", factura.Vendedor)
+
+        # Para actualizar los productos asociados a la factura, primero eliminamos los
+        # detalles existentes y luego agregamos los nuevos detalles proporcionados en
+        # updated_data["productos"].
+        if "productos" in updated_data:
+            # Eliminar detalles existentes
+            session.query(DetalleFactura).filter(DetalleFactura.factura_id == factura.id).delete()
+
+            # Agregar nuevos detalles
+            for item in updated_data["productos"]:
+                detalle = DetalleFactura(
+                    factura_id=factura.id,
+                    Nombre=item["nombre"],
+                    Cantidad=item["cantidad"],
+                    Precio_venta=item["precio"]
+                )
+                session.add(detalle)
+
+        session.commit()
+        return {"Success": True, "Message": f"Factura {factura_number} actualizada correctamente."}
     else:
         return {"Success": False, "Message": f"Factura {factura_number} no encontrada."}
 
@@ -481,14 +523,10 @@ def guardar_nueva_factura(factura_data):
 
 
 if __name__ == "__main__":
-    factura = get_factura_by_numero(260035)
-    # print(factura.tipo_rel.tipo_factura)
-    productos = get_facturas_products(factura.id)
-    facturas_products = []
-    for producto in productos:
-        facturas_products.append((producto.Nombre, producto.Cantidad, float(producto.Precio_venta)))
-    print(facturas_products)
-    print(facturas_products[0][2])
+    datos = dashboard_data()
+
+    for dato in datos["Data"]["datos_tabla"]:
+        print(dato[0], dato[1], dato[2], dato[3], dato[4], dato[5], dato[6])
 
     # for factura in facturas:
     #     print(factura.numero_factura, factura.vendedor.Nombre, factura.tipo_rel.tipo_factura)

@@ -168,7 +168,7 @@ class Inicio(ft.Container):
         self.tabla_controls = []
 
         for dato in data["Data"]["datos_tabla"]:
-            self.tabla_controls.append(Tabla_Factura_Row(dato[0], dato[1], dato[2], dato[3], dato[4], dato[5], page).crear())
+            self.tabla_controls.append(Tabla_Factura_Row(dato[0], dato[1], dato[2], dato[3], dato[4], dato[5], dato[6], page).crear())
 
         ## Widgets objects>
         # Controls>

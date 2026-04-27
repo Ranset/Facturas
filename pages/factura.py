@@ -118,7 +118,7 @@ class Factura(ft.Container):
         )
 
         def click_buscar (e):
-            self.tabla_controls = [Tabla_Factura_Row("Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),]
+            self.tabla_controls = [Tabla_Factura_Row(1, "Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),]
             tabla.controls.clear()
             for row in self.tabla_controls:
                 tabla.controls.append(row)
@@ -137,11 +137,11 @@ class Factura(ft.Container):
 
         def click_clear (e):
             self.tabla_controls = [
-            Tabla_Factura_Row("Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP").crear(),
-            Tabla_Factura_Row("Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP").crear(),
-            Tabla_Factura_Row("XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-            Tabla_Factura_Row("Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-            Tabla_Factura_Row("Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
+            Tabla_Factura_Row(1, "Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP").crear(),
+            Tabla_Factura_Row(2, "Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP").crear(),
+            Tabla_Factura_Row(1, "XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
+            Tabla_Factura_Row(2, "Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
+            Tabla_Factura_Row(1, "Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
             ]
 
             select_estatus.value = None
@@ -196,7 +196,8 @@ class Factura(ft.Container):
                         cliente= row["cliente"],
                         total= row["total"],
                         moneda= row["moneda"],
-                        page= page
+                        page= page,
+                        tipo= row["tipo"]
                     ).crear()
                 )
 

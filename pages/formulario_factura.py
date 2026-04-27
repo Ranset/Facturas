@@ -349,7 +349,8 @@ class FormularioFactura(ft.Container):
             "Guardar y otra",
             style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
-            on_click= click_guardar_otra
+            on_click= click_guardar_otra,
+            visible= True if factura is None else False # Solo mostrar el botón de "Guardar y otra" si no se está editando una factura existente, ya que tiene más sentido crear una nueva factura después de guardar una nueva que después de editar una existente
         )
 
         def click_guardar(e):
@@ -407,7 +408,8 @@ class FormularioFactura(ft.Container):
             "Guardar",
             style= ft.ButtonStyle(bgcolor= "#2c78d0", color= "white", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
-            on_click= click_guardar
+            on_click= click_guardar,
+            visible= True if factura is None else False # Solo mostrar el botón de "Guardar" si no se está editando una factura existente
         )
 
         def click_cancelar(e):
@@ -427,6 +429,78 @@ class FormularioFactura(ft.Container):
             style= ft.ButtonStyle(side= ft.BorderSide(1, "#6d6d6d"), color= "#6d6d6d", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
             on_click= click_cancelar
+        )
+
+        def click_actualizar(e):
+            # El proceso de actualización es básicamente el mismo que el de guardar,
+            # pero en lugar de crear una nueva factura, se actualiza la existente.
+            # Para simplificar el código, se puede reutilizar la función de guardar
+            # y simplemente pasar un parámetro adicional que indique que se trata de
+            # una actualización y cuál es el ID de la factura a actualizar. Sin embargo,
+            # para mantener la claridad, se implementará una función separada para la actualización.
+            from controller import update_factura
+
+            if factura is None:
+                print("No hay factura para actualizar")
+                return
+            
+            # Validar que haya productos en la factura
+            if len(dt_factura.rows) == 0:
+                print("No hay productos en la factura")
+                return
+            # Validar que se haya seleccionado un cliente
+            if not select_cliente.value:
+                print("No se ha seleccionado un cliente")
+                return
+            
+            tipo_descuento = 0
+
+            if chk_descuento.value:
+                if not sw_descuento.value:
+                    tipo_descuento = 1
+                else:
+                    tipo_descuento = 2
+
+            tasa_de_cambio = 1.00
+
+            if radio_monedas.value == "cup":
+                tasa_de_cambio = cup_tasa.controls[1].value
+            elif radio_monedas.value == "mlc":
+                tasa_de_cambio = mlc_tasa.controls[1].value
+            
+            factura_data = {
+                "id": factura.id,
+                "cliente_id": select_cliente.value,
+                "moneda": radio_monedas.value.upper(),
+                "metodo_pago": int(dd_pago.value),
+                "fecha": select_fecha_inicio.value,
+                "tasa_cambio": tasa_de_cambio,
+                "tasa_fiscal": tasa_fiscal.controls[1].value,
+                "descuento": float(descuento.value) if descuento.value else 0.0,
+                "descuento_tipo": tipo_descuento,
+                "total": float(txt_total_value.value.replace(",", "")),
+                "tipo": tipo,
+                "estado": 2, # Asumimos que al actualizar una factura, esta pasa a estado "XEnviar" (2)
+                "vendedor_id": 1, # Asumimos un vendedor fijo por simplicidad
+                "productos": [
+                    {
+                        "nombre": row.data[0],
+                        "precio": row.data[1],
+                        "cantidad": row.data[2],
+                    }
+                    for row in dt_factura.rows
+                ]
+            }
+
+            update_factura(factura.numero_factura, factura_data)
+            click_cancelar(e) # Volver a la vista anterior después de actualizar
+
+        btn_actualizar = ft.ElevatedButton(
+            "Actualizar",
+            style= ft.ButtonStyle(bgcolor= "#2c78d0", color= "white", shape= ft.RoundedRectangleBorder(radius= 5)),
+            width= 120,
+            on_click= click_actualizar,
+            visible= True if factura is not None else False # Solo mostrar el botón de "Actualizar" si se está editando una factura existente
         )
 
         def chk_descuento_changed(e):
@@ -749,7 +823,7 @@ class FormularioFactura(ft.Container):
                     ft.Column(
                         controls=[
                             ft.Row(
-                                controls= [btn_guardar_otra, btn_guardar]
+                                controls= [btn_guardar_otra, btn_guardar, btn_actualizar]
                             ),
                             ft.Row(controls= [btn_cancelar]),
                         ]

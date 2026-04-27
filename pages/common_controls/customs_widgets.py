@@ -166,9 +166,10 @@ class CustomTextFieldAutocomplete(ft.Stack):
         
 
 class Tabla_Factura_Row(ft.Column):
-    def __init__(self, estado: str, fecha: str, numero: str, cliente: str, total: str, moneda: str, page: ft.Page):
+    def __init__(self, tipo: int, estado: str, fecha: str, numero: str, cliente: str, total: str, moneda: str, page: ft.Page):
         super().__init__()
 
+        self.tipo = tipo
         self.estado = estado
         self.page = page
 
@@ -221,15 +222,32 @@ class Tabla_Factura_Row(ft.Column):
                         on_click= lambda e: self.click_row(e, numero)
                     ),
                     ft.Container(
+                        content= ft.TextButton(text="Enviada"),
+                        width= 80,
+                        visible= True if estado == "XEnviar" else False,
+                    ),
+                    ft.Container(
                         content= ft.TextButton(text="Facturar"),
-                        width= 80
+                        width= 80,
+                        visible= True if estado == "Enviada" and self.tipo == 1 else False,
+                    ),
+                    ft.Container(
+                        content= ft.TextButton(text="Pagada"),
+                        width= 80,
+                        visible= True if estado == "Enviada" and self.tipo == 2 else False,
+                    ),
+                    ft.Container(
+                        content= ft.TextButton(text="PDF"),
+                        width= 80,
+                        visible= True if estado == "Pagada" and self.tipo == 2 else False,
                     ),
                     ft.Container(
                         content= ft.PopupMenuButton(
                             items=[
-                                ft.PopupMenuItem("Borrador", height= 10),
+                                ft.PopupMenuItem("XEnviar", height= 10),
                                 ft.PopupMenuItem("Enviada", height= 10),
-                                ft.PopupMenuItem("Facturar", height= 10),
+                                ft.PopupMenuItem("Facturar", height= 10, disabled= True if self.tipo == 2 else False),
+                                ft.PopupMenuItem("Pagada", height= 10, disabled= True if self.tipo == 1 else False),
                                 ft.PopupMenuItem(
                                     content= ft.Column(controls=[
                                         ft.Divider(height=8, color= "#ECEEF4"),
@@ -278,6 +296,12 @@ class Tabla_Factura_Row(ft.Column):
         # ,  -> Agrega la coma de miles
         # .2f -> Asegura siempre 2 decimales (fixed point)
         return f"${numero:,.2f}"
+    
+    def click_btn_enviada(self, e):
+        self.estado = "Enviada"
+        self.tabla_row.controls[0].controls[0].content.value = self.estado
+        self.tabla_row.controls[0].controls[0].content.bgcolor = self._color_estado()
+        self.tabla_row.controls[0].controls[0].content.update()
     
     def eliminar(self, factura_number, modal_dialog: ft.AlertDialog):
         from router import show_view
