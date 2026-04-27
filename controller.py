@@ -1,4 +1,5 @@
 from operator import or_
+from datetime import datetime
 
 from models import (session, 
                     Tasa,
@@ -11,7 +12,7 @@ from models import (session,
                     Config)
 
 def get_facturas():
-    facturas = session.query(Factura).filter(Factura.tipo == 2).all()
+    facturas = session.query(Factura).order_by(Factura.id.desc()).filter(Factura.tipo == 2).all()
     clientes = get_clientes()
     lista_clientes = []
 
@@ -58,7 +59,7 @@ def get_recientes_facturas():
     return para_tabla_resumen
 
 def get_cotizaciones():
-    cotizaciones = session.query(Factura).filter(Factura.tipo == 1).all()
+    cotizaciones = session.query(Factura).order_by(Factura.id.desc()).filter(Factura.tipo == 1).all()
     clientes = get_clientes()
     lista_clientes = []
 
@@ -101,6 +102,10 @@ def get_facturas_pendientes():
 
 def get_factura_by_id(factura_id):
     factura = session.query(Factura).filter(Factura.id == factura_id).first()
+    return factura
+
+def get_factura_by_numero(numero_factura):
+    factura = session.query(Factura).filter(Factura.numero_factura == numero_factura).first()
     return factura
 
 def get_facturas_products(factura_id):
@@ -382,24 +387,75 @@ def update_nota_terminos(updated_data):
         return {"Success": False, "Message": "Configuración no encontrada."}
     
 
-def guardar_nueva_factura(factura_data):
-    # Generar número de factura único. Inicia con dos dígitos del año, seguido de 4 dígitos secuenciales.
-    from datetime import datetime
+def _parse_factura_year(fecha):
+    # Extrae el año de la fecha proporcionada.
+    # Acepta cadenas en formatos comunes y objetos con atributo year.
+    if isinstance(fecha, str):
+        for fmt in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y"):
+            try:
+                return datetime.strptime(fecha, fmt).year
+            except ValueError:
+                continue
+    elif hasattr(fecha, "year"):
+        return fecha.year
+    raise ValueError(f"Formato de fecha no válido: {fecha}")
 
-    year = datetime.now().year
 
-    ultimo_numero = session.query(Factura).order_by(Factura.id.desc()).first()
-    if ultimo_numero:
-        nuevo_numero = f"{str(year)[-2:]}{ultimo_numero.id + 1:04d}"
+def _get_next_invoice_number(fecha_factura):
+    # Genera el siguiente número de factura.
+    # El formato es: YY + secuencia.
+    # La secuencia se reinicia en 0001 cada año nuevo.
+    # Los primeros dos dígitos corresponden al año de la fecha de la factura.
+    # La secuencia mínima tiene 4 dígitos, pero puede crecer más allá de 9999.
+    year = _parse_factura_year(fecha_factura)
+    year_prefix = str(year)[-2:]
+
+    # Lee el último número generado desde Config.numero_factura.
+    config = session.query(Config).first()
+    last_config_number = None
+    if config is not None and config.numero_factura is not None:
+        last_config_number = str(int(config.numero_factura))
+
+    next_sequence = 1
+    if last_config_number and last_config_number[:2] == year_prefix:
+        # Si el último número en Config es del mismo año, se incrementa la secuencia.
+        next_sequence = int(last_config_number[2:]) + 1
     else:
-        nuevo_numero = f"{str(year)[-2:]}0001"
-    
+        # Si el último número es de otro año o no existe, buscamos la máxima secuencia
+        #del año actual en las facturas existentes y reiniciamos a 0001.
+        max_sequence = 0
+        facturas_del_year = session.query(Factura).filter(Factura.numero_factura.like(f"{year_prefix}%")).all()
+        for factura in facturas_del_year:
+            numero = factura.numero_factura
+            if numero and len(numero) > 2 and numero[:2] == year_prefix and numero[2:].isdigit():
+                secuencia = int(numero[2:])
+                if secuencia > max_sequence:
+                    max_sequence = secuencia
+        next_sequence = max_sequence + 1
+
+    sequence_part = f"{next_sequence:04d}" if next_sequence < 10000 else str(next_sequence)
+    next_number = f"{year_prefix}{sequence_part}"
+
+    # Actualiza Config.numero_factura para que el siguiente cálculo tenga referencia persistente.
+    if config is None:
+        config = Config(numero_factura=int(next_number))
+        session.add(config)
+    else:
+        config.numero_factura = int(next_number)
+    session.commit()
+
+    return next_number
+
+
+def guardar_nueva_factura(factura_data):
+    nuevo_numero = _get_next_invoice_number(factura_data["fecha"])
+
     nueva_factura = Factura(
         numero_factura=nuevo_numero,
         Fecha=factura_data["fecha"],
         Cliente=factura_data["cliente_id"],
         total=factura_data["total"].replace(",", ""),
-        Moneda=factura_data["moneda"],
+        Moneda=factura_data["moneda"].upper(),
         tasa_cambio=factura_data["tasa_cambio"],
         tipo=factura_data["tipo"],
         metodo_pago=factura_data["metodo_pago"],
@@ -407,6 +463,7 @@ def guardar_nueva_factura(factura_data):
         Estado= 2,  # Estado "XEnviar"
         descuento=factura_data.get("descuento", 0),
         descuento_tipo=factura_data.get("descuento_tipo", 0),
+        Vendedor = 1
     )
     session.add(nueva_factura)
 
@@ -424,8 +481,14 @@ def guardar_nueva_factura(factura_data):
 
 
 if __name__ == "__main__":
-    cliente = get_cliente_filter("contacto")
-    print(cliente)
+    factura = get_factura_by_numero(260035)
+    # print(factura.tipo_rel.tipo_factura)
+    productos = get_facturas_products(factura.id)
+    facturas_products = []
+    for producto in productos:
+        facturas_products.append((producto.Nombre, producto.Cantidad, float(producto.Precio_venta)))
+    print(facturas_products)
+    print(facturas_products[0][2])
 
     # for factura in facturas:
     #     print(factura.numero_factura, factura.vendedor.Nombre, factura.tipo_rel.tipo_factura)

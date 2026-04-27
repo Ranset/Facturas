@@ -189,32 +189,36 @@ class Tabla_Factura_Row(ft.Column):
                         width= 70,
                         height= 20,
                         margin= ft.margin.only(left= 15),
-                        on_click= lambda e: print(f"Clic en factura {numero}")
+                        on_click= lambda e: self.click_row(e, numero)
                         ),
                     ft.Container(
                         content= ft.Text(fecha),
                         width= 80,
                         margin= ft.margin.only(left= 15),
+                        on_click= lambda e: self.click_row(e, numero)
                     ),
                     ft.Container(
                         content= ft.Text(numero),
                         width= 80,
-                        margin= ft.margin.only(left= 15)
+                        margin= ft.margin.only(left= 15),
+                        on_click= lambda e: self.click_row(e, numero)
                     ),
                     ft.Container(
                         content= ft.Text(cliente, no_wrap= True, overflow= "ellipsis"),
                         expand= 4,
-                        on_click= lambda e: print(f"Clic en factura {numero}")
+                        on_click= lambda e: self.click_row(e, numero)
                     ),
                     ft.Container(
                         content= ft.Text(self.formatear_con_comas(total)),
                         width= 200,
-                        margin= ft.margin.only(left= 20)
+                        margin= ft.margin.only(left= 20),
+                        on_click= lambda e: self.click_row(e, numero)
                     ),
                     ft.Container(
                         content= ft.Text(moneda),
                         width= 50,
-                        margin= ft.margin.only(left= 15)
+                        margin= ft.margin.only(left= 15),
+                        on_click= lambda e: self.click_row(e, numero)
                     ),
                     ft.Container(
                         content= ft.TextButton(text="Facturar"),
@@ -304,10 +308,17 @@ class Tabla_Factura_Row(ft.Column):
             on_dismiss=lambda e: print("Modal dialog dismissed!"),
         )
 
+
         page.overlay.append(modal_dialog) # Agregar el diálogo a la superposición de la página
         modal_dialog.open = True   # Abrirlo
         page.update()
 
+    def click_row(self, e, number):
+        from router import show_view
+        from pages.common_controls.states import States
+
+        States.factura_numero = number
+        show_view(self.page, States._formulario_factura_location)
 
     def crear(self):
         return self.tabla_row
@@ -888,7 +899,7 @@ class NewProductDialog(ft.AlertDialog):
                 if States.where_i_am != States._formulario_factura_location:
                     self.alert_dialog.open = False
                     show_view(page, States.where_i_am)
-                else:
+                else: # Si está e el frmulario de facturas
                     self.alert_dialog.open = False
                     page.update()
 

@@ -2,7 +2,7 @@ from flet_base import flet_instance as ft
 from datetime import datetime
 from pages.common_controls.states import States
 from pages.common_controls.customs_widgets import CustomTextDatePicker, Tabla_Factura_Row, NewClientDialog, NewProductDialog, CustomTextFieldAutocomplete
-from controller import get_clientes, get_configuration, get_productos, guardar_nueva_factura
+from controller import get_clientes, get_configuration, get_productos, guardar_nueva_factura, get_factura_by_numero
 
 class FormularioFactura(ft.Container):
     def __init__(self, page: ft.Page):
@@ -19,11 +19,29 @@ class FormularioFactura(ft.Container):
 
         configuracion = get_configuration()
         usd = 1
-        cup = configuracion["Data"]["tasa_cup"]
-        mlc = configuracion["Data"]["tasa_mlc"]
+        cup = float(configuracion["Data"]["tasa_cup"])
+        mlc = float(configuracion["Data"]["tasa_mlc"])
         tasa_fiscal = configuracion["Data"]["tasa_fiscal"]
 
         productos = get_productos()
+
+        factura = None
+
+        if States.factura_numero is not None: # Si es una edición de una factura
+            factura = get_factura_by_numero(States.factura_numero)
+            States.factura_numero = None # Limpiar el número de factura en el estado para evitar problemas al volver a cargar el formulario después de guardar una factura o cotización, ya que ese número solo se usa para editar facturas existentes, no para nuevas facturas
+
+            if factura.tipo == 1:
+                States.i_come_from = States._Crear_btn_loc_cotizacion
+            elif factura.tipo == 2:
+                States.i_come_from = States._Crear_btn_loc_facturas
+
+            if factura.Moneda == "CUP":
+                cup = factura.tasa_cambio
+            elif factura.Moneda == "MLC":
+                mlc = factura.tasa_cambio
+            
+            tasa_fiscal = factura.porciento_cta_fiscal
 
         # <Fin Carga de datos
 
@@ -42,9 +60,9 @@ class FormularioFactura(ft.Container):
         ## @note <Widgets objects
         def title():
             if States.i_come_from == States._Crear_btn_loc_facturas:
-                return "Crear Factura"
+                return "Crear Factura" if factura is None else f"Editar Factura #{factura.numero_factura}"
             if States.i_come_from == States._Crear_btn_loc_cotizacion:
-                return "Crear Cotización"
+                return "Crear Cotización" if factura is None else f"Editar Cotización #{factura.numero_factura}"
         
         txt_title = title()
 
@@ -66,7 +84,8 @@ class FormularioFactura(ft.Container):
             editable=True,
             filled= True,
             fill_color= inputs_bgcolor,
-            border_color= inputs_border_color
+            border_color= inputs_border_color,
+            value= factura.Cliente if factura is not None else None
         )
 
         new_client_dialog = NewClientDialog(page).Crear()
@@ -101,7 +120,7 @@ class FormularioFactura(ft.Container):
             ],
             ),
             on_change= moneda_change,
-            value= "cup",
+            value= str(factura.Moneda).lower() if factura is not None else  "cup",
         )
 
         txt_pago = ft.Text("Pago:")
@@ -113,21 +132,21 @@ class FormularioFactura(ft.Container):
                 ft.DropdownOption("1", "Transferencia"),
                 ft.DropdownOption("2", "Efectivo"),
             ],
-            value= "1",
+            value= str(factura.metodo_pago) if factura is not None else "1",
             border_color= ft.Colors.GREY_400,
         )
 
         txt_fecha = ft.Text("Fecha:")
 
         select_fecha_inicio = CustomTextDatePicker(page= page).Crear()
-        select_fecha_inicio.value = datetime.now().strftime("%d/%m/%Y")
+        select_fecha_inicio.value = factura.Fecha if factura is not None else datetime.now().strftime("%d/%m/%Y")
 
         txt_finanzas_title = ft.Text("Configuración financiera", weight= ft.FontWeight.BOLD)
 
         cup_tasa = ft.Row(
             controls=[
                 ft.Text("CUP:"),
-                ft.TextField(str(cup),
+                ft.TextField(str(f"{cup:.2f}"),
                             border_color= ft.Colors.GREY_400,
                             width= 80,
                             on_change= lambda e: recalcular_monedas(radio_monedas.value)
@@ -138,7 +157,7 @@ class FormularioFactura(ft.Container):
         mlc_tasa = ft.Row(
             controls=[
                 ft.Text("MLC:"),
-                ft.TextField(str(mlc),
+                ft.TextField(str(f"{mlc:.2f}"),
                             border_color= ft.Colors.GREY_400,
                             width= 80,
                             on_change= lambda e: recalcular_monedas(radio_monedas.value)
@@ -173,7 +192,6 @@ class FormularioFactura(ft.Container):
         product_suggestions = []
 
         for producto in productos["Data"]:
-            # print((producto["nombre"], float(producto["precio"]), producto["moneda"], producto["iva"], producto["proveedor"], producto["peso"], producto["id"]))
             product_suggestions.append((producto["nombre"], float(producto["precio"]), producto["moneda"], producto["iva"], producto["proveedor"], producto["peso"], producto["id"]))
 
         def update_price():
@@ -194,23 +212,22 @@ class FormularioFactura(ft.Container):
         
         precio = ft.TextField(label="Precio USD", width= 150, border_color= inputs_border_color)
 
-        def click_add_product(e):
+        def click_add_product(e, product_name= None, product_price= None, product_qty= None):
             # Remover overlay si está presente
             if select_product_instance.overlay_wrapper in page.overlay:
                 page.overlay.remove(select_product_instance.overlay_wrapper)
             # Validar entradas antes de crear la fila de producto
-            nombre_producto = select_product_instance.select_cliente_field.value
+            nombre_producto = product_name if product_name is not None else select_product_instance.select_cliente_field.value
             if not nombre_producto:
                 print("Nombre de producto vacío")
                 return
             try:
-                qty = int(cantidad.value)
+                qty = product_qty if product_qty is not None else int(cantidad.value)
             except Exception:
-                page.op
                 print("Cantidad inválida")
                 return
             try:
-                price = float(precio.value)
+                price = product_price if product_price is not None else float(precio.value)
             except Exception:
                 print("Precio inválido")
                 return
@@ -352,13 +369,20 @@ class FormularioFactura(ft.Container):
                     tipo_descuento = 1
                 else:
                     tipo_descuento = 2
+
+            tasa_de_cambio = 1.00
+
+            if radio_monedas.value == "cup":
+                tasa_de_cambio = cup_tasa.controls[1].value
+            elif radio_monedas.value == "mlc":
+                tasa_de_cambio = mlc_tasa.controls[1].value
             
             factura_data = {
                 "cliente_id": select_cliente.value,
                 "moneda": radio_monedas.value,
                 "metodo_pago": int(dd_pago.value),
                 "fecha": select_fecha_inicio.value,
-                "tasa_cambio": cup_tasa.controls[1].value,
+                "tasa_cambio": tasa_de_cambio,
                 "tasa_fiscal": tasa_fiscal.controls[1].value,
                 "descuento": float(descuento.value) if descuento.value else 0.0,
                 "descuento_tipo": tipo_descuento,
@@ -406,7 +430,8 @@ class FormularioFactura(ft.Container):
         )
 
         def chk_descuento_changed(e):
-            if e.control.value:
+            checkbox = getattr(e, "control", None) or e # Manejar ambos casos: on_change pasa el control directamente, mientras que on_click pasa un evento con el control como atributo
+            if checkbox.value:
                 column_descuento.controls[1].visible = True
                 descuento.disabled = False
                 txt_subtotal.visible = True
@@ -428,6 +453,7 @@ class FormularioFactura(ft.Container):
             on_change= chk_descuento_changed,
         )
 
+        
         def descuento_changed(e):
             actualizar_totales()
             page.update()
@@ -442,7 +468,7 @@ class FormularioFactura(ft.Container):
             cursor_height= 14,
             text_vertical_align= -1.0,
             content_padding= ft.padding.only(top= 0, bottom=0, left=10, right=5),
-            value= "10",
+            value= str(f"{factura.descuento:.2f}") if factura is not None else "10",
             disabled= True,
             on_change= descuento_changed
         )
@@ -454,7 +480,7 @@ class FormularioFactura(ft.Container):
             page.update()
 
         sw_descuento = ft.Switch(
-            value=False,
+            value= True if factura is not None and factura.descuento_tipo == 2 else False,
             height= 20,
             inactive_thumb_color= "white",
             inactive_track_color= "#36618E",
@@ -527,6 +553,13 @@ class FormularioFactura(ft.Container):
 
         # Functions>
 
+        # Agregar productos de la factura a la tabla si es una edición
+        if factura is not None:
+            from controller import get_facturas_products
+            productos = get_facturas_products(factura.id)
+            for producto in productos:
+                click_add_product(e=None, product_name= producto.Nombre, product_price= float(producto.Precio_venta), product_qty= producto.Cantidad)
+
         # @note <Layout
 
         Row_title = ft.Row(
@@ -551,7 +584,7 @@ class FormularioFactura(ft.Container):
             content= ft.Row(
             controls=[
                 select_cliente,
-                btn_agragar_cliente
+                # btn_agragar_cliente
             ],
             ),
             margin= ft.margin.only(top= 5)
@@ -628,7 +661,7 @@ class FormularioFactura(ft.Container):
             controls=[
                 ft.Icon(ft.Icons.RECEIPT),
                 txt_title_add_product,
-                btn_new_product
+                # btn_new_product
             ]
             )
         
@@ -775,3 +808,7 @@ class FormularioFactura(ft.Container):
         page.add(Row_generar)
 
         # Layout>
+
+        if factura is not None and factura.descuento_tipo > 0:
+            chk_descuento.value = True
+            chk_descuento_changed(chk_descuento) # Forzar la actualización del estado del descuento para mostrar los campos correspondientes

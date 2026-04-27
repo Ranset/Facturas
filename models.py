@@ -28,6 +28,7 @@ class Config(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     porciento_cta_fiscal = Column(Integer)
     nota_terminos = Column(Text)
+    numero_factura = Column(Integer)
 
 
 class Producto(Base):

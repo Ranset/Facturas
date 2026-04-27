@@ -27,6 +27,8 @@ class States:
 
     selected_product_price = ""
 
+    factura_numero = None
+
     @classmethod
     def set_product_row(cls, index):
         cls.products_list.append(index)
