@@ -172,6 +172,8 @@ class Tabla_Factura_Row(ft.Column):
         self.tipo = tipo
         self.estado = estado
         self.page = page
+        self.numero = numero
+        self.facturar = False
 
         self.tabla_row = ft.Column(
             alignment= ft.MainAxisAlignment.START,
@@ -221,22 +223,22 @@ class Tabla_Factura_Row(ft.Column):
                         margin= ft.margin.only(left= 15),
                         on_click= lambda e: self.click_row(e, numero)
                     ),
-                    ft.Container(
-                        content= ft.TextButton(text="Enviada"),
+                    ft.Container( #6
+                        content= ft.TextButton(text="Enviada", on_click= lambda e: self.click_btn_enviada(e)),
                         width= 80,
                         visible= True if estado == "XEnviar" else False,
                     ),
-                    ft.Container(
-                        content= ft.TextButton(text="Facturar"),
+                    ft.Container( #7
+                        content= ft.TextButton(text="Facturar", on_click= lambda e: self.click_btn_facturar(e)),
                         width= 80,
                         visible= True if estado == "Enviada" and self.tipo == 1 else False,
                     ),
-                    ft.Container(
-                        content= ft.TextButton(text="Pagada"),
+                    ft.Container( #8
+                        content= ft.TextButton(text="Pagada", on_click= lambda e: self.click_btn_pagada(e)),
                         width= 80,
                         visible= True if estado == "Enviada" and self.tipo == 2 else False,
                     ),
-                    ft.Container(
+                    ft.Container( #9
                         content= ft.TextButton(text="PDF"),
                         width= 80,
                         visible= True if estado == "Pagada" and self.tipo == 2 else False,
@@ -244,10 +246,10 @@ class Tabla_Factura_Row(ft.Column):
                     ft.Container(
                         content= ft.PopupMenuButton(
                             items=[
-                                ft.PopupMenuItem("XEnviar", height= 10),
-                                ft.PopupMenuItem("Enviada", height= 10),
-                                ft.PopupMenuItem("Facturar", height= 10, disabled= True if self.tipo == 2 else False),
-                                ft.PopupMenuItem("Pagada", height= 10, disabled= True if self.tipo == 1 else False),
+                                ft.PopupMenuItem("XEnviar", height= 10, on_click= lambda e: self.click_btn_xenviar(e)),
+                                ft.PopupMenuItem("Enviada", height= 10, on_click= lambda e: self.click_btn_enviada(e)),
+                                ft.PopupMenuItem("Facturar", height= 10, disabled= True if self.tipo == 2 else False, on_click= lambda e: self.click_btn_facturar(e)),
+                                ft.PopupMenuItem("Pagada", height= 10, disabled= True if self.tipo == 1 else False, on_click= lambda e: self.click_btn_pagada(e)),
                                 ft.PopupMenuItem(
                                     content= ft.Column(controls=[
                                         ft.Divider(height=8, color= "#ECEEF4"),
@@ -298,10 +300,66 @@ class Tabla_Factura_Row(ft.Column):
         return f"${numero:,.2f}"
     
     def click_btn_enviada(self, e):
+        from controller import update_estado_factura
+        update_estado_factura(self.numero, 3) # 3 = Enviada en la base de datos
+
         self.estado = "Enviada"
         self.tabla_row.controls[0].controls[0].content.value = self.estado
-        self.tabla_row.controls[0].controls[0].content.bgcolor = self._color_estado()
-        self.tabla_row.controls[0].controls[0].content.update()
+        self.tabla_row.controls[0].controls[0].bgcolor = self._color_estado()
+        self.tabla_row.controls[0].controls[6].visible = False # Botón "Enviada"
+        self.tabla_row.controls[0].controls[7].visible = False # Botón "Facturar"
+        self.tabla_row.controls[0].controls[8].visible = False # Botón "Pagada"
+        self.tabla_row.controls[0].controls[9].visible = False # Botón "PDF"
+        if self.tipo == 1:
+            self.tabla_row.controls[0].controls[7].visible = True # Botón "Facturar" si es cotización
+        else:
+            self.tabla_row.controls[0].controls[8].visible = True # Botón "Pagada" si es factura
+        self.page.update()
+    
+    def click_btn_pagada(self, e):
+        from controller import update_estado_factura
+        update_estado_factura(self.numero, 4) # 4 = Pagada en la base de datos
+
+        self.estado = "Pagada"
+        self.tabla_row.controls[0].controls[0].content.value = self.estado
+        self.tabla_row.controls[0].controls[0].bgcolor = self._color_estado()
+        self.tabla_row.controls[0].controls[6].visible = False # Botón "Enviada"
+        self.tabla_row.controls[0].controls[7].visible = False # Botón "Facturar"
+        self.tabla_row.controls[0].controls[8].visible = False # Botón "Pagada"
+        self.tabla_row.controls[0].controls[9].visible = True # Botón "PDF"
+        self.page.update()
+    
+    def click_btn_xenviar(self, e):
+        from controller import update_estado_factura
+        update_estado_factura(self.numero, 2) # 2 = XEnviar en la base de datos
+
+        self.estado = "XEnviar"
+        self.tabla_row.controls[0].controls[0].content.value = self.estado
+        self.tabla_row.controls[0].controls[0].bgcolor = self._color_estado()
+        self.tabla_row.controls[0].controls[7].visible = False # Botón "Facturar"
+        self.tabla_row.controls[0].controls[8].visible = False # Botón "Pagada"
+        self.tabla_row.controls[0].controls[9].visible = False # Botón "PDF"
+        self.tabla_row.controls[0].controls[6].visible = True # Botón "Enviada"
+        self.page.update()
+
+    def click_btn_facturar(self, e):
+        if not self.facturar:
+            self.facturar = True
+
+            if self.tabla_row.controls[0].controls[7].visible == False: # Botón "Facturar"
+                self.tabla_row.controls[0].controls[6].visible = False # Botón "Enviada"
+                self.tabla_row.controls[0].controls[7].visible = True # Botón "Facturar"
+
+            self.tabla_row.controls[0].controls[7].content.text = "Aceptar" # Botón "Facturar" se convierte en "Aceptar" para confirmar acción
+            self.tabla_row.controls[0].controls[7].content.style = ft.ButtonStyle(bgcolor= "#2c78d0", color= "white", shape= ft.RoundedRectangleBorder(radius= 5))
+            self.page.update()
+        else:
+            from controller import convertir_cotizacion_a_factura
+            from router import show_view
+            from pages.common_controls.states import States
+
+            convertir_cotizacion_a_factura(self.numero)
+            show_view(self.page, States.where_i_am)  # Redibujar la vista actual para reflejar el cambio de estado
     
     def eliminar(self, factura_number, modal_dialog: ft.AlertDialog):
         from router import show_view

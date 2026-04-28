@@ -162,6 +162,25 @@ def update_factura(factura_number, updated_data):
         return {"Success": True, "Message": f"Factura {factura_number} actualizada correctamente."}
     else:
         return {"Success": False, "Message": f"Factura {factura_number} no encontrada."}
+    
+def update_estado_factura(factura_number, nuevo_estado):
+    factura = session.query(Factura).filter(Factura.numero_factura == factura_number).first()
+    if factura:
+        factura.Estado = nuevo_estado
+        session.commit()
+        return {"Success": True, "Message": f"Estado de la factura {factura_number} actualizado a {nuevo_estado}."}
+    else:
+        return {"Success": False, "Message": f"Factura {factura_number} no encontrada."}
+    
+def convertir_cotizacion_a_factura(cotizacion_number):
+    cotizacion = session.query(Factura).filter(Factura.numero_factura == cotizacion_number, Factura.tipo == 1).first()
+    if cotizacion:
+        cotizacion.tipo = 2  # Cambia el tipo a "Factura"
+        cotizacion.Estado = 2  # Cambia el estado a "XEnviar" para que se muestre en la tabla de facturas
+        session.commit()
+        return {"Success": True, "Message": f"Cotización {cotizacion_number} convertida a factura correctamente."}
+    else:
+        return {"Success": False, "Message": f"Cotización {cotizacion_number} no encontrada."}
 
 def dashboard_data():
     facturas = get_facturas_pagadas()
