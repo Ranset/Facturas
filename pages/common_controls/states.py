@@ -29,6 +29,8 @@ class States:
 
     factura_numero = None
 
+    duplicated_number = None
+
     @classmethod
     def set_product_row(cls, index):
         cls.products_list.append(index)

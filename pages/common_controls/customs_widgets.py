@@ -256,6 +256,7 @@ class Tabla_Factura_Row(ft.Column):
                                         ft.Text("PDF"),
                                     ], alignment= ft.alignment.top_center, spacing=0),
                                     height= 10),
+                                ft.PopupMenuItem("Duplicar", height= 10, on_click= lambda e: self.click_btn_duplicar(e)),
                                 ft.PopupMenuItem(
                                     content= ft.Column(controls=[
                                         ft.Divider(height=8, color= "#ECEEF4"),
@@ -361,6 +362,13 @@ class Tabla_Factura_Row(ft.Column):
             convertir_cotizacion_a_factura(self.numero)
             show_view(self.page, States.where_i_am)  # Redibujar la vista actual para reflejar el cambio de estado
     
+    def click_btn_duplicar(self, e):
+        from router import show_view
+        from pages.common_controls.states import States
+
+        States.duplicated_number = self.numero
+        show_view(self.page, States._formulario_factura_location)  # Redirigir al formulario de factura para mostrar la factura duplicada
+
     def eliminar(self, factura_number, modal_dialog: ft.AlertDialog):
         from router import show_view
         from pages.common_controls.states import States

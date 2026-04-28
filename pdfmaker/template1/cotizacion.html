@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <table style="width: 28.6301%; border-collapse: collapse; height: 65px;" border="0">
+        <tbody>
+            {% for item in data %}
+                <tr>
+                    <td style="width: 50%;">{{ item.producto }}</td>
+                    <td style="width: 50%;">{{ item.cantidad }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+    <table>
+        <thead>
+            <tr>
+                <th colspan="2" style="background: black;color: white;text-align: center;">Column 1</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Cell 1</td>
+                <td>Cell 2</td>
+            </tr>
+            <tr>
+                <td>Cell 3</td>
+                <td>Cell 4</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+</body>
+
+</html>

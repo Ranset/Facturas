@@ -27,6 +27,8 @@ class FormularioFactura(ft.Container):
 
         factura = None
 
+        duplicated_data = None
+
         if States.factura_numero is not None: # Si es una edición de una factura
             factura = get_factura_by_numero(States.factura_numero)
             States.factura_numero = None # Limpiar el número de factura en el estado para evitar problemas al volver a cargar el formulario después de guardar una factura o cotización, ya que ese número solo se usa para editar facturas existentes, no para nuevas facturas
@@ -42,6 +44,21 @@ class FormularioFactura(ft.Container):
                 mlc = factura.tasa_cambio
             
             tasa_fiscal = factura.porciento_cta_fiscal
+        elif States.duplicated_number is not None: # Si es una duplicación de una factura
+            duplicated_data = get_factura_by_numero(States.duplicated_number)
+            States.duplicated_number = None # Limpiar el número de factura en el estado para evitar problemas al volver a cargar el formulario después de guardar una factura o cotización, ya que ese número solo se usa para duplicar facturas existentes, no para nuevas facturas
+
+            if duplicated_data.tipo == 1:
+                States.i_come_from = States._Crear_btn_loc_cotizacion
+            elif duplicated_data.tipo == 2:
+                States.i_come_from = States._Crear_btn_loc_facturas
+
+            if duplicated_data.Moneda == "CUP":
+                cup = duplicated_data.tasa_cambio
+            elif duplicated_data.Moneda == "MLC":
+                mlc = duplicated_data.tasa_cambio
+            
+            tasa_fiscal = duplicated_data.porciento_cta_fiscal
 
         # <Fin Carga de datos
 
@@ -85,7 +102,7 @@ class FormularioFactura(ft.Container):
             filled= True,
             fill_color= inputs_bgcolor,
             border_color= inputs_border_color,
-            value= factura.Cliente if factura is not None else None
+            value= factura.Cliente if factura is not None else (duplicated_data.Cliente if duplicated_data is not None else None)
         )
 
         new_client_dialog = NewClientDialog(page).Crear()
@@ -120,7 +137,7 @@ class FormularioFactura(ft.Container):
             ],
             ),
             on_change= moneda_change,
-            value= str(factura.Moneda).lower() if factura is not None else  "cup",
+            value= str(factura.Moneda).lower() if factura is not None else (str(duplicated_data.Moneda).lower() if duplicated_data is not None else "cup"),
         )
 
         txt_pago = ft.Text("Pago:")
@@ -132,7 +149,7 @@ class FormularioFactura(ft.Container):
                 ft.DropdownOption("1", "Transferencia"),
                 ft.DropdownOption("2", "Efectivo"),
             ],
-            value= str(factura.metodo_pago) if factura is not None else "1",
+            value= str(factura.metodo_pago) if factura is not None else (str(duplicated_data.metodo_pago) if duplicated_data is not None else "1"),
             border_color= ft.Colors.GREY_400,
         )
 
@@ -353,6 +370,20 @@ class FormularioFactura(ft.Container):
             visible= True if factura is None else False # Solo mostrar el botón de "Guardar y otra" si no se está editando una factura existente, ya que tiene más sentido crear una nueva factura después de guardar una nueva que después de editar una existente
         )
 
+        def click_duplicar(e):
+            from router import show_view
+
+            States.duplicated_number = factura.numero_factura
+            show_view(page, States._formulario_factura_location)  # Redirigir al formulario de factura para mostrar la factura duplicada
+        
+        btn_duplicar = ft.OutlinedButton(
+            "Duplicar",
+            style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
+            width= 120,
+            on_click= click_duplicar,
+            visible= True if factura is not None else False # Solo mostrar el botón de "Duplicar" si se está editando una factura existente
+        )
+
         def click_guardar(e):
             # 1. Validar que haya productos en la factura
             if len(dt_factura.rows) == 0:
@@ -542,7 +573,7 @@ class FormularioFactura(ft.Container):
             cursor_height= 14,
             text_vertical_align= -1.0,
             content_padding= ft.padding.only(top= 0, bottom=0, left=10, right=5),
-            value= str(f"{factura.descuento:.2f}") if factura is not None else "10",
+            value= str(f"{factura.descuento:.2f}") if factura is not None else (str(f"{duplicated_data.descuento:.2f}") if duplicated_data is not None else "10"),
             disabled= True,
             on_change= descuento_changed
         )
@@ -554,7 +585,7 @@ class FormularioFactura(ft.Container):
             page.update()
 
         sw_descuento = ft.Switch(
-            value= True if factura is not None and factura.descuento_tipo == 2 else False,
+            value= True if factura is not None and factura.descuento_tipo == 2 else (True if duplicated_data is not None and duplicated_data.descuento_tipo == 2 else False),
             height= 20,
             inactive_thumb_color= "white",
             inactive_track_color= "#36618E",
@@ -631,6 +662,12 @@ class FormularioFactura(ft.Container):
         if factura is not None:
             from controller import get_facturas_products
             productos = get_facturas_products(factura.id)
+            for producto in productos:
+                click_add_product(e=None, product_name= producto.Nombre, product_price= float(producto.Precio_venta), product_qty= producto.Cantidad)
+        
+        if duplicated_data is not None:
+            from controller import get_facturas_products
+            productos = get_facturas_products(duplicated_data.id)
             for producto in productos:
                 click_add_product(e=None, product_name= producto.Nombre, product_price= float(producto.Precio_venta), product_qty= producto.Cantidad)
 
@@ -823,7 +860,7 @@ class FormularioFactura(ft.Container):
                     ft.Column(
                         controls=[
                             ft.Row(
-                                controls= [btn_guardar_otra, btn_guardar, btn_actualizar]
+                                controls= [btn_duplicar, btn_guardar_otra, btn_guardar, btn_actualizar]
                             ),
                             ft.Row(controls= [btn_cancelar]),
                         ]
@@ -884,5 +921,9 @@ class FormularioFactura(ft.Container):
         # Layout>
 
         if factura is not None and factura.descuento_tipo > 0:
+            chk_descuento.value = True
+            chk_descuento_changed(chk_descuento) # Forzar la actualización del estado del descuento para mostrar los campos correspondientes
+        
+        if duplicated_data is not None and duplicated_data.descuento_tipo > 0:
             chk_descuento.value = True
             chk_descuento_changed(chk_descuento) # Forzar la actualización del estado del descuento para mostrar los campos correspondientes
