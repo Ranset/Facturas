@@ -44,7 +44,7 @@ def get_facturas():
     return {"Success": True, "Data": data}
 
 def get_recientes_facturas():
-    recientes_facturas = session.query(Factura).order_by(Factura.id.desc()).limit(5).all()
+    recientes_facturas = session.query(Factura).order_by(Factura.id.desc()).limit(10).all()
 
     para_tabla_resumen = []
     for factura in recientes_facturas:
@@ -181,6 +181,40 @@ def convertir_cotizacion_a_factura(cotizacion_number):
         return {"Success": True, "Message": f"Cotización {cotizacion_number} convertida a factura correctamente."}
     else:
         return {"Success": False, "Message": f"Cotización {cotizacion_number} no encontrada."}
+
+def filtrar_facturas(status=None, cliente_id=None, fecha_desde=None, fecha_hasta=None, numero=None):
+    query = session.query(Factura)
+
+    if status is not None:
+        query = query.filter(Factura.Estado == status)
+    if cliente_id is not None:
+        query = query.filter(Factura.Cliente == cliente_id)
+    if fecha_desde is not None:
+        query = query.filter(Factura.Fecha >= fecha_desde)
+    if fecha_hasta is not None:
+        query = query.filter(Factura.Fecha <= fecha_hasta)
+    if numero is not None:
+        query = query.filter(Factura.numero_factura.ilike(f"%{numero}%"))
+
+    facturas_filtradas = query.order_by(Factura.id.desc()).all()
+
+    return {"Success": True, "Data": facturas_filtradas}
+
+    tabla_filtrada = []
+    for factura in facturas_filtradas:
+        factura_dict = {
+            "id": factura.id,
+            "estado": factura.estado_rel.Estado,
+            "fecha": factura.Fecha,
+            "numero": factura.numero_factura,
+            "cliente": factura.cliente.Nombre if factura.cliente else "Sin cliente",
+            "total": f"{factura.total:.2f}",
+            "moneda": factura.Moneda,
+            "tipo": factura.tipo
+        }
+        tabla_filtrada.append(factura_dict)
+
+    return {"Success": True, "Data": tabla_filtrada}
 
 def dashboard_data():
     facturas = get_facturas_pagadas()
@@ -542,18 +576,7 @@ def guardar_nueva_factura(factura_data):
 
 
 if __name__ == "__main__":
-    datos = dashboard_data()
-
-    for dato in datos["Data"]["datos_tabla"]:
-        print(dato[0], dato[1], dato[2], dato[3], dato[4], dato[5], dato[6])
-
-    # for factura in facturas:
-    #     print(factura.numero_factura, factura.vendedor.Nombre, factura.tipo_rel.tipo_factura)
-
-    # Productos = get_facturas_products(1)
-    # total = 0
-    # for producto in Productos:
-    #     total_producto = producto.Precio_venta * producto.Cantidad
-    #     print(f"{producto.producto.Nombre} {producto.Precio_venta:.2f} x {producto.Cantidad} = {total_producto:.2f}")
-    #     total += total_producto
-    # print(f"Total: {total:.2f}")
+    datos = filtrar_facturas(numero= "260039")
+    # print(datos["Data"][0].total)
+    for factura in datos["Data"]:
+        print(f"Factura: {factura.numero_factura}, Total: {factura.total}, Fecha: {factura.Fecha}, Cliente: {factura.cliente.Nombre if factura.cliente else 'Sin cliente'}")
