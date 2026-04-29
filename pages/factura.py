@@ -119,6 +119,8 @@ class Factura(ft.Container):
 
         def click_buscar (e):
             from pages.common_controls.states import States
+            from controller import filtrar_facturas
+            from datetime import datetime
 
             tipo = 0
             if States.where_i_am == States._cotizacion_location:
@@ -131,11 +133,20 @@ class Factura(ft.Container):
                 # (2, "XEnviar", "15-01-2025", "250016", "Pritma", "600.00", "USD"),
                 ]
             
-            print(f"Estatus: {select_estatus.value}")
-            print(f"Cliente: {select_cliente.value}")
-            print(f"Fecha Inicio: {select_fecha_inicio.value}")
-            print(f"Fecha Fin: {select_fecha_fin.value}")
-            print(f"Número Factura: {txt_nro_factura.value}")
+            facturas_filtradas = filtrar_facturas(
+                status= select_estatus.value,
+                cliente_id= select_cliente.value,
+                numero= txt_nro_factura.value,
+                )
+            
+            for factura in facturas_filtradas["Data"]:
+                if select_fecha_inicio.value != "" and select_fecha_fin.value != "":
+                    fecha_factura = datetime.strptime(factura.Fecha, "%d/%m/%Y")
+                    fecha_inicio = datetime.strptime(select_fecha_inicio.value, "%d/%m/%Y")
+                    fecha_fin = datetime.strptime(select_fecha_fin.value, "%d/%m/%Y")
+                    if not (fecha_inicio <= fecha_factura <= fecha_fin):
+                        continue  # Si la fecha de la factura no está dentro del rango, se omite
+                self.tabla_controls.append((factura.tipo, factura.estado_rel.Estado, factura.Fecha, factura.numero_factura, factura.cliente.Nombre if factura.cliente else "Sin cliente", f"{factura.total:.2f}", factura.Moneda))
             
             tabla.controls.clear()
 

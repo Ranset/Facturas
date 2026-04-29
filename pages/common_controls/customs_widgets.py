@@ -256,7 +256,7 @@ class Tabla_Factura_Row(ft.Column):
                                         ft.Text("PDF"),
                                     ], alignment= ft.alignment.top_center, spacing=0),
                                     height= 10),
-                                ft.PopupMenuItem("Duplicar", height= 10, on_click= lambda e: self.click_btn_duplicar(e)),
+                                ft.PopupMenuItem("Duplicar", height= 10, on_click= lambda e: self.modal_duplicado()),
                                 ft.PopupMenuItem(
                                     content= ft.Column(controls=[
                                         ft.Divider(height=8, color= "#ECEEF4"),
@@ -361,13 +361,6 @@ class Tabla_Factura_Row(ft.Column):
 
             convertir_cotizacion_a_factura(self.numero)
             show_view(self.page, States.where_i_am)  # Redibujar la vista actual para reflejar el cambio de estado
-    
-    def click_btn_duplicar(self, e):
-        from router import show_view
-        from pages.common_controls.states import States
-
-        States.duplicated_number = self.numero
-        show_view(self.page, States._formulario_factura_location)  # Redirigir al formulario de factura para mostrar la factura duplicada
 
     def eliminar(self, factura_number, modal_dialog: ft.AlertDialog):
         from router import show_view
@@ -402,6 +395,38 @@ class Tabla_Factura_Row(ft.Column):
         page.overlay.append(modal_dialog) # Agregar el diálogo a la superposición de la página
         modal_dialog.open = True   # Abrirlo
         page.update()
+
+    def modal_duplicado(self):
+        from router import show_view
+        from pages.common_controls.states import States
+
+        def duplicar_cotizacion(e):
+            modal_dialog.open = False  # Cerrar el diálogo
+            States.duplicated_number = self.numero
+            States.i_come_from = States._Crear_btn_loc_cotizacion
+            show_view(self.page, States._formulario_factura_location)  # Redirigir al formulario de factura para mostrar la factura duplicada
+        
+        def duplicar_factura(e):
+            modal_dialog.open = False  # Cerrar el diálogo
+            States.duplicated_number = self.numero
+            States.i_come_from = States._Crear_btn_loc_facturas
+            show_view(self.page, States._formulario_factura_location)  # Redirigir al formulario de factura para mostrar la factura duplicada
+
+        modal_dialog = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Confirmación", weight= "bold"),
+            content=ft.Text("¿Realmente desea eliminar esta factura/cotización?"),
+            actions=[
+                ft.TextButton("Cotización", on_click=lambda e: duplicar_cotizacion(e)),
+                ft.TextButton("Factura", on_click=lambda e: duplicar_factura(e)),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+
+
+        self.page.overlay.append(modal_dialog) # Agregar el diálogo a la superposición de la página
+        modal_dialog.open = True   # Abrirlo
+        self.page.update()
 
     def click_row(self, e, number):
         from router import show_view

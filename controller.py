@@ -182,17 +182,13 @@ def convertir_cotizacion_a_factura(cotizacion_number):
     else:
         return {"Success": False, "Message": f"Cotización {cotizacion_number} no encontrada."}
 
-def filtrar_facturas(status=None, cliente_id=None, fecha_desde=None, fecha_hasta=None, numero=None):
+def filtrar_facturas(status=None, cliente_id=None, numero=None):    
     query = session.query(Factura)
 
     if status is not None:
         query = query.filter(Factura.Estado == status)
     if cliente_id is not None:
         query = query.filter(Factura.Cliente == cliente_id)
-    if fecha_desde is not None:
-        query = query.filter(Factura.Fecha >= fecha_desde)
-    if fecha_hasta is not None:
-        query = query.filter(Factura.Fecha <= fecha_hasta)
     if numero is not None:
         query = query.filter(Factura.numero_factura.ilike(f"%{numero}%"))
 
@@ -576,7 +572,7 @@ def guardar_nueva_factura(factura_data):
 
 
 if __name__ == "__main__":
-    datos = filtrar_facturas(fecha_hasta= "30/04/2026", status= 4, numero= "")
+    datos = filtrar_facturas(numero= "260035", fecha_desde="", fecha_hasta="")
     # print(datos["Data"][0].total)
     for factura in datos["Data"]:
         print((factura.tipo, factura.estado_rel.Estado, factura.Fecha, factura.numero_factura, factura.cliente.Nombre if factura.cliente else "Sin cliente", f"{factura.total:.2f}", factura.Moneda))
