@@ -58,8 +58,8 @@ class Factura(ft.Container):
             select_estatus = ft.Dropdown(
                 options=
                 [
-                    ft.dropdown.Option("XEnviar"),
-                    ft.dropdown.Option("Enviada"),
+                    ft.dropdown.Option(2, "XEnviar"),
+                    ft.dropdown.Option(3, "Enviada"),
                 ],
                 label= "Estatus",
                 width= 130,
@@ -72,9 +72,9 @@ class Factura(ft.Container):
             select_estatus = ft.Dropdown(
                 options=
                 [
-                    ft.dropdown.Option("XEnviar"),
-                    ft.dropdown.Option("Enviada"),
-                    ft.dropdown.Option("Pagada"),
+                    ft.dropdown.Option(2, "XEnviar"),
+                    ft.dropdown.Option(3, "Enviada"),
+                    ft.dropdown.Option(4, "Pagada"),
                 ],
                 label= "Estatus",
                 width= 130,
@@ -87,7 +87,7 @@ class Factura(ft.Container):
         lista_clientes = []
 
         for cliente in data["Data"]["nombre_clientes"]:
-            lista_clientes.append(ft.dropdown.Option(cliente["nombre"]))
+            lista_clientes.append(ft.dropdown.Option(cliente["id"], cliente["nombre"]))
 
         select_cliente = ft.Dropdown(
             options=lista_clientes,
@@ -118,10 +118,31 @@ class Factura(ft.Container):
         )
 
         def click_buscar (e):
-            self.tabla_controls = [Tabla_Factura_Row(1, "Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),]
+            from pages.common_controls.states import States
+
+            tipo = 0
+            if States.where_i_am == States._cotizacion_location:
+                tipo = 1
+            else:
+                tipo = 2
+
+            self.tabla_controls = [
+                # (1, "Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD"),
+                # (2, "XEnviar", "15-01-2025", "250016", "Pritma", "600.00", "USD"),
+                ]
+            
+            print(f"Estatus: {select_estatus.value}")
+            print(f"Cliente: {select_cliente.value}")
+            print(f"Fecha Inicio: {select_fecha_inicio.value}")
+            print(f"Fecha Fin: {select_fecha_fin.value}")
+            print(f"Número Factura: {txt_nro_factura.value}")
+            
             tabla.controls.clear()
+
             for row in self.tabla_controls:
-                tabla.controls.append(row)
+                if row[0] == tipo:
+                    tabla.controls.append(Tabla_Factura_Row(row[0], row[1], row[2], row[3], row[4], row[5], row[6], page).crear())
+            
             tabla.update()
 
 
@@ -136,24 +157,26 @@ class Factura(ft.Container):
         )
 
         def click_clear (e):
-            self.tabla_controls = [
-            Tabla_Factura_Row(1, "Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP").crear(),
-            Tabla_Factura_Row(2, "Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP").crear(),
-            Tabla_Factura_Row(1, "XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-            Tabla_Factura_Row(2, "Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-            Tabla_Factura_Row(1, "Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD").crear(),
-            ]
+            # self.tabla_controls = [
+            # Tabla_Factura_Row(1, "Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP", page).crear(),
+            # Tabla_Factura_Row(2, "Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP", page).crear(),
+            # Tabla_Factura_Row(1, "XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD", page).crear(),
+            # Tabla_Factura_Row(2, "Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD", page).crear(),
+            # Tabla_Factura_Row(1, "Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD", page).crear(),
+            # ]
 
-            select_estatus.value = None
-            select_cliente.value = None
-            select_fecha_inicio.value = ""
-            select_fecha_fin.value = ""
-            txt_nro_factura.value = ""
+            # select_estatus.value = None
+            # select_cliente.value = None
+            # select_fecha_inicio.value = ""
+            # select_fecha_fin.value = ""
+            # txt_nro_factura.value = ""
 
-            tabla.controls.clear()
-            for row in self.tabla_controls:
-                tabla.controls.append(row)
-            page.update()
+            # tabla.controls.clear()
+            # for row in self.tabla_controls:
+            #     tabla.controls.append(row)
+            # page.update()
+            from router import show_view
+            show_view(page, States.where_i_am)
         
         btn_clear = ft.FloatingActionButton(
             bgcolor= '#838383',

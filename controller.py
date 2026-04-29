@@ -576,7 +576,7 @@ def guardar_nueva_factura(factura_data):
 
 
 if __name__ == "__main__":
-    datos = filtrar_facturas(numero= "260039")
+    datos = filtrar_facturas(fecha_hasta= "30/04/2026", status= 4, numero= "")
     # print(datos["Data"][0].total)
     for factura in datos["Data"]:
-        print(f"Factura: {factura.numero_factura}, Total: {factura.total}, Fecha: {factura.Fecha}, Cliente: {factura.cliente.Nombre if factura.cliente else 'Sin cliente'}")
+        print((factura.tipo, factura.estado_rel.Estado, factura.Fecha, factura.numero_factura, factura.cliente.Nombre if factura.cliente else "Sin cliente", f"{factura.total:.2f}", factura.Moneda))
