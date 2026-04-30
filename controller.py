@@ -196,21 +196,21 @@ def filtrar_facturas(status=None, cliente_id=None, numero=None):
 
     return {"Success": True, "Data": facturas_filtradas}
 
-    tabla_filtrada = []
-    for factura in facturas_filtradas:
-        factura_dict = {
-            "id": factura.id,
-            "estado": factura.estado_rel.Estado,
-            "fecha": factura.Fecha,
-            "numero": factura.numero_factura,
-            "cliente": factura.cliente.Nombre if factura.cliente else "Sin cliente",
-            "total": f"{factura.total:.2f}",
-            "moneda": factura.Moneda,
-            "tipo": factura.tipo
-        }
-        tabla_filtrada.append(factura_dict)
+    # tabla_filtrada = []
+    # for factura in facturas_filtradas:
+    #     factura_dict = {
+    #         "id": factura.id,
+    #         "estado": factura.estado_rel.Estado,
+    #         "fecha": factura.Fecha,
+    #         "numero": factura.numero_factura,
+    #         "cliente": factura.cliente.Nombre if factura.cliente else "Sin cliente",
+    #         "total": f"{factura.total:.2f}",
+    #         "moneda": factura.Moneda,
+    #         "tipo": factura.tipo
+    #     }
+    #     tabla_filtrada.append(factura_dict)
 
-    return {"Success": True, "Data": tabla_filtrada}
+    # return {"Success": True, "Data": tabla_filtrada}
 
 def dashboard_data():
     facturas = get_facturas_pagadas()

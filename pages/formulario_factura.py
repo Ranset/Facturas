@@ -48,11 +48,6 @@ class FormularioFactura(ft.Container):
             duplicated_data = get_factura_by_numero(States.duplicated_number)
             States.duplicated_number = None # Limpiar el número de factura en el estado para evitar problemas al volver a cargar el formulario después de guardar una factura o cotización, ya que ese número solo se usa para duplicar facturas existentes, no para nuevas facturas
 
-            if duplicated_data.tipo == 1:
-                States.i_come_from = States._Crear_btn_loc_cotizacion
-            elif duplicated_data.tipo == 2:
-                States.i_come_from = States._Crear_btn_loc_facturas
-
             if duplicated_data.Moneda == "CUP":
                 cup = duplicated_data.tasa_cambio
             elif duplicated_data.Moneda == "MLC":
@@ -225,9 +220,9 @@ class FormularioFactura(ft.Container):
         # Actualizar precio del producto seleccionado
         select_product.controls[0].content.on_focus = lambda e: update_price()
 
-        cantidad = ft.TextField(label="Cantidad",width= 95, border_color= inputs_border_color)
+        cantidad = ft.TextField(label="Cantidad",width= 95, border_color= inputs_border_color, on_submit= lambda e: click_add_product(e))
         
-        precio = ft.TextField(label="Precio USD", width= 150, border_color= inputs_border_color)
+        precio = ft.TextField(label="Precio USD", width= 150, border_color= inputs_border_color, on_submit= lambda e: click_add_product(e))
 
         def click_add_product(e, product_name= None, product_price= None, product_qty= None):
             # Remover overlay si está presente
@@ -369,18 +364,40 @@ class FormularioFactura(ft.Container):
             on_click= click_guardar_otra,
             visible= True if factura is None else False # Solo mostrar el botón de "Guardar y otra" si no se está editando una factura existente, ya que tiene más sentido crear una nueva factura después de guardar una nueva que después de editar una existente
         )
-
-        def click_duplicar(e):
+        
+        def modal_duplicado(e):
             from router import show_view
 
-            States.duplicated_number = factura.numero_factura
-            show_view(page, States._formulario_factura_location)  # Redirigir al formulario de factura para mostrar la factura duplicada
-        
+            def duplicar_cotizacion(e):
+                modal_dialog.open = False  # Cerrar el diálogo
+                States.duplicated_number = factura.numero_factura
+                States.i_come_from = States._Crear_btn_loc_cotizacion
+                show_view(page, States._formulario_factura_location)  # Redirigir al formulario de factura para mostrar la factura duplicada
+            
+            def duplicar_factura(e):
+                modal_dialog.open = False  # Cerrar el diálogo
+                States.duplicated_number = factura.numero_factura
+                States.i_come_from = States._Crear_btn_loc_facturas
+                show_view(page, States._formulario_factura_location)  # Redirigir al formulario de factura para mostrar la factura duplicada
+
+            modal_dialog = ft.AlertDialog(
+                title=ft.Text("Tipo de Documento", weight= "bold"),
+                actions=[
+                    ft.ElevatedButton("Cotización", on_click=lambda e: duplicar_cotizacion(e)),
+                    ft.ElevatedButton("Factura", on_click=lambda e: duplicar_factura(e)),
+                ],
+                actions_alignment=ft.MainAxisAlignment.CENTER,
+            )
+
+            page.overlay.append(modal_dialog) # Agregar el diálogo a la superposición de la página
+            modal_dialog.open = True   # Abrirlo
+            page.update()
+
         btn_duplicar = ft.OutlinedButton(
             "Duplicar",
             style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
-            on_click= click_duplicar,
+            on_click= modal_duplicado,
             visible= True if factura is not None else False # Solo mostrar el botón de "Duplicar" si se está editando una factura existente
         )
 

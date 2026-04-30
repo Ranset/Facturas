@@ -107,16 +107,6 @@ class Factura(ft.Container):
         select_fecha_fin = CustomTextDatePicker(page= page,label= "Hasta").Crear()
         select_fecha_fin.height = inputs_height
 
-        txt_nro_factura = ft.TextField(
-            label="# Cotización" if States.where_i_am == States._cotizacion_location else "# Factura",
-            # expand=True,
-            height= inputs_height,
-            width= 140,
-            bgcolor= inputs_bgcolor,
-            border_color= inputs_border_color,
-            hover_color= inputs_bgcolor
-        )
-
         def click_buscar (e):
             from pages.common_controls.states import States
             from controller import filtrar_facturas
@@ -156,6 +146,16 @@ class Factura(ft.Container):
             
             tabla.update()
 
+        txt_nro_factura = ft.TextField(
+            label="# Cotización" if States.where_i_am == States._cotizacion_location else "# Factura",
+            # expand=True,
+            height= inputs_height,
+            width= 140,
+            bgcolor= inputs_bgcolor,
+            border_color= inputs_border_color,
+            hover_color= inputs_bgcolor,
+            on_submit= click_buscar
+        )
 
         btn_buscar = ft.FloatingActionButton(
             bgcolor= "#838383",

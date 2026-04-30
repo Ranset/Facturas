@@ -413,14 +413,12 @@ class Tabla_Factura_Row(ft.Column):
             show_view(self.page, States._formulario_factura_location)  # Redirigir al formulario de factura para mostrar la factura duplicada
 
         modal_dialog = ft.AlertDialog(
-            modal=True,
-            title=ft.Text("Confirmación", weight= "bold"),
-            content=ft.Text("¿Realmente desea eliminar esta factura/cotización?"),
+            title=ft.Text("Tipo de Documento", weight= "bold"),
             actions=[
-                ft.TextButton("Cotización", on_click=lambda e: duplicar_cotizacion(e)),
-                ft.TextButton("Factura", on_click=lambda e: duplicar_factura(e)),
+                ft.ElevatedButton("Cotización", on_click=lambda e: duplicar_cotizacion(e)),
+                ft.ElevatedButton("Factura", on_click=lambda e: duplicar_factura(e)),
             ],
-            actions_alignment=ft.MainAxisAlignment.END,
+            actions_alignment=ft.MainAxisAlignment.CENTER,
         )
 
 
