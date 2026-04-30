@@ -218,13 +218,52 @@ def dashboard_data():
     cotizaciones = get_cotizaciones_por_enviar()
     recientes = get_recientes_facturas()
 
+    monto_facturado = 0.0
+    monto_cotizaciones =  0.0
+    monto_por_pagar = 0.0
+
+    # Para convertir los montos a USD, se verifica la moneda de cada factura y cotización.
+    for cotizacion in cotizaciones:
+        if cotizacion.Moneda == "USD":
+            monto_cotizaciones += float(cotizacion.total)
+            print("Se registró usd")
+        if cotizacion.Moneda == "MLC":
+            monto_cotizaciones += float(cotizacion.total) / float(session.query(Tasa).filter(Tasa.Divisa == "MLC").first().tasa)
+            print("Se registró mlc")
+        if cotizacion.Moneda == "CUP":
+            monto_cotizaciones += float(cotizacion.total) / float(session.query(Tasa).filter(Tasa.Divisa == "CUP").first().tasa)
+            print("Se registró cup")
+
+    for factura in facturas_por_pagar:
+        if factura.Moneda == "USD":
+            monto_por_pagar += float(factura.total)
+            print("Se registró usd")
+        if factura.Moneda == "MLC":
+            monto_por_pagar += float(factura.total) / float(session.query(Tasa).filter(Tasa.Divisa == "MLC").first().tasa)
+            print("Se registró mlc")
+        if factura.Moneda == "CUP":
+            monto_por_pagar += float(factura.total) / float(session.query(Tasa).filter(Tasa.Divisa == "CUP").first().tasa)
+            print("Se registró cup")
+
+    for factura in facturas:
+        if factura.Moneda == "USD":
+            monto_facturado += float(factura.total)
+            print("Se registró usd")
+        if factura.Moneda == "MLC":
+            monto_facturado += float(factura.total) / float(session.query(Tasa).filter(Tasa.Divisa == "MLC").first().tasa)
+            print("Se registró mlc")
+        if factura.Moneda == "CUP":
+            monto_facturado += float(factura.total) / float(session.query(Tasa).filter(Tasa.Divisa == "CUP").first().tasa)
+            print("Se registró cup")
+
+
     data = {
         "total_facturado": len(facturas),
-        "monto_facturado": f"$ {sum(factura.total for factura in facturas):,.2f}",
+        "monto_facturado": f"$ {monto_facturado:,.2f}",
         "cotizaciones_sin_facturar": len(cotizaciones),
-        "monto_cotizaciones_sin_facturar": f"$ {sum(factura.total for factura in cotizaciones):,.2f}",
+        "monto_cotizaciones_sin_facturar": f"$ {monto_cotizaciones:,.2f}",
         "facturas_por_pagar": len(facturas_por_pagar),
-        "monto_facturas_por_pagar": f"$ {sum(factura.total for factura in facturas_por_pagar):,.2f}",
+        "monto_facturas_por_pagar": f"$ {monto_por_pagar:,.2f}",
         "datos_tabla": recientes
     }
 
