@@ -18,7 +18,11 @@
 <body style="width: 8.5in;font-size: 12PX;height: 11in;/*border-style: solid;*//*-webkit-print-color-adjust: exact !important;*/print-color-adjust: exact !important;">
     <div class="row">
         <div class="col-md-12">
-            <h1 style="color: black;font-family: 'Archivo Black', sans-serif;font-weight: bold;margin-top: 16px;margin-bottom: 1px;">COTIZACION</h1>
+            {% if tipo == 1 %}
+                <h1 style="color: black;font-family: 'Archivo Black', sans-serif;font-weight: bold;margin-top: 16px;margin-bottom: 1px;">COTIZACION</h1>
+            {% else %}
+                <h1 style="color: black;font-family: 'Archivo Black', sans-serif;font-weight: bold;margin-top: 16px;margin-bottom: 1px;">FACTURA</h1>
+            {% endif %}
         </div>
     </div>
     <div class="row">
@@ -76,11 +80,16 @@
                             <tbody>
                                 <tr>
                                     <td style="border: 1px solid BLACK;padding: 0px;text-align: right;margin-right: 0px;padding-right: 5px;"><strong>FECHA</strong></td>
-                                    <td style="border: 1px solid BLACK;padding: 0px;text-align: right;padding-right: 5px;">26/03/2025</td>
+                                    <td style="border: 1px solid BLACK;padding: 0px;text-align: right;padding-right: 5px;">{{fecha}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="border: 1px solid BLACK;padding: 0px;text-align: right;padding-right: 5px;"><strong>NUM COTIZACIÓN</strong></td>
-                                    <td style="border: 1px solid BLACK;padding: 0px;text-align: right;padding-right: 5px;">2025125</td>
+                                    {% if tipo == 1 %}
+                                        <td style="border: 1px solid BLACK;padding: 0px;text-align: right;padding-right: 5px;"><strong>NUM COTIZACIÓN</strong></td>
+                                    {% else %}
+                                        <td style="border: 1px solid BLACK;padding: 0px;text-align: right;padding-right: 5px;"><strong>NUM FACTURA</strong></td>
+                                    {% endif %}
+
+                                    <td style="border: 1px solid BLACK;padding: 0px;text-align: right;padding-right: 5px;">{{numero_factura}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -95,41 +104,41 @@
                 <table class="table">
                     <tbody>
                         <tr>
-                            <td class="text-center tabheader" colspan="4" style="color: WHITE;padding: 3px;border: 1px solid #000000;background: black;font-weight: bold;">CLIENTE</td>
+                            <td class="text-center tabheader" colspan="4" style="color: WHITE;padding: 3px;border: 1px solid #000000;background: black;font-weight: bold;letter-spacing: 2px;">CLIENTE</td>
                         </tr>
                         <tr>
-                            <td style="border-width: 1px;border-style: solid;padding: 1px;width: 140px;"><strong>NOMBRE</strong></td>
-                            <td style="border-width: 1px;border-style: solid;padding: 1px;" colspan="3">nombre cliente</td>
+                            <td style="border-width: 1px;border-style: solid;padding: 1px;width: 140px;letter-spacing: 1px;"><strong>NOMBRE</strong></td>
+                            <td style="border-width: 1px;border-style: solid;padding: 1px;padding-left: 5px;" colspan="3">  {{cliente_nombre}}</td>
                         </tr>
                         <tr>
                             <td style="border-width: 1px;border-style: solid;padding: 1px;width: 140px;"><strong>NIT</strong></td>
-                            <td style="border-width: 1px;border-style: solid;padding: 1px;" colspan="3">nit cliente</td>
+                            <td style="border-width: 1px;border-style: solid;padding: 1px;padding-left: 5px;" colspan="3">  {{cliente_nit}}</td>
                         </tr>
                         <tr>
                             <td style="border-width: 1px;border-style: solid;padding: 1px;width: 140px;"><strong>REEUP</strong></td>
-                            <td style="border-width: 1px;border-style: solid;padding: 1px;width: 290px;">reeup cliente</td>
+                            <td style="border-width: 1px;border-style: solid;padding: 1px;width: 290px;padding-left: 5px;">reeup cliente</td>
                             <td style="border-width: 1px;border-style: solid;padding: 1px;"><strong>ONIE</strong></td>
-                            <td style="border-width: 1px;border-style: solid;padding: 1px;width: 280px;">onie cliente</td>
+                            <td style="border-width: 1px;border-style: solid;padding: 1px;width: 280px;padding-left: 5px;">onie cliente</td>
                         </tr>
                         <tr>
                             <td style="border-width: 1px;border-style: solid;padding: 1px;width: 140px;"><strong>DOMICILIO</strong></td>
-                            <td style="border-width: 1px;border-style: solid;padding: 1px;" colspan="3">domicilio cliente</td>
+                            <td style="border-width: 1px;border-style: solid;padding: 1px;padding-left: 5px;" colspan="3">{{cliente_domicilio}}</td>
                         </tr>
                         <tr>
                             <td style="min-width: 162px;border-width: 1px;border-style: solid;padding: 1px;font-weight: bold;width: 140px;"><strong>NUM DE CUENTA (CUP)</strong></td>
-                            <td style="border-width: 1px;border-style: solid;padding: 1px;" colspan="3">num cuenta cup cliente</td>
+                            <td style="border-width: 1px;border-style: solid;padding: 1px;padding-left: 5px;" colspan="3">num cuenta cup cliente</td>
                         </tr>
                         <tr>
                             <td style="border-width: 1px;border-style: solid;padding: 1px;font-weight: bold;width: 140px;"><strong>NUM DE CUENTA (MLC)</strong></td>
-                            <td style="border-width: 1px;border-style: solid;padding: 1px;" colspan="3">num cuenta mlc cliente</td>
+                            <td style="border-width: 1px;border-style: solid;padding: 1px;padding-left: 5px;" colspan="3">num cuenta mlc cliente</td>
                         </tr>
                         <tr>
                             <td style="border-width: 1px;border-style: solid;padding: 1px;width: 140px;"><strong>TELEFONO</strong></td>
-                            <td colspan="3" style="border-width: 1px;border-style: solid;padding: 1px;">telefono cliente</td>
+                            <td colspan="3" style="border-width: 1px;border-style: solid;padding: 1px;padding-left: 5px;">telefono cliente</td>
                         </tr>
                         <tr>
                             <td style="border-width: 1px;border-style: solid;padding: 1px;width: 140px;"><strong>CORREO</strong></td>
-                            <td style="border-width: 1px;border-style: solid;padding: 1px;" colspan="3">correo cliente</td>
+                            <td style="border-width: 1px;border-style: solid;padding: 1px;padding-left: 5px;" colspan="3">correo cliente</td>
                         </tr>
                     </tbody>
                 </table>
@@ -225,6 +234,7 @@
             </div>
         </div>
     </div>
+    <div style="padding: 0px;text-align: center;border: 1px solid #ffffff;"><em>{{nota}}</em></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </body>

@@ -27,7 +27,7 @@ def comprueba_wkhtmltopdf():
 def crea_pdf(info, rutacss=''):
     
 
-    ruta_template = './template1'
+    ruta_template = os.path.join(os.path.dirname(__file__), 'template1')
     nombre_template = 'index.html'
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(ruta_template))
@@ -49,9 +49,17 @@ def crea_pdf(info, rutacss=''):
 
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
 
-    ruta_salida = 'cotizacion.pdf'
+    ruta_descargas = os.path.join(os.path.expanduser('~'), 'Downloads')
+    os.makedirs(ruta_descargas, exist_ok=True)
 
+    ruta_salida = os.path.join(ruta_descargas, 'cotizacion.pdf')
     pdfkit.from_string(html, ruta_salida, options=opciones, configuration=config)
+
+    try:
+        os.startfile(ruta_salida)
+    except AttributeError:
+        import subprocess
+        subprocess.Popen(['xdg-open', ruta_salida])
 
 if __name__ == '__main__':
     info = {

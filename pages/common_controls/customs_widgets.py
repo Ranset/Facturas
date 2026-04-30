@@ -239,7 +239,7 @@ class Tabla_Factura_Row(ft.Column):
                         visible= True if estado == "Enviada" and self.tipo == 2 else False,
                     ),
                     ft.Container( #9
-                        content= ft.TextButton(text="PDF"),
+                        content= ft.TextButton(text="PDF", on_click= lambda e: self.click_btn_pdf(e)),
                         width= 80,
                         visible= True if estado == "Pagada" and self.tipo == 2 else False,
                     ),
@@ -255,7 +255,9 @@ class Tabla_Factura_Row(ft.Column):
                                         ft.Divider(height=8, color= "#ECEEF4"),
                                         ft.Text("PDF"),
                                     ], alignment= ft.alignment.top_center, spacing=0),
-                                    height= 10),
+                                    height= 10,
+                                    on_click= lambda e: self.click_btn_pdf(e)
+                                    ),
                                 ft.PopupMenuItem("Duplicar", height= 10, on_click= lambda e: self.modal_duplicado()),
                                 ft.PopupMenuItem(
                                     content= ft.Column(controls=[
@@ -299,6 +301,11 @@ class Tabla_Factura_Row(ft.Column):
         # ,  -> Agrega la coma de miles
         # .2f -> Asegura siempre 2 decimales (fixed point)
         return f"${numero:,.2f}"
+    
+    def click_btn_pdf(self, e):
+        from controller import pdf_maker
+
+        pdf_maker(self.numero)
     
     def click_btn_enviada(self, e):
         from controller import update_estado_factura

@@ -226,35 +226,26 @@ def dashboard_data():
     for cotizacion in cotizaciones:
         if cotizacion.Moneda == "USD":
             monto_cotizaciones += float(cotizacion.total)
-            print("Se registró usd")
         if cotizacion.Moneda == "MLC":
             monto_cotizaciones += float(cotizacion.total) / float(session.query(Tasa).filter(Tasa.Divisa == "MLC").first().tasa)
-            print("Se registró mlc")
         if cotizacion.Moneda == "CUP":
             monto_cotizaciones += float(cotizacion.total) / float(session.query(Tasa).filter(Tasa.Divisa == "CUP").first().tasa)
-            print("Se registró cup")
 
     for factura in facturas_por_pagar:
         if factura.Moneda == "USD":
             monto_por_pagar += float(factura.total)
-            print("Se registró usd")
         if factura.Moneda == "MLC":
             monto_por_pagar += float(factura.total) / float(session.query(Tasa).filter(Tasa.Divisa == "MLC").first().tasa)
-            print("Se registró mlc")
         if factura.Moneda == "CUP":
             monto_por_pagar += float(factura.total) / float(session.query(Tasa).filter(Tasa.Divisa == "CUP").first().tasa)
-            print("Se registró cup")
 
     for factura in facturas:
         if factura.Moneda == "USD":
             monto_facturado += float(factura.total)
-            print("Se registró usd")
         if factura.Moneda == "MLC":
             monto_facturado += float(factura.total) / float(session.query(Tasa).filter(Tasa.Divisa == "MLC").first().tasa)
-            print("Se registró mlc")
         if factura.Moneda == "CUP":
             monto_facturado += float(factura.total) / float(session.query(Tasa).filter(Tasa.Divisa == "CUP").first().tasa)
-            print("Se registró cup")
 
 
     data = {
@@ -609,9 +600,33 @@ def guardar_nueva_factura(factura_data):
 
     session.commit()
 
+def pdf_maker(nro_factura):
+    from pdfmaker.pdf_render import crea_pdf
+
+    factura_info = get_factura_by_numero(nro_factura)
+
+    info = {
+        "fecha" : factura_info.Fecha,
+        "numero_factura": factura_info.numero_factura,
+        "cliente": factura_info.cliente.Nombre if factura_info.cliente else "Sin cliente",
+        "tipo": factura_info.tipo,
+        "nota": session.query(Config).first().nota_terminos,
+        "total": f"{factura_info.total:.2f}",
+        # Comprobar si hay descuentos y calcular el subtotal y descuento según la moneda y la tasa de cambio
+        # "subtotal": f"{(factura_info.total / (1 + factura_info.porciento_cta_fiscal / 100)):.2f}" if factura_info.porciento_cta_fiscal else f"{factura_info.total:.2f}",
+        # "descuento": f"{factura_info.descuento:.2f}" if factura_info.descuento else "0.00",
+        "moneda": factura_info.Moneda,
+        # Cliente info
+        "cliente_nit": factura_info.cliente.NIT if factura_info.cliente else "",
+        "cliente_domicilio": factura_info.cliente.Domicilio if factura_info.cliente else "",
+        "cliente_nombre": factura_info.cliente.Nombre if factura_info.cliente else "",
+        # Vendedor info
+        "vendedor_nombre": factura_info.vendedor.Nombre if factura_info.vendedor else "",
+    }
+
+    crea_pdf(info)
+
 
 if __name__ == "__main__":
-    datos = filtrar_facturas(numero= "260035", fecha_desde="", fecha_hasta="")
-    # print(datos["Data"][0].total)
-    for factura in datos["Data"]:
-        print((factura.tipo, factura.estado_rel.Estado, factura.Fecha, factura.numero_factura, factura.cliente.Nombre if factura.cliente else "Sin cliente", f"{factura.total:.2f}", factura.Moneda))
+    factura_info = get_factura_by_numero(260035)
+    print(factura_info.tipo)
