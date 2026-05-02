@@ -156,18 +156,14 @@
                             <td class="text-center" style="padding: 1px;width: 90px;background: black;border-style: none;">PRECIO</td>
                             <td class="text-center" style="padding: 1px;width: 90px;background: black;border-style: none;">IMPORTE</td>
                         </tr>
+                        {% for producto in productos %}
                         <tr>
-                            <td style="padding: 1px;border-style: none;">IMPRESORA EPSON L1250, PPM 33 NEGRO 15 COLOR, TINTA CONTINUA, ECOTANK</td>
-                            <td class="text-center" style="padding: 1px;border-style: none;">6</td>
-                            <td class="text-right" style="padding: 1px;border-style: none;width: 90px;">$145.831,88</td>
-                            <td class="text-right" style="padding: 1px;border-style: none;">$874.991,25</td>
+                            <td style="padding: 1px;border-style: none;">{{producto.nombre}}</td>
+                            <td class="text-center" style="padding: 1px;border-style: none;">{{producto.cantidad}}</td>
+                            <td class="text-right" style="padding: 1px;border-style: none;width: 90px;">${{producto.precio}}</td>
+                            <td class="text-right" style="padding: 1px;border-style: none;">${{producto.total}}</td>
                         </tr>
-                        <tr>
-                            <td style="padding: 1px;border-style: none;">KIT 11 GEN BOARD MSI B560M- PRO + CELERON G5905 3.5 GHz + 4GB MEMORIA RAM&nbsp;</td>
-                            <td class="text-center" style="padding: 1px;border-style: none;">10</td>
-                            <td class="text-right" style="padding: 1px;border-style: none;width: 90px;">$99.999,00</td>
-                            <td class="text-right" style="padding: 1px;border-style: none;">$999.990,00</td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -190,22 +186,29 @@
                 </table>
             </div>
         </div>
-        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="margin-top: -14px;">
-            <div class="table-responsive">
+        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="margin-top: -14px; margin-left: 2px">
+            <div class="table-responsive" style="border: 1px solid #ffffff;">
                 <table class="table">
                     <tbody>
+                        {% if subtotal != "0.00" %}
                         <tr>
                             <td style="padding: 5px;color: white;background: black;text-align: center;border: 1px solid black;">SUBTOTAL ({{moneda}})</td>
-                            <td style="padding: 5px;text-align: right;border-width: 1px;border-style: solid;">$3.208.301,25</td>
+                            <td style="padding: 5px;text-align: right;border-width: 1px;border-style: solid;">${{subtotal}}</td>
                         </tr>
                         <tr>
-                            <td style="padding: 5px;color: white;background: black;text-align: center;border: 1px solid black ;">DESCUENTO 10%</td>
-                            <td style="border-width: 1px;border-style: solid;padding: 5px;text-align: right;">$3.208.301,25</td>
+                            <td style="padding: 5px;color: white;background: black;text-align: center;border: 1px solid black ;">{{descuento_texto}}</td>
+                            <td style="border-width: 1px;border-style: solid;padding: 5px;text-align: right;">${{descuento_monto}}</td>
                         </tr>
                         <tr>
                             <td style="padding: 5px;color: white;background: black;text-align: center;border: 1px solid black ;">TOTAL ({{moneda}})</td>
                             <td style="border-width: 1px;border-style: solid;padding: 5px;text-align: right;">${{total}}</td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td style="padding: 5px;color: white;background: black;text-align: center;border: 1px solid black ;">TOTAL ({{moneda}})</td>
+                            <td style="border-width: 1px;border-style: solid;padding: 5px;text-align: right;">${{total}}</td>
+                        </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>

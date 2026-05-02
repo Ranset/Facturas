@@ -628,7 +628,40 @@ def pdf_maker(nro_factura):
     if factura_info.Moneda == "MLC":
         total_con_letras = total_con_letras.replace("PESOS", "MLC")
 
-    
+    descuento_monto = 0.0
+    subtotal = 0.0
+
+    if factura_info.descuento_tipo == 2: # Si es un descuento de cantidad
+        descuento_monto = factura_info.descuento
+        subtotal = factura_info.total + descuento_monto
+    if factura_info.descuento_tipo == 1: # Si es un descuento de porcentaje
+        porcentaje_decimal = factura_info.descuento / 100
+        porcentaje = 1 - porcentaje_decimal
+        subtotal = factura_info.total / porcentaje
+
+        descuento_monto = subtotal * porcentaje_decimal
+
+    # Obtener los productos de la factura
+    productos = []
+
+    tasa = float("1." + str(factura_info.porciento_cta_fiscal))
+
+    productos_de_factura = get_facturas_products(factura_info.id)
+
+    for producto in productos_de_factura:
+        precio_en_moneda = producto.Precio_venta * factura_info.tasa_cambio
+        precio = float(precio_en_moneda) * tasa
+        total = precio * producto.Cantidad
+        print(f"tasa_fiscal: {tasa}", f"precio: {precio}")
+
+        productos.append(
+            {
+                "nombre": producto.Nombre,
+                "cantidad": producto.Cantidad,
+                "precio": f"{precio:,.2f}",
+                "total": f"{total:,.2f}"
+            }
+        )
 
     info = {
         "fecha" : factura_info.Fecha,
@@ -637,14 +670,12 @@ def pdf_maker(nro_factura):
         "moneda": factura_info.Moneda,
         "metodo_pago": str(factura_info.metodo_pago_rel.metodo_pago).upper(),
         "nota": session.query(Config).first().nota_terminos,
-        "subtotal": "",
-        "descuento_texto": "",
-        "descuento_monto": "",
+        "subtotal": f"{subtotal:,.2f}",
+        "descuento_texto": "DESCUENTO" if factura_info.descuento_tipo != 1 else f"DESCUENTO {factura_info.descuento:.2f}%",
+        "descuento_monto": f"{descuento_monto:,.2f}",
         "total": f"{factura_info.total:,.2f}",
         "total_con_letras": total_con_letras,
-        # Comprobar si hay descuentos y calcular el subtotal y descuento según la moneda y la tasa de cambio
-        # "subtotal": f"{(factura_info.total / (1 + factura_info.porciento_cta_fiscal / 100)):.2f}" if factura_info.porciento_cta_fiscal else f"{factura_info.total:.2f}",
-        # "descuento": f"{factura_info.descuento:.2f}" if factura_info.descuento else "0.00",
+        "productos": productos,
         # Cliente info
         "cliente_nombre": factura_info.cliente.Nombre if factura_info.cliente else "",
         "cliente_nit": factura_info.cliente.NIT if factura_info.cliente.NIT else "",
@@ -671,5 +702,6 @@ def pdf_maker(nro_factura):
 
 
 if __name__ == "__main__":
-    factura_info = get_factura_by_numero(260035)
-    print(factura_info.tipo)
+    facturas = get_facturas_products(38)
+    for bill in facturas:
+        print(bill.Nombre, bill.Cantidad, float(bill.Precio_venta) * 1.25)
