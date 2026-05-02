@@ -647,6 +647,7 @@ class NewClientDialog(ft.AlertDialog):
             txt_nit.update()
 
         def clear_txt_nit(e):
+            self.txt_del_nit = ""
             txt_nit.value = ""
             txt_nit.update()
         

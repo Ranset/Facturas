@@ -600,28 +600,71 @@ def guardar_nueva_factura(factura_data):
 
     session.commit()
 
+def convertir_moneda_letras(cifra):
+    from num2words import num2words
+
+    # 1. Separar enteros y decimales
+    entero = int(cifra)
+    centavos = int(round((cifra - entero) * 100))
+    
+    # 2. Convertir enteros a palabras en español
+    letras = num2words(entero, lang='es').upper()
+    
+    # 3. Formatear la salida (Pesos y Céntimos)
+    # Reemplazar 'uno' por 'un' si aplica (301 -> trescientos un)
+    letras = letras.replace(" UNO", " UN") 
+    
+    resultado = f"{letras} PESOS {centavos:02d}/100 M.N."
+    return resultado
+
 def pdf_maker(nro_factura):
     from pdfmaker.pdf_render import crea_pdf
 
     factura_info = get_factura_by_numero(nro_factura)
 
+    total_con_letras = convertir_moneda_letras(factura_info.total)
+    if factura_info.Moneda == "USD":
+        total_con_letras = total_con_letras.replace("PESOS", "DÓLARES")
+    if factura_info.Moneda == "MLC":
+        total_con_letras = total_con_letras.replace("PESOS", "MLC")
+
+    
+
     info = {
         "fecha" : factura_info.Fecha,
         "numero_factura": factura_info.numero_factura,
-        "cliente": factura_info.cliente.Nombre if factura_info.cliente else "Sin cliente",
         "tipo": factura_info.tipo,
+        "moneda": factura_info.Moneda,
+        "metodo_pago": str(factura_info.metodo_pago_rel.metodo_pago).upper(),
         "nota": session.query(Config).first().nota_terminos,
-        "total": f"{factura_info.total:.2f}",
+        "subtotal": "",
+        "descuento_texto": "",
+        "descuento_monto": "",
+        "total": f"{factura_info.total:,.2f}",
+        "total_con_letras": total_con_letras,
         # Comprobar si hay descuentos y calcular el subtotal y descuento según la moneda y la tasa de cambio
         # "subtotal": f"{(factura_info.total / (1 + factura_info.porciento_cta_fiscal / 100)):.2f}" if factura_info.porciento_cta_fiscal else f"{factura_info.total:.2f}",
         # "descuento": f"{factura_info.descuento:.2f}" if factura_info.descuento else "0.00",
-        "moneda": factura_info.Moneda,
         # Cliente info
-        "cliente_nit": factura_info.cliente.NIT if factura_info.cliente else "",
-        "cliente_domicilio": factura_info.cliente.Domicilio if factura_info.cliente else "",
         "cliente_nombre": factura_info.cliente.Nombre if factura_info.cliente else "",
+        "cliente_nit": factura_info.cliente.NIT if factura_info.cliente.NIT else "",
+        "cliente_domicilio": factura_info.cliente.Domicilio if factura_info.cliente.Domicilio else "",
+        "cliente_reeup": factura_info.cliente.REEUP if factura_info.cliente.REEUP else "",
+        "cliente_onie": factura_info.cliente.ONIE if factura_info.cliente.ONIE else "",
+        "cliente_nro_cta_cup": factura_info.cliente.nro_cta_CUP if factura_info.cliente.nro_cta_CUP else "",
+        "cliente_nro_cta_mlc": factura_info.cliente.nro_cta_MLC if factura_info.cliente.nro_cta_MLC else "",
+        "cliente_telefono": factura_info.cliente.Telefono if factura_info.cliente.Telefono else "",
+        "cliente_email": factura_info.cliente.email if factura_info.cliente.email else "",
         # Vendedor info
-        "vendedor_nombre": factura_info.vendedor.Nombre if factura_info.vendedor else "",
+        "vendedor_nombre": str(factura_info.vendedor.Nombre).upper() if factura_info.vendedor.Nombre else "",
+        "vendedor_nit": factura_info.vendedor.NIT if factura_info.vendedor.NIT else "",
+        "vendedor_telefono": factura_info.vendedor.Telefono if factura_info.vendedor.Telefono else "",
+        "vendedor_domicilio": factura_info.vendedor.Domicilio if factura_info.vendedor.Domicilio else "",
+        "vendedor_nro_cta_cup": factura_info.vendedor.nro_cta_CUP if factura_info.vendedor.nro_cta_CUP else "",
+        "vendedor_tarjeta_cup": factura_info.vendedor.Tarjeta_CUP if factura_info.vendedor.Tarjeta_CUP else "",
+        "vendedor_nro_cta_mlc": factura_info.vendedor.nro_cta_MLC if factura_info.vendedor.nro_cta_MLC else "",
+        "vendedor_tarjeta_mlc": factura_info.vendedor.Tarjeta_MLC if factura_info.vendedor.Tarjeta_MLC else "",
+        "vendedor_email": factura_info.vendedor.email if factura_info.vendedor.email else "",
     }
 
     crea_pdf(info)
