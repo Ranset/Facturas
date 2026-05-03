@@ -402,6 +402,9 @@ class FormularioFactura(ft.Container):
         )
 
         def click_guardar(e):
+            # Remover overlay si está presente
+            if select_product_instance.overlay_wrapper in page.overlay:
+                page.overlay.remove(select_product_instance.overlay_wrapper)
             # 1. Validar que haya productos en la factura
             if len(dt_factura.rows) == 0:
                 print("No hay productos en la factura")
@@ -462,6 +465,10 @@ class FormularioFactura(ft.Container):
 
         def click_cancelar(e):
             from router import show_view
+
+            # Remover overlay si está presente
+            if select_product_instance.overlay_wrapper in page.overlay:
+                page.overlay.remove(select_product_instance.overlay_wrapper)
 
             if States.i_come_from == States._Crear_btn_loc_cotizacion:
                 States.where_i_am = States._cotizacion_location

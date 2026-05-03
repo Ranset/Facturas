@@ -625,8 +625,10 @@ def pdf_maker(nro_factura):
     total_con_letras = convertir_moneda_letras(factura_info.total)
     if factura_info.Moneda == "USD":
         total_con_letras = total_con_letras.replace("PESOS", "DÓLARES")
+        total_con_letras = total_con_letras.replace("M.N.", "USD")
     if factura_info.Moneda == "MLC":
         total_con_letras = total_con_letras.replace("PESOS", "MLC")
+        total_con_letras = total_con_letras.replace("M.N.", "MLC")
 
     descuento_monto = 0.0
     subtotal = 0.0
@@ -652,7 +654,6 @@ def pdf_maker(nro_factura):
         precio_en_moneda = producto.Precio_venta * factura_info.tasa_cambio
         precio = float(precio_en_moneda) * tasa
         total = precio * producto.Cantidad
-        print(f"tasa_fiscal: {tasa}", f"precio: {precio}")
 
         productos.append(
             {

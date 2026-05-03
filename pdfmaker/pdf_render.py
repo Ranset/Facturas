@@ -52,7 +52,7 @@ def crea_pdf(info, rutacss=''):
     ruta_descargas = os.path.join(os.path.expanduser('~'), 'Downloads')
     os.makedirs(ruta_descargas, exist_ok=True)
 
-    ruta_salida = os.path.join(ruta_descargas, 'cotizacion.pdf')
+    ruta_salida = os.path.join(ruta_descargas, f'Documento #{info["numero_factura"]}.pdf')
     pdfkit.from_string(html, ruta_salida, options=opciones, configuration=config)
 
     try:

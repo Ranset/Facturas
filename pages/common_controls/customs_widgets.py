@@ -121,6 +121,7 @@ class CustomTextFieldAutocomplete(ft.Stack):
             expand=True,
             on_change=on_cliente_change,
             border_color= ft.Colors.GREY_400,
+            # max_length= 73
         )
 
         suggestions_container = ft.Container(
@@ -943,6 +944,7 @@ class NewProductDialog(ft.AlertDialog):
                             expand= True,
                             value= nombre if nombre else "",
                             autofocus= True,
+                            # max_length= 73
                             )
         
         txt_precio = ft.CupertinoTextField(
