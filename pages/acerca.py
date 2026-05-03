@@ -30,7 +30,7 @@ class Acerca(ft.Container):
             size= 16,
             )
 
-        
+        img_logo = ft.Image("images/facturacion_cm_logo.png", width= 400, height= 400)
 
         ## Widgets objects>
         # Controls>
@@ -39,7 +39,8 @@ class Acerca(ft.Container):
     
         column_central = ft.Column(
             controls=[
-                txt_title,
+                img_logo,
+                # txt_title,
                 txt_version,
                 txt_job
             ],
@@ -49,7 +50,7 @@ class Acerca(ft.Container):
         contenedor_central = ft.Container(
             content= column_central,
             width= 600,
-            padding= ft.padding.only(top= 100)
+            # padding= ft.padding.only(top= 30)
         )
 
         columna_menu = ft.Column(controls= [Menu().Crear()])
