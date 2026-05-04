@@ -241,6 +241,15 @@ class Inicio(ft.Container):
 
         Row_generar = ft.Row(controls=[columna_menu, column2], alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)
 
+        try:
+            import pyi_splash # type: ignore # Es normal que marque error se importa con pyinstaller
+            # Close the splash screen. It does not matter when the call
+            # to this function is made, the splash screen remains open until
+            # this function is called or the Python program is terminated.
+            pyi_splash.close()
+        except:
+            pass
+
         page.add(Row_generar)
 
         # Layout>
