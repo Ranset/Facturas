@@ -581,7 +581,7 @@ def guardar_nueva_factura(factura_data):
         tipo=factura_data["tipo"],
         metodo_pago=factura_data["metodo_pago"],
         porciento_cta_fiscal=factura_data["tasa_fiscal"],
-        Estado= 2,  # Estado "XEnviar"
+        Estado= 2 if factura_data["tipo"] == 1 else 4,  # Estado "XEnviar" o "Pagada"
         descuento=factura_data.get("descuento", 0),
         descuento_tipo=factura_data.get("descuento_tipo", 0),
         Vendedor = 1

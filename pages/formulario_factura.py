@@ -535,7 +535,7 @@ class FormularioFactura(ft.Container):
                 "descuento_tipo": tipo_descuento,
                 "total": float(txt_total_value.value.replace(",", "")),
                 "tipo": tipo,
-                "estado": 2, # Asumimos que al actualizar una factura, esta pasa a estado "XEnviar" (2)
+                "estado": factura.Estado,
                 "vendedor_id": 1, # Asumimos un vendedor fijo por simplicidad
                 "productos": [
                     {
