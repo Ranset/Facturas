@@ -1090,9 +1090,9 @@ class NewProductDialog(ft.AlertDialog):
 
             product_data = {
                 "nombre": txt_nombre.value,
-                "precio": txt_precio.value,
-                "proveedor": txt_proveedor.value,
-                "peso": txt_peso.value,
+                "precio": txt_precio.value if txt_precio.value else "0",
+                "proveedor": txt_proveedor.value if txt_proveedor.value else "",
+                "peso": txt_peso.value if txt_peso.value else "0",
             }
 
             update_producto(id, product_data)
