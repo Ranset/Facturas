@@ -1038,8 +1038,9 @@ class NewProductDialog(ft.AlertDialog):
                 if States.where_i_am != States._formulario_factura_location:
                     self.alert_dialog.open = False
                     show_view(page, States.where_i_am)
-                else: # Si está e el frmulario de facturas
+                else: # Si está en el frmulario de facturas
                     self.alert_dialog.open = False
+                    print(page.controls[0].controls[0].controls[1].controls[2].content.controls[1].controls[0].controls[0].content.value)
                     page.update()
 
         def click_guardar_y_otro(e):
@@ -1129,7 +1130,8 @@ class NewProductDialog(ft.AlertDialog):
             ),
             style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
-            on_click= click_guardar_y_otro
+            on_click= click_guardar_y_otro,
+            visible= True if States.where_i_am != States._formulario_factura_location else False
         )
 
         row_1 = ft.Row(controls= [txt_nombre], expand= True,)

@@ -796,7 +796,7 @@ class FormularioFactura(ft.Container):
             controls=[
                 ft.Icon(ft.Icons.RECEIPT),
                 txt_title_add_product,
-                # btn_new_product
+                btn_new_product
             ]
             )
         
