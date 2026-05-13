@@ -176,6 +176,10 @@ class Tabla_Factura_Row(ft.Column):
         self.numero = numero
         self.facturar = False
 
+        # Directorio salvar pdf
+        self.save_directory = ft.FilePicker()
+        page.overlay.extend([self.save_directory])
+
         self.tabla_row = ft.Column(
             alignment= ft.MainAxisAlignment.START,
             spacing= 0,
@@ -306,7 +310,19 @@ class Tabla_Factura_Row(ft.Column):
     def click_btn_pdf(self, e):
         from controller import pdf_maker
 
-        pdf_maker(self.numero)
+        def on_save_file(e: ft.FilePickerResultEvent):
+            if e.path:
+                pdf_maker(self.numero, e.path)
+            else:
+                return
+
+        self.save_directory.on_result = on_save_file
+
+        self.save_directory.save_file(
+            dialog_title= "Guardar PDF",
+            file_name= f"Documento #{self.numero}",
+            allowed_extensions=["pdf"],
+        )
     
     def click_btn_enviada(self, e):
         from controller import update_estado_factura

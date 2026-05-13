@@ -163,14 +163,14 @@
                 <table class="table" style="table-layout: fixed; width: 100%;">
                     <tbody>
                         <tr style="background: black;color: white;font-weight: bold;">
-                            <td class="text-center" style="padding: 1px;background: black;border-style: none;letter-spacing: 2px;width: 520px;">PRODUCTOS</td>
-                            <td class="text-center" style="padding: 1px;background: black;border-style: none;letter-spacing: 2px;">CANTIDAD</td>
+                            <td class="text-center" style="padding: 1px;background: black;border-style: none;letter-spacing: 2px;width: 495px;">PRODUCTOS</td>
+                            <td class="text-center" style="padding: 1px;width: 120px;background: black;border-style: none;letter-spacing: 2px;">CANTIDAD</td>
                             <td class="text-start" style="padding: 1px;width: 90px;background: black;border-style: none;letter-spacing: 2px;">PRECIO</td>
-                            <td class="text-center" style="padding: 1px;width: 90px;background: black;border-style: none;letter-spacing: 2px;">IMPORTE</td>
+                            <td class="text-center" style="padding: 1px;width: 110px;background: black;border-style: none;letter-spacing: 2px;">IMPORTE</td>
                         </tr>
                         {% for producto in productos %}
                         <tr>
-                            <td style="padding: 1px;border-style: none;letter-spacing: 1px;padding-left: 5px;width: 520px;">{{producto.nombre}}</td>
+                            <td style="padding: 1px;border-style: none;letter-spacing: 1px;padding-left: 5px;width: 495px;">{{producto.nombre}}</td>
                             <td class="text-center" style="padding: 1px;border-style: none;letter-spacing: 1px;">{{producto.cantidad}}</td>
                             <td class="text-start" style="padding: 1px;border-style: none;width: 90px;letter-spacing: 1px;word-wrap: break-word;">${{producto.precio}}</td>
                             <td class="text-right" style="padding: 1px;border-style: none;letter-spacing: 1px;padding-right: 5px;word-wrap: break-word;">${{producto.total}}</td>

@@ -176,7 +176,7 @@ def convertir_cotizacion_a_factura(cotizacion_number):
     cotizacion = session.query(Factura).filter(Factura.numero_factura == cotizacion_number, Factura.tipo == 1).first()
     if cotizacion:
         cotizacion.tipo = 2  # Cambia el tipo a "Factura"
-        cotizacion.Estado = 2  # Cambia el estado a "XEnviar" para que se muestre en la tabla de facturas
+        cotizacion.Estado = 4  # Cambia el estado a "Pagada" para que se muestre en la tabla de facturas
         session.commit()
         return {"Success": True, "Message": f"Cotización {cotizacion_number} convertida a factura correctamente."}
     else:
@@ -617,8 +617,12 @@ def convertir_moneda_letras(cifra):
     resultado = f"{letras} PESOS {centavos:02d}/100 M.N."
     return resultado
 
-def pdf_maker(nro_factura):
+def pdf_maker(nro_factura, path):
     from pdfmaker.pdf_render import crea_pdf
+    import os
+
+    directorio = os.path.dirname(path)
+    nombre_pdf = os.path.basename(path)
 
     factura_info = get_factura_by_numero(nro_factura)
 
@@ -665,6 +669,9 @@ def pdf_maker(nro_factura):
         )
 
     info = {
+        "directorio" : directorio,
+        "nombre_pdf": nombre_pdf,
+        # Facrura
         "fecha" : factura_info.Fecha,
         "numero_factura": factura_info.numero_factura,
         "tipo": factura_info.tipo,
