@@ -7,7 +7,8 @@ from controller import (
                         update_cliente,
                         add_producto,
                         update_producto,
-                        convertir_de_mxm_a_usd
+                        convertir_de_mxm_a_usd,
+                        get_cliente_filter
                         )
 from pages.common_controls.states import States
 
@@ -794,12 +795,15 @@ class NewClientDialog(ft.AlertDialog):
                 if id is not None:
                     actualizar_cliente(e)
                 else:
-                    guardar(e)
+                    response = guardar(e)
                 if States.where_i_am != States._formulario_factura_location:
                     self.alert_dialog.open = False
                     show_view(page, States.where_i_am)
-                else:
+                else: # Si está en el formulario factura agregar el nombre del cliente al control select
                     self.alert_dialog.open = False
+                    #    Row_genral     column2 factura_body   cont_info    
+                    page.controls[0].controls[0].controls[1].controls[0].content.controls[1].content.controls[0].options.append(ft.dropdown.Option(response[0], response[1])) # Agregar cliente al dropdown
+                    page.controls[0].controls[0].controls[1].controls[0].content.controls[1].content.controls[0].value = response[0] # Seleccionar el cliente en el dropdown
                     page.update()
 
         def click_guardar_y_otro(e):            
@@ -842,6 +846,10 @@ class NewClientDialog(ft.AlertDialog):
                 "telefono": txt_telefono.value,
                 "correo": txt_email.value,
             })
+
+            response = get_cliente_filter(txt_nombre.value)
+
+            return (response["Data"][-1]["id"], response["Data"][-1]["nombre"])
 
         def actualizar_cliente(e):
             cliente_data = {
@@ -1034,13 +1042,16 @@ class NewProductDialog(ft.AlertDialog):
                 if id is not None:
                     actualizar_producto(e)
                 else:
-                    guardar(e)
+                    guardar_response = guardar(e)
                 if States.where_i_am != States._formulario_factura_location:
                     self.alert_dialog.open = False
                     show_view(page, States.where_i_am)
-                else: # Si está en el frmulario de facturas
+                else: # Si está en el frmulario de facturas: Agregar nombre y precio de producto al guardar la factura
                     self.alert_dialog.open = False
-                    print(page.controls[0].controls[0].controls[1].controls[2].content.controls[1].controls[0].controls[0].content.value)
+                    #    Row_genral     column2 factura_body add_product    Row_add_product2
+                    page.controls[0].controls[0].controls[1].controls[2].content.controls[1].controls[0].controls[0].content.value = txt_nombre.value # nombre
+                    page.controls[0].controls[0].controls[1].controls[2].content.controls[1].controls[2].value = guardar_response # Precio
+                    page.controls[0].controls[0].controls[1].controls[2].content.controls[1].controls[1].focus() # Cantidad
                     page.update()
 
         def click_guardar_y_otro(e):
@@ -1081,6 +1092,8 @@ class NewProductDialog(ft.AlertDialog):
                 "proveedor": txt_proveedor.value if txt_proveedor.value else "",
                 "peso": txt_peso.value if txt_peso.value else "0",
             })
+
+            return txt_precio.value if txt_precio.value else "0"
 
         def actualizar_producto(e):
             if chk_iva.value:

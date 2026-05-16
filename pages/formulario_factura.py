@@ -719,7 +719,7 @@ class FormularioFactura(ft.Container):
             content= ft.Row(
             controls=[
                 select_cliente,
-                # btn_agragar_cliente
+                btn_agragar_cliente
             ],
             ),
             margin= ft.margin.only(top= 5)
