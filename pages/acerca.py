@@ -21,7 +21,7 @@ class Acerca(ft.Container):
             )
         
         txt_version = ft.Text(
-            "Versión 1.1.1",
+            "Versión 1.2.0",
             size= 20,
             )
         
