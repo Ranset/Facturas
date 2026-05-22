@@ -899,7 +899,8 @@ class NewClientDialog(ft.AlertDialog):
             ),
             style= ft.ButtonStyle(side= ft.BorderSide(1, "#2c78d0"), color= "#2c78d0", shape= ft.RoundedRectangleBorder(radius= 5)),
             width= 120,
-            on_click= click_guardar_y_otro
+            on_click= click_guardar_y_otro,
+            visible= True if States.where_i_am != States._formulario_factura_location else False
         )
 
         row_1 = ft.Row(controls= [txt_nombre], expand= True,)
@@ -944,8 +945,8 @@ class NewProductDialog(ft.AlertDialog):
         super().__init__()
 
         def keyboard_event_handler(e):
-            if e.key == "Enter":
-                click_guardar(e)
+            # if e.key == "Enter":
+            #     click_guardar(e)
             if e.ctrl and e.key.lower() == "g":
                 click_guardar_y_otro(e)
 
@@ -968,7 +969,7 @@ class NewProductDialog(ft.AlertDialog):
                             expand= True,
                             value= nombre if nombre else "",
                             autofocus= True,
-                            # max_length= 73
+                            on_submit= lambda e: click_guardar(e)
                             )
         
         txt_precio = ft.CupertinoTextField(
@@ -980,6 +981,9 @@ class NewProductDialog(ft.AlertDialog):
                             width= 200,
                             expand= True,
                             value= precio if precio else "",
+                            keyboard_type= ft.KeyboardType.NUMBER,
+                            input_filter= ft.InputFilter(allow=True, regex_string=r"^\d*\.?\d*$", replacement_string=""), # Solo números y un punto decimal opcional
+                            on_submit= lambda e: click_guardar(e)
                             )
         
         rdo_moneda = ft.Container(
@@ -1013,6 +1017,7 @@ class NewProductDialog(ft.AlertDialog):
                             width= 200,
                             expand= True,
                             value= proveedor if proveedor else "",
+                            on_submit= lambda e: click_guardar(e)
                             )
         
         txt_peso = ft.CupertinoTextField(
@@ -1023,6 +1028,9 @@ class NewProductDialog(ft.AlertDialog):
                                                     ), 
                             width= 200,
                             value= peso if peso else "",
+                            keyboard_type= ft.KeyboardType.NUMBER,
+                            input_filter= ft.InputFilter(allow=True, regex_string=r"^\d*\.?\d*$", replacement_string=""), # Solo números y un punto decimal opcional
+                            on_submit= lambda e: click_guardar(e)
                             )
         
         def validar_campos():

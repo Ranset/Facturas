@@ -232,16 +232,22 @@ class FormularioFactura(ft.Container):
             nombre_producto = product_name if product_name is not None else select_product_instance.select_cliente_field.value
             if not nombre_producto:
                 print("Nombre de producto vacío")
+                snack_bar = ft.SnackBar(ft.Text("Nombre de producto vacío"))
+                page.open(snack_bar)
                 return
             try:
                 qty = product_qty if product_qty is not None else int(cantidad.value)
             except Exception:
                 print("Cantidad inválida")
+                snack_bar = ft.SnackBar(ft.Text("Cantidad inválida"))
+                page.open(snack_bar)
                 return
             try:
                 price = product_price if product_price is not None else float(precio.value)
             except Exception:
                 print("Precio inválido")
+                snack_bar = ft.SnackBar(ft.Text("Precio inválido"))
+                page.open(snack_bar)
                 return
             # Precio segun moneda seleccionada
             if radio_monedas.value == "cup":
@@ -266,7 +272,13 @@ class FormularioFactura(ft.Container):
             dt_factura.rows.append(new_row)
             actualizar_totales()
             # Limpiar valores usando la instancia
-            select_product_instance.select_cliente_field.value = ""
+            try:
+                select_product_instance.select_cliente_field.value = ""
+            except Exception:
+                try:
+                    select_product.controls[0].content.value = ""
+                except Exception:
+                    print("No se pudo limpiar el campo de producto")
             cantidad.value = ""
             precio.value = ""
             States.selected_product_price = ""
@@ -277,7 +289,7 @@ class FormularioFactura(ft.Container):
                 try:
                     select_product.controls[0].content.autofocus = True
                 except Exception:
-                    pass
+                    print("No se pudo enfocar el campo de producto")
             page.update()
 
         btn_add_product = ft.FloatingActionButton(
@@ -408,10 +420,14 @@ class FormularioFactura(ft.Container):
             # 1. Validar que haya productos en la factura
             if len(dt_factura.rows) == 0:
                 print("No hay productos en la factura")
+                snack_bar = ft.SnackBar(ft.Text("No hay productos en la factura"))
+                page.open(snack_bar)
                 return False
             # 2. Validar que se haya seleccionado un cliente
             if not select_cliente.value:
                 print("No se ha seleccionado un cliente")
+                snack_bar = ft.SnackBar(ft.Text("No se ha seleccionado un cliente"))
+                page.open(snack_bar)
                 return False
             
             tipo_descuento = 0
@@ -497,15 +513,21 @@ class FormularioFactura(ft.Container):
 
             if factura is None:
                 print("No hay factura para actualizar")
+                snack_bar = ft.SnackBar(ft.Text("No hay factura para actualizar"))
+                page.open(snack_bar)
                 return
             
             # Validar que haya productos en la factura
             if len(dt_factura.rows) == 0:
                 print("No hay productos en la factura")
+                snack_bar = ft.SnackBar(ft.Text("No hay productos en la factura"))
+                page.open(snack_bar)
                 return
             # Validar que se haya seleccionado un cliente
             if not select_cliente.value:
                 print("No se ha seleccionado un cliente")
+                snack_bar = ft.SnackBar(ft.Text("No se ha seleccionado un cliente"))
+                page.open(snack_bar)
                 return
             
             tipo_descuento = 0

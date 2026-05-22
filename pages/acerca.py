@@ -21,7 +21,7 @@ class Acerca(ft.Container):
             )
         
         txt_version = ft.Text(
-            "Versión 1.2.0",
+            "Versión 1.2.1",
             size= 20,
             )
         
@@ -42,7 +42,7 @@ class Acerca(ft.Container):
                 img_logo,
                 # txt_title,
                 txt_version,
-                txt_job
+                # txt_job
             ],
             horizontal_alignment= ft.CrossAxisAlignment.CENTER,
         )
