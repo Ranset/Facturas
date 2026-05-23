@@ -456,6 +456,8 @@ class Tabla_Factura_Row(ft.Column):
         from pages.common_controls.states import States
 
         States.factura_numero = number
+        States.i_come_from = States.where_i_am
+        States.where_i_am = States._formulario_factura_location
         show_view(self.page, States._formulario_factura_location)
 
     def crear(self):
