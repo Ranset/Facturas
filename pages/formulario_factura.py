@@ -461,8 +461,6 @@ class FormularioFactura(ft.Container):
                         "nombre": row.data[0],
                         "precio": row.data[1],
                         "cantidad": row.data[2],
-                        # "precio_con_tasa": row.data[3],
-                        # "importe": row.data[4]
                     }
                     for row in dt_factura.rows
                 ]
@@ -919,7 +917,6 @@ class FormularioFactura(ft.Container):
                                 border= ft.border.all(2, "black"),
                                 border_radius= ft.border_radius.all(5),
                                 padding= ft.padding.all(10),
-                                # height= 78,
                                 margin= ft.margin.only(right= 30)
                             )
                         ]
@@ -953,11 +950,9 @@ class FormularioFactura(ft.Container):
         
         
 
-        # columna_menu = ft.Column(controls= [Menu().Crear()])
         column2 = ft.Column(controls=[contenedor_title, factura_body, Row_footer], expand= True)
 
         Row_generar = ft.Row(controls=[
-            # columna_menu,
             column2
             ],
             alignment= ft.MainAxisAlignment.CENTER, spacing= 0, expand= True)

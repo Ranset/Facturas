@@ -100,7 +100,6 @@ class Clientes(ft.Container):
 
         txt_buscar_persona = ft.TextField(
             label="Buscar Cliente",
-            # expand=True,
             height= inputs_height,
             width= 400,
             bgcolor= inputs_bgcolor,
@@ -176,7 +175,6 @@ class Clientes(ft.Container):
                         ft.DataCell(ft.Text(c["nombre"])),
                         ft.DataCell(ft.Text(c["telefono"])),
                         ft.DataCell(ft.Text(c["correo"])),
-                        # ft.DataCell(ft.TextButton("Eliminar", on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= c["id"])),
                         ft.DataCell(ft.Row(controls=[
                                 ft.IconButton(icon=ft.Icons.EDIT_SHARP, icon_color=ft.Colors.PRIMARY, on_click= click_btn_editar, style= ft.ButtonStyle(color= "red"), data= (c["id"], c["nombre"], c["NIT"], c["REEUP"], c["ONIE"], c["Domicilio"], c["nro_cta_CUP"], c["nro_cta_MLC"], c["telefono"], c["correo"])),
                                 ft.IconButton(icon=ft.Icons.DELETE_FOREVER, icon_color=ft.Colors.RED, on_click= click_btn_eliminar, style= ft.ButtonStyle(color= "red"), data= c["id"]),
@@ -185,7 +183,6 @@ class Clientes(ft.Container):
                             )
                         ),
                     ],
-                    # on_select_changed= on_select_row,
                     data= c
                 )
             )
@@ -227,7 +224,6 @@ class Clientes(ft.Container):
         Row1 = ft.Row(controls=[column_left, column_Right], alignment= ft.MainAxisAlignment.CENTER)
         contenedor1 = ft.Container(
             content=Row1, 
-            # bgcolor= "#7979e6",
             margin= ft.margin.only(top=30, left=15, right=15),
         )
 

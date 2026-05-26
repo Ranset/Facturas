@@ -50,7 +50,6 @@ def crea_pdf(info, rutacss=''):
     config = pdfkit.configuration(wkhtmltopdf=wkhtml_path)
 
     ruta_descargas = info["directorio"]
-    # ruta_descargas = os.path.join(os.path.expanduser('~'), 'Downloads')
     os.makedirs(ruta_descargas, exist_ok=True)
 
     ruta_salida = os.path.join(ruta_descargas, f'{info["nombre_pdf"]}.pdf')

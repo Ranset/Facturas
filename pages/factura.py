@@ -118,10 +118,7 @@ class Factura(ft.Container):
             else:
                 tipo = 2
 
-            self.tabla_controls = [
-                # (1, "Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD"),
-                # (2, "XEnviar", "15-01-2025", "250016", "Pritma", "600.00", "USD"),
-                ]
+            self.tabla_controls = []
             
             facturas_filtradas = filtrar_facturas(
                 status= select_estatus.value,
@@ -148,7 +145,6 @@ class Factura(ft.Container):
 
         txt_nro_factura = ft.TextField(
             label="# Cotización" if States.where_i_am == States._cotizacion_location else "# Factura",
-            # expand=True,
             height= inputs_height,
             width= 140,
             bgcolor= inputs_bgcolor,
@@ -168,24 +164,6 @@ class Factura(ft.Container):
         )
 
         def click_clear (e):
-            # self.tabla_controls = [
-            # Tabla_Factura_Row(1, "Vencida", "15-01-2025", "250012", "Empresa de suministros integrales y cooperaci'on econ'omica", "158548.52", "CUP", page).crear(),
-            # Tabla_Factura_Row(2, "Borrador", "15-01-2025", "250013", "Pedro", "150158548.00", "CUP", page).crear(),
-            # Tabla_Factura_Row(1, "XEnviar", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD", page).crear(),
-            # Tabla_Factura_Row(2, "Pagada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD", page).crear(),
-            # Tabla_Factura_Row(1, "Enviada", "15-01-2025", "250015", "Carlos Ace", "548.99", "USD", page).crear(),
-            # ]
-
-            # select_estatus.value = None
-            # select_cliente.value = None
-            # select_fecha_inicio.value = ""
-            # select_fecha_fin.value = ""
-            # txt_nro_factura.value = ""
-
-            # tabla.controls.clear()
-            # for row in self.tabla_controls:
-            #     tabla.controls.append(row)
-            # page.update()
             from router import show_view
             show_view(page, States.where_i_am)
         
@@ -258,7 +236,6 @@ class Factura(ft.Container):
         Row1 = ft.Row(controls=[column_left, column_Right], alignment= ft.MainAxisAlignment.CENTER)
         contenedor1 = ft.Container(
             content=Row1, 
-            # bgcolor= "#7979e6",
             margin= ft.margin.only(top=30, left=15, right=15),
         )
 
@@ -277,7 +254,6 @@ class Factura(ft.Container):
             )
         contenedor2 = ft.Container(
             content=Row2, 
-            # bgcolor= "#e67979",
             margin= ft.margin.only(left=15, right=15),
             )
         

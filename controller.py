@@ -3,14 +3,12 @@ from datetime import datetime
 
 from models import (session, 
                     Tasa,
-                    Tipo,
                     Factura,
                     DetalleFactura,
                     Cliente,
                     Producto,
                     Vendedor,
                     Config)
-from pages import factura
 
 def get_facturas():
     facturas = session.query(Factura).order_by(Factura.id.desc()).filter(Factura.tipo == 2).all()
@@ -196,22 +194,6 @@ def filtrar_facturas(status=None, cliente_id=None, numero=None):
 
     return {"Success": True, "Data": facturas_filtradas}
 
-    # tabla_filtrada = []
-    # for factura in facturas_filtradas:
-    #     factura_dict = {
-    #         "id": factura.id,
-    #         "estado": factura.estado_rel.Estado,
-    #         "fecha": factura.Fecha,
-    #         "numero": factura.numero_factura,
-    #         "cliente": factura.cliente.Nombre if factura.cliente else "Sin cliente",
-    #         "total": f"{factura.total:.2f}",
-    #         "moneda": factura.Moneda,
-    #         "tipo": factura.tipo
-    #     }
-    #     tabla_filtrada.append(factura_dict)
-
-    # return {"Success": True, "Data": tabla_filtrada}
-
 def dashboard_data():
     facturas = get_facturas_pagadas()
     facturas_por_pagar = get_facturas_pendientes()
@@ -284,7 +266,6 @@ def get_cliente_filter(search_term):
     clientes = session.query(Cliente).filter(
         or_(
             Cliente.Nombre.ilike(f"%{search_term}%"),
-            # Cliente.Domicilio.ilike(f"%{search_term}%"),
             Cliente.Telefono.ilike(f"%{search_term}%"),
             Cliente.email.ilike(f"%{search_term}%")
         )

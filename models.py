@@ -142,12 +142,10 @@ class DetalleFactura(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     factura_id = Column(Integer, ForeignKey("Facturas.id"))
     Nombre = Column(Text)
-    # Producto_id = Column(Integer, ForeignKey("Productos.id"))
     Cantidad = Column(Integer)
     Precio_venta = Column(Numeric)
 
     factura = relationship("Factura", back_populates="detalles")
-    # producto = relationship("Producto", back_populates="detalles")
 
 # Fin Modelos
 

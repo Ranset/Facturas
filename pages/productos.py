@@ -74,7 +74,6 @@ class Productos(ft.Container):
 
         txt_buscar_producto = ft.TextField(
             label="Buscar Producto",
-            # expand=True,
             height= inputs_height,
             width= 400,
             bgcolor= inputs_bgcolor,
@@ -227,8 +226,7 @@ class Productos(ft.Container):
 
         Row1 = ft.Row(controls=[column_left, column_Right], alignment= ft.MainAxisAlignment.CENTER)
         contenedor1 = ft.Container(
-            content=Row1, 
-            # bgcolor= "#7979e6",
+            content=Row1,
             margin= ft.margin.only(top=30, left=15, right=15),
         )
 
