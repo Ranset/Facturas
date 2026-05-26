@@ -623,6 +623,7 @@ def pdf_maker(nro_factura, path):
 
     directorio = os.path.dirname(path)
     nombre_pdf = os.path.basename(path)
+    nombre_pdf = os.path.splitext(nombre_pdf)[0]  # Elimina la extensión .pdf si se proporcionó
 
     factura_info = get_factura_by_numero(nro_factura)
 
