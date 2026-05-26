@@ -122,7 +122,6 @@ class CustomTextFieldAutocomplete(ft.Stack):
             expand=True,
             on_change=on_cliente_change,
             border_color= ft.Colors.GREY_400,
-            # max_length= 73
         )
 
         suggestions_container = ft.Container(
@@ -947,8 +946,6 @@ class NewProductDialog(ft.AlertDialog):
         super().__init__()
 
         def keyboard_event_handler(e):
-            # if e.key == "Enter":
-            #     click_guardar(e)
             if e.ctrl and e.key.lower() == "g":
                 click_guardar_y_otro(e)
 
@@ -1082,8 +1079,6 @@ class NewProductDialog(ft.AlertDialog):
                 txt_precio.value = ""
                 txt_proveedor.value = ""
                 txt_peso.value = ""
-                # chk_iva.value = False # Decidí no resetear el checkbox ni la selección de moneda para agilizar ingreso de productos similares
-                # rdo_moneda.content.controls[0].value = "usd" 
                 txt_error.visible = False
                 txt_nombre.focus()  # Volver a enfocar el campo nombre para agilizar ingreso
 
