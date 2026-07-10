@@ -67,6 +67,10 @@ class FormularioFactura(ft.Container):
 
         tipo = 2 if States.i_come_from == States._Crear_btn_loc_facturas else 1 # 1 cotización, 2 factura
 
+        nro_cotizacion = factura.numero_cotizacion if factura is not None else None
+
+        viene_de_cotizacion = f" <-- DE COTIZACIÓN {nro_cotizacion}" if nro_cotizacion is not None else ""
+
         ## common variables>
 
         ## @note <Widgets objects
@@ -78,11 +82,20 @@ class FormularioFactura(ft.Container):
         
         txt_title = title()
 
-        txt_formulario_title = ft.Text(
-            txt_title,
-            size= 20,
-            weight= ft.FontWeight.BOLD,
-            )
+        txt_formulario_title = ft.Row(
+            controls=[
+                ft.Text(
+                        txt_title,
+                        size= 20,
+                        weight= ft.FontWeight.BOLD,
+                        ),
+                ft.Text(
+                        viene_de_cotizacion,
+                        size= 12,
+                        ),
+            ]
+        )
+        
 
         txt_info_title = ft.Text("Información General", weight= ft.FontWeight.BOLD)
 

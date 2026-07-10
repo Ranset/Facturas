@@ -29,6 +29,7 @@ class Config(Base):
     porciento_cta_fiscal = Column(Integer)
     nota_terminos = Column(Text)
     numero_factura = Column(Integer)
+    numero_cotizacion = Column(Integer)
 
 
 class Producto(Base):
@@ -105,6 +106,7 @@ class Factura(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     numero_factura = Column(Text, nullable=False, unique=True)
+    numero_cotizacion = Column(Text, unique=True)
 
     tipo = Column(Integer, ForeignKey("Tipos.id"))
     Vendedor = Column(Integer, ForeignKey("Vendedores.id"))

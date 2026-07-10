@@ -1,5 +1,6 @@
-from operator import or_
 from datetime import datetime
+
+from sqlalchemy import or_
 
 from models import (session, 
                     Tasa,
@@ -169,16 +170,7 @@ def update_estado_factura(factura_number, nuevo_estado):
         return {"Success": True, "Message": f"Estado de la factura {factura_number} actualizado a {nuevo_estado}."}
     else:
         return {"Success": False, "Message": f"Factura {factura_number} no encontrada."}
-    
-def convertir_cotizacion_a_factura(cotizacion_number):
-    cotizacion = session.query(Factura).filter(Factura.numero_factura == cotizacion_number, Factura.tipo == 1).first()
-    if cotizacion:
-        cotizacion.tipo = 2  # Cambia el tipo a "Factura"
-        cotizacion.Estado = 4  # Cambia el estado a "Pagada" para que se muestre en la tabla de facturas
-        session.commit()
-        return {"Success": True, "Message": f"Cotización {cotizacion_number} convertida a factura correctamente."}
-    else:
-        return {"Success": False, "Message": f"Cotización {cotizacion_number} no encontrada."}
+
 
 def filtrar_facturas(status=None, cliente_id=None, numero=None):    
     query = session.query(Factura)
@@ -188,7 +180,12 @@ def filtrar_facturas(status=None, cliente_id=None, numero=None):
     if cliente_id is not None:
         query = query.filter(Factura.Cliente == cliente_id)
     if numero is not None:
-        query = query.filter(Factura.numero_factura.ilike(f"%{numero}%"))
+        query = query.filter(
+            or_(
+                Factura.numero_factura.ilike(f"%{numero}%"),
+                Factura.numero_cotizacion.ilike(f"%{numero}%")
+            )
+        )
 
     facturas_filtradas = query.order_by(Factura.id.desc()).all()
 
@@ -548,9 +545,56 @@ def _get_next_invoice_number(fecha_factura):
 
     return next_number
 
+def _get_next_cotizacion_number():
+    # Genera el siguiente número de cotización.
+    # El formato es: secuencia de 4 dígitos 0001.
+
+    # Lee el último número generado desde Config.numero_cotizacion.
+    config = session.query(Config).first()
+    last_config_number = None
+    if config is not None and config.numero_cotizacion is not None:
+        last_config_number = str(int(config.numero_cotizacion))
+
+    next_sequence = 1
+    if last_config_number:
+        # Si existe un último número, se incrementa la secuencia.
+        next_sequence = int(last_config_number) + 1
+
+    sequence_part = f"{next_sequence:04d}" if next_sequence < 10000 else str(next_sequence)
+    next_number = sequence_part
+
+    # Actualiza Config.numero_cotizacion para que el siguiente cálculo tenga referencia persistente.
+    if config is None:
+        config = Config(numero_cotizacion=int(next_number))
+        session.add(config)
+    else:
+        config.numero_cotizacion = int(next_number)
+    session.commit()
+
+    return next_number
+
+
+def convertir_cotizacion_a_factura(cotizacion_number):
+    cotizacion = session.query(Factura).filter(Factura.numero_factura == cotizacion_number, Factura.tipo == 1).first()
+
+    if cotizacion:
+        nuevo_numero_factura = _get_next_invoice_number(datetime.now().strftime("%d/%m/%Y"))
+        
+        cotizacion.tipo = 2  # Cambia el tipo a "Factura"
+        cotizacion.Estado = 4  # Cambia el estado a "Pagada" para que se muestre en la tabla de facturas
+        cotizacion.numero_factura = nuevo_numero_factura  # Asigna el nuevo número de factura
+        cotizacion.numero_cotizacion = cotizacion_number  # Guarda el número de cotización original
+        session.commit()
+        return {"Success": True, "Message": f"Cotización {cotizacion_number} convertida a factura correctamente."}
+    else:
+        return {"Success": False, "Message": f"Cotización {cotizacion_number} no encontrada."}
 
 def guardar_nueva_factura(factura_data):
-    nuevo_numero = _get_next_invoice_number(factura_data["fecha"])
+
+    if factura_data["tipo"] == 2:  # Si es una factura, se genera un nuevo número de factura.
+        nuevo_numero = _get_next_invoice_number(factura_data["fecha"])
+    else:
+        nuevo_numero = _get_next_cotizacion_number()  # Si es una cotización, se genera un nuevo número de cotización.
 
     nueva_factura = Factura(
         numero_factura=nuevo_numero,

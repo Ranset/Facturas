@@ -64,7 +64,7 @@ class Inicio(ft.Container):
                         ft.Row(expand= True),
                         ft.Text(data["Data"]["total_facturado"], size= 27, color="#005BAF", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.Text("Total Facturado", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
+                    ft.Text("Total Facturado USD", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
                     ft.Text(data["Data"]["monto_facturado"], size=30, color= "black", weight= ft.FontWeight.BOLD)
                 ],
                 horizontal_alignment= "start",
@@ -93,7 +93,7 @@ class Inicio(ft.Container):
                         ft.Row(expand= True),
                         ft.Text(data["Data"]["cotizaciones_sin_facturar"], size=27, color= "#D97706", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.Text("Cotizaciones Sin Enviar", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
+                    ft.Text("Cotizaciones Sin Enviar USD", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
                     ft.Text(data["Data"]["monto_cotizaciones_sin_facturar"], size=30, color= "black", weight= ft.FontWeight.BOLD)
                 ],
                 horizontal_alignment= "start",
@@ -121,7 +121,7 @@ class Inicio(ft.Container):
                         ft.Row(expand= True),
                         ft.Text(data["Data"]["facturas_por_pagar"], size=27, color= "#9333EA", weight= ft.FontWeight.BOLD, text_align= ft.TextAlign.END)
                     ], expand= True),
-                    ft.Text("Facturas Por Pagar", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
+                    ft.Text("Facturas Por Pagar USD", size= 12, color="#64748B", weight="normal", text_align= ft.TextAlign.START),
                     ft.Text(data["Data"]["monto_facturas_por_pagar"], size=30, color= "black", weight= ft.FontWeight.BOLD)
                 ],
                 horizontal_alignment= "start",
