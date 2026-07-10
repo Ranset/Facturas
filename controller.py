@@ -182,8 +182,8 @@ def filtrar_facturas(status=None, cliente_id=None, numero=None):
     if numero is not None:
         query = query.filter(
             or_(
-                Factura.numero_factura.ilike(f"%{numero}%"),
-                Factura.numero_cotizacion.ilike(f"%{numero}%")
+                Factura.numero_factura == numero,
+                Factura.numero_cotizacion == numero
             )
         )
 
