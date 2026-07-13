@@ -267,10 +267,11 @@ class Tabla_Factura_Row(ft.Column):
                                 ft.PopupMenuItem(
                                     content= ft.Column(controls=[
                                         ft.Divider(height=8, color= "#ECEEF4"),
-                                        ft.Text("Eliminar", color= ft.Colors.RED),
+                                        ft.Text("Eliminar", color= ft.Colors.GREY_400 if self.tipo == 2 else ft.Colors.RED),
                                     ], alignment= ft.alignment.top_center, spacing=0),
                                     height= 10,
-                                    on_click= lambda e: self.modal(numero, page)
+                                    disabled= True if self.tipo == 2 else False,
+                                    on_click= lambda e: self.modal(numero, page),
                                 ),
                             ],
                             tooltip= "",
@@ -406,7 +407,7 @@ class Tabla_Factura_Row(ft.Column):
         modal_dialog = ft.AlertDialog(
             modal=True,
             title=ft.Text("Confirmación", weight= "bold"),
-            content=ft.Text("¿Realmente desea eliminar esta factura/cotización?"),
+            content=ft.Text("¿Realmente desea eliminar esta cotización?"),
             actions=[
                 ft.TextButton("Si", on_click=lambda e: self.eliminar(factura_number, modal_dialog)),
                 ft.TextButton("No", on_click=cerrar_modal),

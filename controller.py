@@ -12,7 +12,7 @@ from models import (session,
                     Config)
 
 def get_facturas():
-    facturas = session.query(Factura).order_by(Factura.id.desc()).filter(Factura.tipo == 2).all()
+    facturas = session.query(Factura).order_by(Factura.numero_factura.desc()).filter(Factura.tipo == 2).all()
     clientes = get_clientes()
     lista_clientes = []
 
